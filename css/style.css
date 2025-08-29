@@ -1,0 +1,861 @@
+/* 现代化Vibrant UI设计 - 卡片式布局 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  width: 380px;
+  min-height: auto;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: auto;
+}
+
+/* 移除动态背景装饰以避免双重背景效果 */
+
+.container {
+  padding: 2px;
+  position: relative;
+  z-index: 10;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 10px;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  letter-spacing: -0.5px;
+}
+
+/* 搜索功能样式 */
+.search-section {
+  margin-bottom: 2px;
+}
+
+.search-input-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #2d3748;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.search-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.search-input::placeholder {
+  color: #718096;
+}
+
+.search-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+  flex-shrink: 0;
+}
+
+.search-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
+}
+
+.search-button:active {
+  transform: translateY(0);
+}
+
+.search-results {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-result-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.search-result-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4a5568;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.search-result-info {
+  flex: 1;
+}
+
+.search-result-name {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.search-result-symbol {
+  color: #718096;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.add-coin-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.add-coin-button:hover {
+  transform: scale(1.05);
+}
+
+.add-coin-button:disabled {
+  background: #e2e8f0;
+  color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.search-loading {
+  padding: 20px;
+  text-align: center;
+  color: #718096;
+  font-size: 14px;
+}
+
+.search-empty {
+  padding: 20px;
+  text-align: center;
+  color: #718096;
+  font-size: 14px;
+}
+
+
+
+/* 语言选择样式 */
+.language-selection {
+  margin-bottom: 20px;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.language-selection h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 8px 0;
+  text-shadow: none;
+}
+
+#languageSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d3748;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+#languageSelect:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+#languageSelect:hover {
+  border-color: #667eea;
+}
+
+
+
+.crypto-list {
+  margin-bottom: 20px;
+}
+
+.crypto-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.crypto-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.5s;
+}
+
+.crypto-container:hover::before {
+  left: 100%;
+}
+
+.crypto-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.crypto-item:last-child {
+  border-bottom: none;
+}
+
+.crypto-item:hover {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 0 -12px;
+}
+
+.crypto-delete-btn {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(229, 62, 62, 0.1);
+  color: #e53e3e;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-sizing: border-box;
+  line-height: 1;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  transform: translateY(-50%);
+}
+
+.crypto-item:hover .crypto-delete-btn {
+  opacity: 1;
+}
+
+.crypto-delete-btn:hover {
+  background: rgba(229, 62, 62, 0.1);
+  color: #c53030;
+  transform: translateY(-50%) scale(1.15);
+  border-radius: 50%;
+}
+
+
+
+.crypto-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.crypto-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+
+.crypto-name {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 14px;
+  margin-bottom: 1px;
+}
+
+.crypto-symbol {
+  color: #718096;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.crypto-price {
+  text-align: right;
+  flex-shrink: 0;
+  margin-right: 30px;
+}
+
+.crypto-price .price {
+  font-weight: 700;
+  font-size: 14px;
+  color: #2d3748;
+  margin-bottom: 1px;
+}
+
+.crypto-price .price.positive {
+  color: #38a169;
+}
+
+.crypto-price .price.negative {
+  color: #e53e3e;
+}
+
+.price-change {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.price-change.positive {
+  color: #38a169;
+  background: rgba(56, 161, 105, 0.1);
+}
+
+.price-change.negative {
+  color: #e53e3e;
+  background: rgba(229, 62, 62, 0.1);
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.footer {
+  margin-top: 20px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  background: rgba(102, 126, 234, 0.1);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.last-updated {
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.hidden:not(.settings-panel) {
+  display: none;
+}
+
+.settings-panel,
+.feedback-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 380px;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: 20;
+  padding: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+  backdrop-filter: blur(20px);
+  transform: translateX(0);
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-panel.hidden,
+.feedback-panel.hidden {
+  transform: translateX(-100%);
+  display: block;
+}
+
+.qr-codes-section {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.qr-code-item {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.qr-code-image {
+  width: 120px;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.qr-code-image:hover {
+  transform: scale(1.05);
+}
+
+/* 图片放大弹窗样式 */
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.image-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.image-modal-content {
+  max-width: 90%;
+  max-height: 90%;
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+
+.image-modal.show .image-modal-content {
+  transform: scale(1);
+}
+
+.image-modal img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.image-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.image-modal-close:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+}
+
+.donation-tip {
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  color: #2d3748;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+}
+
+.donation-tip:hover {
+  background: rgba(102, 126, 234, 0.15);
+  transform: translateY(-1px);
+}
+
+.feedback-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feedback-content textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d3748;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.feedback-content textarea::placeholder {
+  color: #718096;
+}
+
+.feedback-content textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px 16px 0 0;
+  border-top: 1px solid rgba(102, 126, 234, 0.2);
+  position: sticky;
+  bottom: 0;
+}
+
+.settings-panel h2,
+.feedback-panel h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 20px;
+  text-align: center;
+  text-shadow: none;
+  padding: 20px 20px 0 20px;
+  flex-shrink: 0;
+}
+
+.settings-content {
+  flex: 1;
+  padding: 0 20px 20px 20px;
+  overflow-y: auto;
+}
+
+.settings-panel h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 16px 0 8px;
+  text-shadow: none;
+}
+
+
+
+.refresh-interval, .currency-selection {
+  margin-bottom: 20px;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.refresh-interval h3, .currency-selection h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 8px 0;
+  text-shadow: none;
+}
+
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d3748;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.settings-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 0;
+  border-top: 1px solid rgba(102, 126, 234, 0.2);
+  flex-shrink: 0;
+}
+
+.settings-actions button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.settings-actions button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.settings-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.settings-actions button:hover::before {
+  left: 100%;
+}
+
+.settings-actions button:active {
+  transform: translateY(0);
+}
+
+.settings-actions button#cancelSettingsButton {
+  background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+  box-shadow: 0 4px 15px rgba(113, 128, 150, 0.4);
+}
+
+.settings-actions button#cancelSettingsButton:hover {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+  box-shadow: 0 8px 25px rgba(113, 128, 150, 0.6);
+}
+
+.loading {
+  text-align: center;
+  padding: 16px 12px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.error-message {
+  color: #fed7d7;
+  text-align: center;
+  padding: 12px 16px;
+  background: rgba(229, 62, 62, 0.2);
+  border-radius: 12px;
+  margin: 12px 0;
+  border: 1px solid rgba(229, 62, 62, 0.3);
+  backdrop-filter: blur(10px);
+  font-weight: 500;
+}
+
+.search-error {
+  color: #fed7d7;
+  text-align: center;
+  padding: 12px 16px;
+  background: rgba(255, 165, 0, 0.2);
+  border-radius: 8px;
+  margin: 8px 0;
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* 动画效果 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.crypto-item {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.crypto-item:nth-child(1) { animation-delay: 0.1s; }
+.crypto-item:nth-child(2) { animation-delay: 0.2s; }
+.crypto-item:nth-child(3) { animation-delay: 0.3s; }
+.crypto-item:nth-child(4) { animation-delay: 0.4s; }
+.crypto-item:nth-child(5) { animation-delay: 0.5s; }
+
+/* 响应式设计 */
+@media (max-width: 400px) {
+  body {
+    width: 320px;
+  }
+  
+  .container {
+    padding: 16px;
+  }
+  
+  .crypto-item {
+    padding: 12px;
+  }
+  
+  .crypto-name {
+    font-size: 14px;
+  }
+  
+  .settings-panel,
+  .feedback-panel {
+    width: 320px;
+  }
+  
+  .qr-code-image {
+    width: 100px;
+  }
+}
