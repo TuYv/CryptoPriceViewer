@@ -9,8 +9,8 @@ class NotionService {
     this.NOTION_VERSION = '2022-06-28';
     
     // 这些配置需要在使用前设置
-    this.token = 'REMOVED_NOTION_TOKEN';
-    this.databaseId = 'YOUR_NOTION_DATABASE_ID';
+    this.token = '';
+    this.databaseId = '';
   }
 
   /**
