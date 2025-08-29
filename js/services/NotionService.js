@@ -9,8 +9,8 @@ class NotionService {
     this.NOTION_VERSION = '2022-06-28';
     
     // 这些配置需要在使用前设置
-    this.token = 'ntn_o129948485284nxxDLK8kvH7KvcIoOTSoVMsfI7fORVd27';
-    this.databaseId = '24c04d7490b4804e8ad6c28c3ff1548d';
+    this.token = '';
+    this.databaseId = '';
   }
 
   /**
