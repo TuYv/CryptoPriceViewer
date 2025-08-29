@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>加密货币价格查看器</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 data-i18n="appTitle">加密货币价格</h1>
+    
+    <!-- 搜索功能 -->
+    <div class="search-section">
+      <div class="search-input-container">
+        <input type="text" id="searchInput" placeholder="搜索币种名称或代码..." class="search-input" data-i18n-placeholder="searchPlaceholder">
+        <button id="searchButton" class="search-button" data-i18n="search">搜索</button>
+      </div>
+      <div id="searchResults" class="search-results hidden"></div>
+    </div>
+    
+    <div class="crypto-list" id="cryptoList">
+      <div id="loadingIndicator" class="loading" data-i18n="loading">加载中...</div>
+      <div id="errorMessage" class="error" style="display: none;"></div>
+      <div id="noDataMessage" class="no-data" style="display: none;" data-i18n="noData">没有数据可显示</div>
+      <!-- 加密货币数据将在这里动态插入 -->
+    </div>
+    
+    <div class="controls">
+      <button id="refreshButton" data-i18n="refresh">刷新</button>
+      <button id="settingsButton" data-i18n="settings">设置</button>
+      <button id="feedbackButton" data-i18n="feedback">反馈</button>
+    </div>
+    
+    <div id="feedbackPanel" class="feedback-panel hidden">
+      <h2 data-i18n="feedbackTitle">用户反馈</h2>
+      <div class="donation-tip" data-i18n="donationTip">如果这个工具对您有帮助，欢迎给我打赏支持一下！</div>
+      <div class="qr-codes-section">
+        <div class="qr-code-item">
+          <img src="images/bnb-qr.png" alt="BNB Chain QR Code" class="qr-code-image">
+        </div>
+        <div class="qr-code-item">
+          <img src="images/sol-qr.png" alt="Solana QR Code" class="qr-code-image">
+        </div>
+      </div>
+      
+      <div class="feedback-content">
+        <textarea id="feedbackText" placeholder="请输入您的反馈意见..." data-i18n-placeholder="feedbackPlaceholder"></textarea>
+        <div class="feedback-actions">
+          <button id="sendFeedbackButton" data-i18n="sendFeedback">发送反馈</button>
+          <button id="cancelFeedbackButton" data-i18n="cancel">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="settingsPanel" class="settings-panel hidden">
+      <h2 data-i18n="settingsTitle">设置</h2>
+      <div class="settings-content">
+
+
+        <div class="refresh-interval">
+          <h3 data-i18n="refreshInterval">自动刷新间隔</h3>
+          <select id="refreshInterval">
+            <option value="0" data-i18n="refreshOff">关闭自动刷新</option>
+            <option value="30" data-i18n="interval30s">30秒</option>
+            <option value="60" data-i18n="interval1m">1分钟</option>
+            <option value="300" data-i18n="interval5m">5分钟</option>
+            <option value="600" data-i18n="interval10m">10分钟</option>
+          </select>
+        </div>
+        <div class="currency-selection">
+          <h3 data-i18n="currency">显示货币</h3>
+          <select id="currencySelect">
+            <option value="USD" data-i18n="currencyUSD">美元 (USD)</option>
+            <option value="CNY" data-i18n="currencyCNY">人民币 (CNY)</option>
+            <option value="EUR" data-i18n="currencyEUR">欧元 (EUR)</option>
+          </select>
+        </div>
+        
+
+        <div class="language-selection">
+          <h3 data-i18n="language">语言</h3>
+          <select id="languageSelect">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+          </select>
+        </div>
+        <div class="settings-actions">
+          <button id="saveSettingsButton" data-i18n="save">保存</button>
+          <button id="cancelSettingsButton" data-i18n="cancel">取消</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p data-i18n="dataSource">数据来源: CoinGecko API</p>
+      <p class="last-updated"><span data-i18n="lastUpdated">最后更新</span>: <span id="lastUpdated">-</span></p>
+    </div>
+    
+    <!-- 图片放大弹窗 -->
+    <div class="image-modal" id="imageModal">
+      <button class="image-modal-close" id="imageModalClose">×</button>
+      <div class="image-modal-content">
+        <img id="modalImage" src="" alt="">
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/popup.js"></script>
+</body>
+</html>
