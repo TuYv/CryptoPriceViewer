@@ -1041,10 +1041,12 @@ const RATE_LIMIT_DELAY = 1000; // 1秒速率限制
 async function searchCoins() {
   const searchInput = document.getElementById('searchInput');
   const searchResults = document.getElementById('searchResults');
+  const resultList = document.getElementById('resultList');
   const query = searchInput.value.trim();
   
   if (!query) {
     searchResults.classList.add('hidden');
+    resultList.classList.add('hidden');
     return;
   }
   
@@ -1072,11 +1074,13 @@ async function searchCoins() {
 // 执行搜索
 async function performSearch(query) {
   const searchResults = document.getElementById('searchResults');
+  const resultList = document.getElementById('resultList');
   const currentLang = window.cryptoApp ? window.cryptoApp.settings.language : I18N.DEFAULT_LANGUAGE;
   
   // 显示加载状态
   searchResults.innerHTML = `<div class="search-loading">${I18N.t('searchLoading', currentLang)}</div>`;
   searchResults.classList.remove('hidden');
+  resultList.classList.remove('hidden');
   
   try {
     lastSearchTime = Date.now();
@@ -1251,6 +1255,7 @@ function addCoin(coinId, coinName, coinSymbol) {
     
     // 更新搜索结果中的按钮状态
     const searchResults = document.getElementById('searchResults');
+    const resultList = document.getElementById('resultList');
     const buttons = searchResults.querySelectorAll('.add-coin-button');
     const currentLang = window.cryptoApp ? window.cryptoApp.settings.language : I18N.DEFAULT_LANGUAGE;
     buttons.forEach(button => {
@@ -1263,6 +1268,7 @@ function addCoin(coinId, coinName, coinSymbol) {
     // 清空搜索框
     document.getElementById('searchInput').value = '';
     searchResults.classList.add('hidden');
+    resultList.classList.add('hidden');
   } catch (error) {
     console.error('添加币种失败:', error);
   }

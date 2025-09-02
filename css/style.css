@@ -9,7 +9,7 @@
 }
 
 body {
-  width: 380px;
+  width: 320px;
   min-height: auto;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
@@ -47,7 +47,7 @@ h1 {
 
 .search-input {
   flex: 1;
-  padding: 12px 16px;
+  padding: 12px;
   border: none;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.95);
@@ -71,17 +71,19 @@ h1 {
 }
 
 .search-button {
-  padding: 12px 20px;
+  padding: 12px 0;
+  text-align: center;
   border: none;
   border-radius: 12px;
   background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   color: white;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
   flex-shrink: 0;
+  width: 70px;
 }
 
 .search-button:hover {
@@ -93,14 +95,15 @@ h1 {
   transform: translateY(0);
 }
 
-.search-results {
-  background: rgba(255, 255, 255, 0.95);
+.result-list {
+  background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  max-height: 200px;
+  padding: 10px 1px;
+}
+.search-results {
+  max-height: 180px;
   overflow-y: auto;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .search-result-item {
@@ -142,7 +145,7 @@ h1 {
 }
 
 .search-result-name {
-  font-weight: 600;
+  font-weight: 500;
   color: #2d3748;
   font-size: 14px;
   margin-bottom: 2px;
@@ -162,7 +165,7 @@ h1 {
   color: white;
   cursor: pointer;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   transition: all 0.2s ease;
 }
 
@@ -203,7 +206,7 @@ h1 {
 
 .language-selection h3 {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #2d3748;
   margin: 0 0 8px 0;
   text-shadow: none;
@@ -234,18 +237,19 @@ h1 {
 
 .crypto-list {
   margin-bottom: 20px;
-}
-
-.crypto-container {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 16px;
-  padding: 16px;
+  padding: 10px 0;
   border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.crypto-container {
+  padding: 0 16px;
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
-  max-height: 320px;
+  max-height: 300px;
 }
 
 .crypto-container::before {
@@ -343,7 +347,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 500;
   color: white;
   font-size: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -351,7 +355,7 @@ h1 {
 }
 
 .crypto-name {
-  font-weight: 600;
+  font-weight: 500;
   color: #2d3748;
   font-size: 14px;
   margin-bottom: 1px;
@@ -388,7 +392,7 @@ h1 {
 
 .price-change {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   padding: 1px 4px;
   border-radius: 4px;
   display: inline-block;
@@ -412,14 +416,15 @@ h1 {
 
 button {
   flex: 1;
-  padding: 12px 20px;
+  padding: 12px 0;
+  text-align: center;
   border: none;
   border-radius: 12px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   position: relative;
@@ -482,7 +487,7 @@ button:active {
   position: fixed;
   top: 0;
   left: 0;
-  width: 380px;
+  width: 320px;
   height: 100vh;
   background: rgba(255, 255, 255, 0.95);
   z-index: 20;
@@ -682,7 +687,7 @@ button:active {
 
 .settings-panel h3 {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #2d3748;
   margin: 16px 0 8px;
   text-shadow: none;
@@ -701,7 +706,7 @@ button:active {
 .refresh-interval h3,
 .currency-selection h3 {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #2d3748;
   margin: 0 0 8px 0;
   text-shadow: none;
@@ -734,7 +739,7 @@ select:focus {
   color: white;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   position: relative;
@@ -771,12 +776,14 @@ select:focus {
   transform: translateY(0);
 }
 
-.common-actions button#cancelSettingsButton {
+.common-actions button#cancelSettingsButton, 
+.common-actions button#cancelFeedbackButton {
   background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
   box-shadow: 0 4px 15px rgba(113, 128, 150, 0.4);
 }
 
-.common-actions button#cancelSettingsButton:hover {
+.common-actions button#cancelSettingsButton:hover, 
+.common-actions button#cancelFeedbackButton:hover {
   background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
   box-shadow: 0 8px 25px rgba(113, 128, 150, 0.6);
 }
@@ -846,9 +853,9 @@ select:focus {
 }
 
 ::-webkit-scrollbar {
-  /* width: 7px;
-  height: 7px; */
-  display: none;
+  width: 7px;
+  height: 7px;
+  /* display: none; */
 }
 
 
@@ -861,7 +868,7 @@ select:focus {
 /* 响应式设计 */
 /* @media (max-width: 400px) {
   body {
-    width: 380px;
+    width: 320px;
   }
   
   .container {
@@ -878,7 +885,7 @@ select:focus {
   
   .settings-panel,
   .feedback-panel {
-    width: 380px;
+    width: 320px;
   }
   
   .qr-code-image {
