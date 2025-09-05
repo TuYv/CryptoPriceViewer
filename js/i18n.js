@@ -28,6 +28,7 @@ export const I18N = {
       loading: '加载中...',
       noData: '暂无数据',
       error: '加载失败，请稍后重试',
+      clickToOpenCoinGecko: '点击查看该币种在 CoinGecko 上的详细信息',
       
       // 搜索功能
       searchPlaceholder: '搜索币种...',
@@ -106,6 +107,7 @@ export const I18N = {
       loading: 'Loading...',
       noData: 'No data available',
       error: 'Failed to load, please try again later',
+      clickToOpenCoinGecko: 'Click to view detailed information on CoinGecko',
       
       // Search functionality
       searchPlaceholder: 'Search coins...',
@@ -184,6 +186,7 @@ export const I18N = {
       loading: '読み込み中...',
       noData: 'データがありません',
       error: '読み込みに失敗しました。後でもう一度お試しください',
+      clickToOpenCoinGecko: 'CoinGeckoで詳細情報を見るにはクリックしてください',
       
       // 検索機能
       searchPlaceholder: 'コインを検索...',
@@ -335,7 +338,12 @@ export const I18N = {
    */
   getCurrentLanguage() {
     try {
-      const settings = JSON.parse(localStorage.getItem(Config.STORAGE_KEY) || '{}');
+      // 1) 内存优先：应用的单一事实来源
+      if (window.cryptoApp && window.cryptoApp.settings && window.cryptoApp.settings.language) {
+        return window.cryptoApp.settings.language;
+      }
+      // 2) 回退到存储
+      const settings = storage.getSync(Config.STORAGE_KEY, {}) || {};
       return settings.language || this.DEFAULT_LANGUAGE;
     } catch (error) {
       return this.DEFAULT_LANGUAGE;
@@ -347,9 +355,14 @@ export const I18N = {
    */
   setCurrentLanguage(languageCode) {
     try {
-      const settings = JSON.parse(localStorage.getItem(Config.STORAGE_KEY) || '{}');
+      // 1) 先更新内存，驱动 UI 立即一致
+      if (window.cryptoApp && window.cryptoApp.settings) {
+        window.cryptoApp.settings.language = languageCode;
+      }
+      // 2) 再持久化存储（异步，不阻塞）
+      const settings = storage.getSync(Config.STORAGE_KEY, {}) || {};
       settings.language = languageCode;
-      localStorage.setItem(Config.STORAGE_KEY, JSON.stringify(settings));
+      storage.set(Config.STORAGE_KEY, settings);
     } catch (error) {
       console.warn('Failed to save language setting:', error);
     }

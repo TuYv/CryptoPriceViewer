@@ -1,3 +1,4 @@
+import { http } from '../lib/http.js';
 /**
  * Notion API 服务
  * 用于将反馈数据发送到 Notion 数据库
@@ -41,7 +42,7 @@ class NotionService {
     }
 
     try {
-      const response = await fetch(`${this.NOTION_API_URL}/databases/${this.databaseId}`, {
+      const data = await http.request(`${this.NOTION_API_URL}/databases/${this.databaseId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${this.token}`,
@@ -50,20 +51,13 @@ class NotionService {
         }
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('成功连接到 Notion 数据库:', data.title);
-        return true;
-      } else {
-        const error = await response.json();
-        console.error('Notion 连接失败:', error);
-        return false;
-      }
+      console.log('成功连接到 Notion 数据库:', (data && data.title) || '');
+      return true;
     } catch (error) {
       console.error('Notion 连接错误:', error);
-      // 记录详细错误信息
-      const errorMessage = error.message || error.toString() || '连接失败';
-      console.error('详细错误信息:', errorMessage);
+      const status = error.status || 0;
+      const payload = error.data || null;
+      console.error('状态码:', status, '响应体:', payload);
       return false;
     }
   }
@@ -83,39 +77,16 @@ class NotionService {
     }
 
     const pageData = {
-      parent: {
-        database_id: this.databaseId
-      },
+      parent: { database_id: this.databaseId },
       properties: {
-        'Title': {
-          title: [
-            {
-              text: {
-                content: '测试title'
-              }
-            }
-          ]
-        },
-        'Content': {
-            "rich_text": [
-                {
-                    "text": {
-                        "content": feedback.content
-                    }
-                }
-            ]
-        },
-        'Published': {
-            "date": {
-                "start": feedback.timestamp,
-                "end": null
-            }
-        }
-      },
+        'Title': { title: [{ text: { content: '测试title' } }] },
+        'Content': { rich_text: [{ text: { content: feedback.content } }] },
+        'Published': { date: { start: feedback.timestamp, end: null } }
+      }
     };
 
     try {
-      const response = await fetch(`${this.NOTION_API_URL}/pages`, {
+      const data = await http.request(`${this.NOTION_API_URL}/pages`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.token}`,
@@ -125,20 +96,13 @@ class NotionService {
         body: JSON.stringify(pageData)
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('成功创建 Notion 反馈页面:', data.id);
-        return data;
-      } else {
-        const error = await response.json();
-        console.error('创建 Notion 页面失败:', error);
-        return null;
-      }
+      console.log('成功创建 Notion 反馈页面:', data && data.id);
+      return data;
     } catch (error) {
       console.error('Notion API 请求错误:', error);
-      // 确保错误信息能够正确显示
-      const errorMessage = error.message || error.toString() || '未知错误';
-      console.error('详细错误信息:', errorMessage);
+      const status = error.status || 0;
+      const payload = error.data || null;
+      console.error('状态码:', status, '响应体:', payload);
       return null;
     }
   }
