@@ -2,6 +2,8 @@
 import { Config } from './config.js';
 import { I18N } from './i18n.js';
 import { notionService } from './services/NotionService.js';
+import { http } from './lib/http.js';
+import { storage } from './lib/storage.js';
 
 /**
  * 加密货币价格查看器应用
@@ -62,7 +64,15 @@ class CryptoApp {
    * 加载 Notion 配置
    */
   async loadNotionConfig() {
-    // Notion配置现在使用硬编码，无需从存储加载
+    try {
+      const notionToken = await storage.get('notionToken');
+      const notionDatabaseId = await storage.get('notionDatabaseId');
+      if (notionToken && notionDatabaseId) {
+        notionService.setConfig(notionToken, notionDatabaseId);
+      }
+    } catch (e) {
+      console.warn('Failed to load Notion config:', e);
+    }
   }
 
   /**
@@ -99,24 +109,48 @@ class CryptoApp {
         }
       });
     }
+
+    // 事件委托：点击列表中的 crypto-info / crypto-item 打开 CoinGecko 页面 [OPT-1]
+    if (this.elements.cryptoList) {
+      this.elements.cryptoList.addEventListener('click', (event) => {
+        // 排除删除按钮
+        const deleteBtn = event.target.closest('.crypto-delete-btn');
+        if (deleteBtn) return;
+
+        const infoEl = event.target.closest('.crypto-info');
+        const itemEl = event.target.closest('.crypto-item');
+        if (!infoEl || !itemEl) return;
+
+        const symbol = (itemEl.dataset.symbol ||
+                        infoEl.dataset.symbol ||
+                        infoEl.querySelector('.crypto-symbol')?.textContent ||
+                        '').trim().toUpperCase();
+
+        console.log(`[CLICK] crypto-info clicked, symbol=${symbol}`);
+        if (!symbol) return;
+
+        const geckoId = itemEl.dataset.geckoId || null;
+        this.openCoinOnCoinGecko(symbol, geckoId);
+      });
+    }
   }
 
   /**
    * 加载保存的设置
    */
-  loadSettings() {
+  async loadSettings() {
     try {
-      const savedSettings = localStorage.getItem(Config.STORAGE_KEY);
+      const savedSettings = await storage.get(Config.STORAGE_KEY);
       if (savedSettings) {
-        this.settings = { ...Config.DEFAULT_SETTINGS, ...JSON.parse(savedSettings) };
+        this.settings = { ...Config.DEFAULT_SETTINGS, ...savedSettings };
       } else {
         this.settings = { ...Config.DEFAULT_SETTINGS };
-        this.saveSettings();
+        await this.saveSettings();
       }
     } catch (error) {
-      console.warn('Failed to load settings from localStorage:', error);
+      console.warn('Failed to load settings:', error);
       this.settings = { ...Config.DEFAULT_SETTINGS };
-      this.saveSettings();
+      await this.saveSettings();
     }
     
     // 初始化语言设置
@@ -165,16 +199,12 @@ class CryptoApp {
    * 获取上次反馈发送时间
    * @returns {number|null} 时间戳或null
    */
-  getLastFeedbackTime() {
+  async getLastFeedbackTime() {
     try {
-      if (typeof chrome !== 'undefined' && chrome.storage) {
-        // Chrome扩展环境 - 使用同步方式获取
-        return localStorage.getItem('lastFeedbackTime') ? parseInt(localStorage.getItem('lastFeedbackTime')) : null;
-      } else {
-        // 普通网页环境
-        const time = localStorage.getItem('lastFeedbackTime');
-        return time ? parseInt(time) : null;
-      }
+      const time = await storage.get('lastFeedbackTime');
+      if (typeof time === 'number') return time;
+      if (typeof time === 'string') return parseInt(time);
+      return null;
     } catch (error) {
       console.error('获取反馈时间失败:', error);
       return null;
@@ -185,16 +215,9 @@ class CryptoApp {
    * 设置上次反馈发送时间
    * @param {number} timestamp - 时间戳
    */
-  setLastFeedbackTime(timestamp) {
+  async setLastFeedbackTime(timestamp) {
     try {
-      if (typeof chrome !== 'undefined' && chrome.storage) {
-        // Chrome扩展环境
-        localStorage.setItem('lastFeedbackTime', timestamp.toString());
-        chrome.storage.local.set({ lastFeedbackTime: timestamp });
-      } else {
-        // 普通网页环境
-        localStorage.setItem('lastFeedbackTime', timestamp.toString());
-      }
+      await storage.set('lastFeedbackTime', timestamp);
     } catch (error) {
       console.error('保存反馈时间失败:', error);
     }
@@ -278,18 +301,54 @@ class CryptoApp {
 
 
   /**
+   * 添加币种（类方法，保持与 removeCoin 对称）
+   */
+  async addCoin(coinId, coinName, coinSymbol) {
+    const upperSymbol = String(coinSymbol || '').toUpperCase();
+    if (!upperSymbol) return;
+
+    if (!Array.isArray(this.settings.selectedCoins)) {
+      this.settings.selectedCoins = [];
+    }
+
+    if (this.settings.selectedCoins.includes(upperSymbol)) {
+      return; // 已存在则直接返回，避免重复保存
+    }
+
+    // 更新内存中的设置
+    this.settings.selectedCoins.push(upperSymbol);
+    if (!this.settings.coinNames) this.settings.coinNames = {};
+    this.settings.coinNames[upperSymbol] = coinName;
+
+    if (!this.settings.coinGeckoIds) this.settings.coinGeckoIds = {};
+    this.settings.coinGeckoIds[upperSymbol] = coinId;
+
+    // 持久化存储
+    try {
+      await storage.set(Config.STORAGE_KEY, this.settings);
+    } catch (error) {
+      console.warn('Failed to save settings:', error);
+      throw error;
+    }
+
+    // 更新UI与数据
+    this.updateSettingsUI();
+    this.fetchCryptoData();
+  }
+
+  /**
    * 删除币种
    */
-  removeCoin(coinSymbol) {
+  async removeCoin(coinSymbol) {
     const index = this.settings.selectedCoins.indexOf(coinSymbol);
     if (index > -1) {
       this.settings.selectedCoins.splice(index, 1);
       
       // 保存设置
       try {
-        localStorage.setItem(Config.STORAGE_KEY, JSON.stringify(this.settings));
+        await storage.set(Config.STORAGE_KEY, this.settings);
       } catch (error) {
-        console.warn('Failed to save settings to localStorage:', error);
+        console.warn('Failed to save settings:', error);
       }
       
       // 更新UI
@@ -303,13 +362,13 @@ class CryptoApp {
   /**
    * 语言切换事件处理
    */
-  onLanguageChange() {
+  async onLanguageChange() {
     const selectedLanguage = this.elements.languageSelect.value;
     this.settings.language = selectedLanguage;
     
     // 立即保存语言设置
     try {
-      localStorage.setItem(Config.STORAGE_KEY, JSON.stringify(this.settings));
+      await storage.set(Config.STORAGE_KEY, this.settings);
     } catch (error) {
       console.warn('Failed to save language setting:', error);
     }
@@ -472,7 +531,7 @@ class CryptoApp {
   /**
    * 保存设置
    */
-  saveSettings() {
+  async saveSettings() {
     // 获取刷新间隔
     this.settings.refreshInterval = this.elements.refreshInterval.value;
     
@@ -484,9 +543,9 @@ class CryptoApp {
     
     // 保存到存储（保持现有的selectedCoins不变）
     try {
-      localStorage.setItem(Config.STORAGE_KEY, JSON.stringify(this.settings));
+      await storage.set(Config.STORAGE_KEY, this.settings);
     } catch (error) {
-      console.warn('Failed to save settings to localStorage:', error);
+      console.warn('Failed to save settings:', error);
     }
     
     // 重新获取数据并设置自动刷新
@@ -505,27 +564,17 @@ class CryptoApp {
     const notionDatabaseId = this.elements.notionDatabaseId.value.trim();
     
     try {
-      // 检查是否在Chrome扩展环境中
-      if (typeof chrome !== 'undefined' && chrome.storage) {
-        await new Promise(resolve => {
-          chrome.storage.local.set({
-            notionToken: notionToken,
-            notionDatabaseId: notionDatabaseId
-          }, resolve);
-        });
+      // 使用 storage 抽象保存配置
+      if (notionToken) {
+        await storage.set('notionToken', notionToken);
       } else {
-        // 在普通网页环境中使用localStorage
-        if (notionToken) {
-          localStorage.setItem('notionToken', notionToken);
-        } else {
-          localStorage.removeItem('notionToken');
-        }
-        
-        if (notionDatabaseId) {
-          localStorage.setItem('notionDatabaseId', notionDatabaseId);
-        } else {
-          localStorage.removeItem('notionDatabaseId');
-        }
+        await storage.remove('notionToken');
+      }
+      
+      if (notionDatabaseId) {
+        await storage.set('notionDatabaseId', notionDatabaseId);
+      } else {
+        await storage.remove('notionDatabaseId');
       }
       
       // 更新NotionService配置
@@ -604,7 +653,7 @@ class CryptoApp {
   async sendFeedback() {
     // 检查发送频率限制（每分钟只能发送一条）
     const now = Date.now();
-    const lastSendTime = this.getLastFeedbackTime();
+    const lastSendTime = await this.getLastFeedbackTime();
     const oneMinute = 60 * 1000; // 1分钟 = 60000毫秒
     
     if (lastSendTime && (now - lastSendTime) < oneMinute) {
@@ -637,7 +686,7 @@ class CryptoApp {
           const result = await notionService.createFeedbackPage(feedback);
           if (result) {
             // 记录发送时间
-            this.setLastFeedbackTime(now);
+            await this.setLastFeedbackTime(now);
             this.showMessage(`反馈已成功发送！反馈ID: ${feedback.id}`, 'success');
           } else {
             this.showMessage('发送失败，请稍后重试。', 'error');
@@ -704,6 +753,75 @@ class CryptoApp {
   }
 
   /**
+   * 使用 chrome.tabs 优先的方式打开外部链接，失败回退 window.open [OPT-1]
+   */
+  openUrlWithTabs(url) {
+    try {
+      console.log(`[NAV] openUrlWithTabs -> ${url}`);
+      if (typeof chrome !== 'undefined' && chrome.tabs && typeof chrome.tabs.create === 'function') {
+        chrome.tabs.create({ url }, (tab) => {
+          if (chrome.runtime && chrome.runtime.lastError) {
+            console.error('[NAV] chrome.tabs.create 失败:', chrome.runtime.lastError.message);
+            // 回退到 window.open
+            const win = window.open(url, '_blank');
+            if (!win) {
+              alert('无法打开页面：弹窗可能被浏览器阻止');
+            }
+          } else {
+            console.log('[NAV] chrome.tabs.create 成功:', tab?.id);
+          }
+        });
+      } else {
+        const win = window.open(url, '_blank');
+        if (!win) {
+          alert('无法打开页面：弹窗可能被浏览器阻止');
+        }
+      }
+    } catch (error) {
+      console.error('[NAV] 打开链接失败:', error);
+      alert('打开链接失败，请稍后重试');
+    }
+  }
+
+  /**
+   * 打开指定币种在 CoinGecko 的详情页，带详细日志与语言路径 [OPT-5]
+   */
+  openCoinOnCoinGecko(symbol, geckoIdParam = null) {
+    try {
+      const upperSymbol = (symbol || '').toUpperCase();
+      const geckoId = geckoIdParam || this.getCoinGeckoId(upperSymbol);
+      const langPath = this.getCoinGeckoLangPath();
+      const targetUrl = `https://www.coingecko.com/${langPath}/coins/${encodeURIComponent(geckoId)}`;
+      console.log(`[NAV] 即将打开 CoinGecko: symbol=${upperSymbol}, geckoId=${geckoId}, url=${targetUrl}`);
+      this.openUrlWithTabs(targetUrl);
+    } catch (error) {
+      console.error('[NAV] openCoinOnCoinGecko 出错:', error);
+    }
+  }
+
+  /**
+   * 将当前语言映射到 CoinGecko 的路径段 [OPT-5]
+   */
+  getCoinGeckoLangPath() {
+    const lang = (this.settings?.language || 'en').toLowerCase();
+    switch (lang) {
+      case 'zh':
+      case 'zh-cn':
+      case 'zh_cn':
+        return 'zh';
+      case 'ja':
+      case 'jp':
+        return 'ja';
+      case 'ko':
+      case 'kr':
+        return 'ko';
+      case 'en':
+      default:
+        return 'en';
+    }
+  }
+
+  /**
    * 获取加密货币数据
    */
   async fetchCryptoData() {
@@ -716,22 +834,11 @@ class CryptoApp {
     this.elements.noDataMessage.style.display = 'none';
     
     try {
-      // 构建API URL - 使用coins/markets获取包含图像的完整数据
-      const ids = this.settings.selectedCoins.map(coin => {
-        const id = this.getCoinGeckoId(coin);
-        return id;
-      }).join(',');
+      const ids = this.settings.selectedCoins.map(coin => this.getCoinGeckoId(coin)).join(',');
       const url = `${Config.API_BASE_URL}/coins/markets?vs_currency=${this.settings.currency.toLowerCase()}&ids=${ids}&order=market_cap_desc&per_page=250&page=1&sparkline=false&price_change_percentage=24h`;
       
-      // 获取数据
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`API请求失败: ${response.status}`);
-      }
+      const data = await http.getJson(url);
       
-      const data = await response.json();
-      
-      // 处理数据 - 新的API返回数组格式
       this.cryptoData = this.settings.selectedCoins.map(coin => {
         const geckoId = this.getCoinGeckoId(coin);
         const coinData = data.find(item => item.id === geckoId);
@@ -744,7 +851,7 @@ class CryptoApp {
             symbol: coin,
             price: coinData.current_price,
             change24h: coinData.price_change_percentage_24h,
-            image: coinData.image // 添加图像URL
+            image: coinData.image
           };
           console.log(`[DEBUG] 币种 ${coin} 处理结果:`, result);
           return result;
@@ -755,24 +862,17 @@ class CryptoApp {
       
       console.log(`[DEBUG] 最终处理的币种数据:`, this.cryptoData);
       
-      // 更新UI
       this.renderCryptoData();
-      
-      // 更新最后更新时间
       this.updateLastUpdated();
     } catch (error) {
       console.error('[DEBUG] fetchCryptoData 错误:', error);
       this.hasError = true;
       this.errorMessage = '获取数据失败，请稍后再试';
-      
-      // 显示错误信息
       this.elements.errorMessage.textContent = this.errorMessage;
       this.elements.errorMessage.style.display = 'block';
     } finally {
       this.isLoading = false;
       this.elements.loadingIndicator.style.display = 'none';
-      
-      // 如果没有数据，显示无数据消息
       if (!this.hasError && this.cryptoData.length === 0) {
         this.elements.noDataMessage.style.display = 'block';
       }
@@ -797,15 +897,27 @@ class CryptoApp {
     // 创建统一的容器
     const cryptoContainer = document.createElement('div');
     cryptoContainer.className = 'crypto-container';
+
+    // 使用 DocumentFragment 批量插入，减少回流重绘 [OPT-2]
+    const fragment = document.createDocumentFragment();
     
     // 添加新数据
     this.cryptoData.forEach(crypto => {
       const cryptoItem = document.createElement('div');
       cryptoItem.className = 'crypto-item';
+
+      const upperSymbol = (crypto.symbol || '').toUpperCase();
+      cryptoItem.dataset.symbol = upperSymbol; // 透传数据，便于事件委托 [OPT-4]
+      cryptoItem.dataset.geckoId = this.getCoinGeckoId(upperSymbol);
       
       // 创建左侧信息容器
       const cryptoInfo = document.createElement('div');
       cryptoInfo.className = 'crypto-info';
+      cryptoInfo.style.cursor = 'pointer'; // UX 提示 [OPT-1]
+      try {
+        const tip = I18N.t('clickToOpenCoinGecko', this.settings.language || I18N.DEFAULT_LANGUAGE);
+        if (tip) cryptoInfo.title = tip;
+      } catch (_) {}
       
       // 创建图标
       const cryptoIcon = document.createElement('div');
@@ -882,9 +994,10 @@ class CryptoApp {
       cryptoItem.appendChild(priceContainer);
       cryptoItem.appendChild(deleteButton);
       
-      cryptoContainer.appendChild(cryptoItem);
+      fragment.appendChild(cryptoItem);
     });
     
+    cryptoContainer.appendChild(fragment);
     this.elements.cryptoList.appendChild(cryptoContainer);
   }
 
@@ -934,6 +1047,11 @@ class CryptoApp {
    * @returns {string} 格式化后的价格
    */
   formatPrice(price) {
+    // 添加null和undefined检查
+    if (price === null || price === undefined) {
+      return `${Config.CURRENCY_SYMBOLS[this.settings.currency] || ''}-`;
+    }
+    
     const symbol = Config.CURRENCY_SYMBOLS[this.settings.currency] || '';
     
     // 根据价格大小格式化
@@ -983,7 +1101,7 @@ class CryptoApp {
    * @returns {string} 格式化后的价格变化
    */
   formatChange(change) {
-    if (change === undefined) return 'N/A';
+    if (change === undefined || change === null) return 'N/A';
     const sign = change >= 0 ? '+' : '';
     return `${sign}${change.toFixed(2)}%`;
   }
@@ -994,7 +1112,7 @@ class CryptoApp {
    * @returns {string} CSS类名
    */
   getChangeClass(change) {
-    if (change === undefined) return '';
+    if (change === undefined || change === null) return '';
     return change >= 0 ? 'positive' : 'negative';
   }
 
@@ -1077,30 +1195,18 @@ async function performSearch(query) {
   const resultList = document.getElementById('resultList');
   const currentLang = window.cryptoApp ? window.cryptoApp.settings.language : I18N.DEFAULT_LANGUAGE;
   
-  // 显示加载状态
   searchResults.innerHTML = `<div class="search-loading">${I18N.t('searchLoading', currentLang)}</div>`;
   searchResults.classList.remove('hidden');
   resultList.classList.remove('hidden');
   
   try {
     lastSearchTime = Date.now();
-    const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`);
-    
-    if (response.status === 429) {
-      // 处理速率限制错误
-      searchResults.innerHTML = `<div class="search-error">${I18N.t('searchRateLimit', currentLang)}</div>`;
-      return;
-    }
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    displaySearchResults(data.coins || []);
+    const url = `https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`;
+    const data = await http.getJson(url);
+    displaySearchResults((data && data.coins) || []);
   } catch (error) {
     console.error('搜索失败:', error);
-    if (error.message.includes('429')) {
+    if (error.status === 429 || (error.message && String(error.message).includes('429'))) {
       searchResults.innerHTML = `<div class="search-error">${I18N.t('searchRateLimit', currentLang)}</div>`;
     } else {
       searchResults.innerHTML = `<div class="search-empty">${I18N.t('searchError', currentLang)}</div>`;
@@ -1188,8 +1294,25 @@ function displaySearchResults(coins) {
     addButton.disabled = isAdded;
     
     if (!isAdded) {
-      addButton.addEventListener('click', () => {
-        addCoin(coin.id, coin.name, coin.symbol);
+      addButton.addEventListener('click', async () => {
+        const originalText = addButton.textContent;
+        addButton.disabled = true;
+        addButton.textContent = I18N.t('added', currentLang);
+        try {
+          await addCoin(coin.id, coin.name, coin.symbol);
+          // 添加成功后可选择性隐藏结果
+          const searchResultsEl = document.getElementById('searchResults');
+          const resultListEl = document.getElementById('resultList');
+          setTimeout(() => {
+            if (searchResultsEl) searchResultsEl.classList.add('hidden');
+            if (resultListEl) resultListEl.classList.add('hidden');
+          }, 500);
+        } catch (e) {
+          // 失败则恢复按钮
+          addButton.disabled = false;
+          addButton.textContent = originalText;
+          console.error('添加币种失败:', e);
+        }
       });
     }
     
@@ -1200,92 +1323,27 @@ function displaySearchResults(coins) {
   });
 }
 
-// 添加币种
-function addCoin(coinId, coinName, coinSymbol) {
-  try {
-    console.log(`[DEBUG] 开始添加币种: ID=${coinId}, Name=${coinName}, Symbol=${coinSymbol}`);
-    
-    // 获取当前设置
-    const savedSettings = localStorage.getItem(Config.STORAGE_KEY);
-    const settings = savedSettings ? JSON.parse(savedSettings) : Config.DEFAULT_SETTINGS;
-    console.log(`[DEBUG] 当前设置:`, settings);
-    console.log(`[DEBUG] 当前已选币种:`, settings.selectedCoins);
-    
-    // 检查是否已存在
-    const upperSymbol = coinSymbol.toUpperCase();
-    console.log(`[DEBUG] 检查币种是否已存在: ${upperSymbol}`);
-    if (settings.selectedCoins.includes(upperSymbol)) {
-      console.log(`[DEBUG] 币种 ${upperSymbol} 已存在，跳过添加`);
-      return;
-    }
-    
-    // 添加新币种（使用symbol而不是id，因为现有系统使用symbol）
-    settings.selectedCoins.push(upperSymbol);
-    console.log(`[DEBUG] 添加币种到数组: ${upperSymbol}`);
-    console.log(`[DEBUG] 更新后的币种数组:`, settings.selectedCoins);
-    
-    // 保存币种名称信息
-    if (!settings.coinNames) {
-      settings.coinNames = {};
-    }
-    settings.coinNames[upperSymbol] = coinName;
-    console.log(`[DEBUG] 保存币种名称: ${upperSymbol} -> ${coinName}`);
-    
-    // 动态保存CoinGecko ID映射
-    if (!settings.coinGeckoIds) {
-      settings.coinGeckoIds = {};
-    }
-    settings.coinGeckoIds[upperSymbol] = coinId;
-    console.log(`[DEBUG] 保存CoinGecko ID映射: ${upperSymbol} -> ${coinId}`);
-    
-    // 保存设置
-    localStorage.setItem(Config.STORAGE_KEY, JSON.stringify(settings));
-    console.log(`[DEBUG] 设置已保存到localStorage`);
-    console.log(`已添加币种: ${coinName} (${coinSymbol})`);
-    
-    // 重新初始化应用以刷新数据
-    if (window.cryptoApp) {
-      console.log(`[DEBUG] 更新应用设置并刷新数据`);
-      window.cryptoApp.settings.selectedCoins = settings.selectedCoins;
-      console.log(`[DEBUG] 应用中的币种列表:`, window.cryptoApp.settings.selectedCoins);
-      window.cryptoApp.fetchCryptoData();
-    } else {
-      console.log(`[DEBUG] window.cryptoApp 不存在`);
-    }
-    
-    // 更新搜索结果中的按钮状态
-    const searchResults = document.getElementById('searchResults');
-    const resultList = document.getElementById('resultList');
-    const buttons = searchResults.querySelectorAll('.add-coin-button');
-    const currentLang = window.cryptoApp ? window.cryptoApp.settings.language : I18N.DEFAULT_LANGUAGE;
-    buttons.forEach(button => {
-      if (button.onclick && button.onclick.toString().includes(coinId)) {
-        button.disabled = true;
-        button.textContent = I18N.t('added', currentLang);
-      }
-    });
-    
-    // 清空搜索框
-    document.getElementById('searchInput').value = '';
-    searchResults.classList.add('hidden');
-    resultList.classList.add('hidden');
-  } catch (error) {
-    console.error('添加币种失败:', error);
+// 添加币种（全局函数，由搜索结果调用，委托到类方法）
+async function addCoin(coinId, coinName, coinSymbol) {
+  if (!window.cryptoApp) {
+    throw new Error('App not initialized');
   }
+  await window.cryptoApp.addCoin(coinId, coinName, coinSymbol);
 }
 
 // 同步获取选中的币种（用于搜索功能）
 function getSelectedCoinsSync() {
   try {
-    const savedSettings = localStorage.getItem(Config.STORAGE_KEY);
-    if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      return settings.selectedCoins || ['BTC', 'ETH', 'BNB', 'SOL', 'XRP'];
+    if (window.cryptoApp && window.cryptoApp.settings && Array.isArray(window.cryptoApp.settings.selectedCoins)) {
+      return window.cryptoApp.settings.selectedCoins;
     }
   } catch (error) {
-    console.warn('Failed to load settings:', error);
+    console.warn('Failed to read in-memory settings:', error);
   }
-  return ['BTC', 'ETH', 'BNB', 'SOL', 'XRP'];
+  // 回退到默认配置，避免阻塞UI
+  return (Config && Config.DEFAULT_SETTINGS && Array.isArray(Config.DEFAULT_SETTINGS.selectedCoins))
+    ? Config.DEFAULT_SETTINGS.selectedCoins
+    : ['BTC', 'ETH', 'BNB', 'SOL'];
 }
 
 // 当DOM加载完成后初始化应用

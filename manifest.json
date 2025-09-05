@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Crypto Price Viewer",
-  "version": "0.00.2",
+  "version": "0.0.4",
   "description": "Real-time crypto currency price viewer for Bitcoin, Ethereum, Solana, BNB and other digital currencies",
   "action": {
     "default_popup": "popup.html",
