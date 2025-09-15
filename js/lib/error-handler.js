@@ -4,6 +4,7 @@
  */
 
 import { messageSystem } from './message-system.js';
+import { I18N } from '../i18n.js';
 
 export class ErrorHandler {
   constructor() {
@@ -24,6 +25,7 @@ export class ErrorHandler {
       name: 'NetworkError',
       recoverable: true,
       userFriendly: '网络连接失败，请检查网络连接',
+      userFriendlyKey: 'networkError',
       retryable: true
     });
 
@@ -31,6 +33,7 @@ export class ErrorHandler {
       name: 'APIError', 
       recoverable: true,
       userFriendly: 'API请求失败，请稍后重试',
+      userFriendlyKey: 'apiErrorGeneric',
       retryable: true
     });
 
@@ -38,6 +41,7 @@ export class ErrorHandler {
       name: 'StorageError',
       recoverable: true,
       userFriendly: '数据存储失败，请检查浏览器设置',
+      userFriendlyKey: 'storageError',
       retryable: false
     });
 
@@ -45,6 +49,7 @@ export class ErrorHandler {
       name: 'ValidationError',
       recoverable: true,
       userFriendly: '输入的数据格式不正确',
+      userFriendlyKey: 'validationError',
       retryable: false
     });
 
@@ -52,6 +57,7 @@ export class ErrorHandler {
       name: 'AuthError',
       recoverable: false,
       userFriendly: '身份验证失败，请重新登录',
+      userFriendlyKey: 'authError',
       retryable: false
     });
 
@@ -59,6 +65,7 @@ export class ErrorHandler {
       name: 'RateLimitError',
       recoverable: true,
       userFriendly: '请求过于频繁，请稍后再试',
+      userFriendlyKey: 'rateLimitError',
       retryable: true,
       retryDelay: 60000 // 1分钟后重试
     });
@@ -67,6 +74,7 @@ export class ErrorHandler {
       name: 'UnknownError',
       recoverable: false,
       userFriendly: '发生未知错误，请刷新页面重试',
+      userFriendlyKey: 'unknownErrorFull',
       retryable: false
     });
   }
@@ -78,7 +86,8 @@ export class ErrorHandler {
     // 网络错误处理器
     this.handlers.set('NetworkError', (error, context) => {
       this.log('error', 'Network error occurred:', error, context);
-      messageSystem.error(this.getErrorType('NetworkError').userFriendly);
+      const lang = I18N.getCurrentLanguage();
+      messageSystem.error(I18N.t('networkError', lang));
       
       // 可以添加重试逻辑
       if (context.retry && typeof context.retry === 'function') {
@@ -89,6 +98,7 @@ export class ErrorHandler {
     // API错误处理器
     this.handlers.set('APIError', (error, context) => {
       this.log('error', 'API error occurred:', error, context);
+      const lang = I18N.getCurrentLanguage();
       
       if (error.status === 429) {
         // 速率限制
@@ -97,8 +107,8 @@ export class ErrorHandler {
       }
       
       const message = error.status ? 
-        `API错误 (${error.status}): ${error.message || '未知错误'}` :
-        this.getErrorType('APIError').userFriendly;
+        `${I18N.t('apiErrorPrefix', lang)} (${error.status}): ${error.message || I18N.t('unknownErrorShort', lang)}` :
+        I18N.t('apiErrorGeneric', lang);
       
       messageSystem.error(message);
     });
@@ -106,19 +116,22 @@ export class ErrorHandler {
     // 存储错误处理器
     this.handlers.set('StorageError', (error, context) => {
       this.log('error', 'Storage error occurred:', error, context);
-      messageSystem.error(this.getErrorType('StorageError').userFriendly);
+      const lang = I18N.getCurrentLanguage();
+      messageSystem.error(I18N.t('storageError', lang));
     });
 
     // 验证错误处理器
     this.handlers.set('ValidationError', (error, context) => {
       this.log('warn', 'Validation error occurred:', error, context);
-      messageSystem.warning(error.message || this.getErrorType('ValidationError').userFriendly);
+      const lang = I18N.getCurrentLanguage();
+      messageSystem.warning(error.message || I18N.t('validationError', lang));
     });
 
     // 速率限制错误处理器
     this.handlers.set('RateLimitError', (error, context) => {
       this.log('warn', 'Rate limit error occurred:', error, context);
-      messageSystem.warning(this.getErrorType('RateLimitError').userFriendly);
+      const lang = I18N.getCurrentLanguage();
+      messageSystem.warning(I18N.t('rateLimitError', lang));
     });
   }
 
@@ -136,7 +149,7 @@ export class ErrorHandler {
       this.logError(errorInfo, context);
       
       // 执行处理器
-      handler(error, { ...context, errorInfo });
+      handler.call(this, error, { ...context, errorInfo });
       
       // 如果需要上报错误
       if (context.report !== false) {
@@ -259,7 +272,8 @@ export class ErrorHandler {
    */
   defaultFallbackHandler(error, context) {
     this.log('error', 'Fallback error handler:', error);
-    messageSystem.error('发生了未知错误，请刷新页面重试');
+    const lang = I18N.getCurrentLanguage();
+    messageSystem.error(I18N.t('unknownErrorFull', lang));
   }
 
   /**

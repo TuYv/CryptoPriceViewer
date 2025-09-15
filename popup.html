@@ -7,9 +7,11 @@
 </head>
 <body>
   <div class="container">
-    <h1 data-i18n="appTitle">加密货币价格</h1>
-    
-    <!-- 搜索功能 -->
+    <!-- 主页面 -->
+    <div id="mainPage" class="page active">
+      <h1 data-i18n="appTitle">加密货币价格</h1>
+      
+      <!-- 搜索功能 -->
     <div class="search-section">
       <div class="search-input-container">
         <input type="text" id="searchInput" placeholder="搜索币种名称或代码..." class="search-input" data-i18n-placeholder="searchPlaceholder">
@@ -95,9 +97,94 @@
       </div>
     </div>
     
-    <div class="footer">
-      <p data-i18n="dataSource">数据来源: CoinGecko API</p>
-      <p class="last-updated"><span data-i18n="lastUpdated">最后更新</span>: <span id="lastUpdated">-</span></p>
+      <div class="footer">
+        <p data-i18n="dataSource">数据来源: CoinGecko API</p>
+        <p class="last-updated"><span data-i18n="lastUpdated">最后更新</span>: <span id="lastUpdated">-</span></p>
+      </div>
+    </div>
+
+    <!-- 币种详情页面 -->
+    <div id="coinDetailPage" class="page coin-detail-page">
+      <div class="detail-header">
+        <button id="backButton" class="back-button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m12 19-7-7 7-7"/>
+            <path d="m19 12H5"/>
+          </svg>
+          <span data-i18n="back">返回</span>
+        </button>
+        <div class="coin-header">
+          <img id="coinDetailIcon" class="coin-detail-icon" src="" alt="">
+          <div class="coin-title">
+            <h2 id="coinDetailName">Bitcoin</h2>
+            <span id="coinDetailSymbol" class="coin-symbol">BTC</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-content">
+        <!-- 价格概览 -->
+        <div class="price-overview">
+          <div class="current-price">
+            <span class="price-label" data-i18n="currentPrice">当前价格</span>
+            <span id="coinDetailPrice" class="price-value">$0.00</span>
+          </div>
+          <div class="price-change">
+            <span id="coinDetailChange24h" class="change-value">+0.00%</span>
+            <span class="change-label" data-i18n="change24h">24h变化</span>
+          </div>
+        </div>
+
+        <!-- 价格图表 -->
+        <div class="chart-section">
+          <div class="chart-period-selector">
+            <button class="period-btn active" data-period="1">1D</button>
+            <button class="period-btn" data-period="7">7D</button>
+            <button class="period-btn" data-period="30">30D</button>
+            <button class="period-btn" data-period="90">90D</button>
+          </div>
+          <div class="chart-container">
+            <canvas id="priceChart" width="280" height="200"></canvas>
+            <div id="chartLoading" class="chart-loading" data-i18n="loading">加载中...</div>
+          </div>
+        </div>
+
+        <!-- 详细信息 -->
+        <div class="coin-stats">
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="marketCap">市值</span>
+            <span id="coinMarketCap" class="stat-value">-</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="volume24h">24h交易量</span>
+            <span id="coinVolume24h" class="stat-value">-</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="circulatingSupply">流通供应量</span>
+            <span id="coinCirculatingSupply" class="stat-value">-</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="totalSupply">总供应量</span>
+            <span id="coinTotalSupply" class="stat-value">-</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="allTimeHigh">历史最高</span>
+            <span id="coinAllTimeHigh" class="stat-value">-</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="allTimeLow">历史最低</span>
+            <span id="coinAllTimeLow" class="stat-value">-</span>
+          </div>
+        </div>
+
+        <!-- 相关新闻 -->
+        <div class="news-section">
+          <h3 data-i18n="relatedNews">相关新闻</h3>
+          <div id="coinNews" class="news-list">
+            <div class="news-loading" data-i18n="loading">加载新闻中...</div>
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- 图片放大弹窗 -->
@@ -109,6 +196,7 @@
     </div>
   </div>
 
+  <!-- 移除了冗余的早期 .env 注入脚本，统一使用 js/lib/env.js 的 Env.load() -->
   <script type="module" src="js/popup.js"></script>
 </body>
 </html>

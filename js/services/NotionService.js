@@ -1,4 +1,5 @@
 import { http } from '../lib/http.js';
+import { Env } from '../lib/env.js';
 /**
  * Notion API 服务
  * 用于将反馈数据发送到 Notion 数据库
@@ -8,10 +9,24 @@ class NotionService {
     // Notion API 配置
     this.NOTION_API_URL = 'https://api.notion.com/v1';
     this.NOTION_VERSION = '2022-06-28';
-    
-    // 这些配置需要在使用前设置
-    this.token = '';
-    this.databaseId = '';
+
+    // 默认从 .env 读取，用户保存的设置仍然可以覆盖（通过 popup.js -> setConfig）
+    this.token = undefined;
+    this.databaseId = undefined;
+
+    // 延迟异步加载 .env 变量，不阻塞构造
+    // 调用方在首次使用前应确保调用 Env.load()（我们也在这里触发一次 best-effort）
+    (async () => {
+      try {
+        await Env.load();
+        const envToken = Env.get('NOTION_TOKEN');
+        const envDb = Env.get('NOTION_DATABASE_ID');
+        if (!this.token && envToken) this.token = envToken;
+        if (!this.databaseId && envDb) this.databaseId = envDb;
+      } catch (_) {
+        // ignore
+      }
+    })();
   }
 
   /**
@@ -38,7 +53,7 @@ class NotionService {
    */
   async testConnection() {
     if (!this.isConfigured()) {
-      throw new Error('Notion 配置未设置');
+      throw new Error('Notion configuration not set');
     }
 
     try {
@@ -51,13 +66,13 @@ class NotionService {
         }
       });
 
-      console.log('成功连接到 Notion 数据库:', (data && data.title) || '');
+      console.log('Connected to Notion database successfully:', (data && data.title) || '');
       return true;
     } catch (error) {
-      console.error('Notion 连接错误:', error);
+      console.error('Notion connection error:', error);
       const status = error.status || 0;
       const payload = error.data || null;
-      console.error('状态码:', status, '响应体:', payload);
+      console.error('Status code:', status, 'Response body:', payload);
       return false;
     }
   }
@@ -73,13 +88,13 @@ class NotionService {
    */
   async createFeedbackPage(feedback) {
     if (!this.isConfigured()) {
-      throw new Error('Notion 配置未设置');
+      throw new Error('Notion configuration not set');
     }
 
     const pageData = {
       parent: { database_id: this.databaseId },
       properties: {
-        'Title': { title: [{ text: { content: '测试title' } }] },
+        'Title': { title: [{ text: { content: 'User Feedback' } }] },
         'Content': { rich_text: [{ text: { content: feedback.content } }] },
         'Published': { date: { start: feedback.timestamp, end: null } }
       }
@@ -96,13 +111,13 @@ class NotionService {
         body: JSON.stringify(pageData)
       });
 
-      console.log('成功创建 Notion 反馈页面:', data && data.id);
+      console.log('Successfully created Notion feedback page:', data && data.id);
       return data;
     } catch (error) {
-      console.error('Notion API 请求错误:', error);
+      console.error('Notion API request error:', error);
       const status = error.status || 0;
       const payload = error.data || null;
-      console.error('状态码:', status, '响应体:', payload);
+      console.error('Status code:', status, 'Response body:', payload);
       return null;
     }
   }
