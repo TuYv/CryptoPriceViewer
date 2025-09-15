@@ -2,8 +2,10 @@
 import { Config } from './config.js';
 import { I18N } from './i18n.js';
 import { notionService } from './services/NotionService.js';
+import { coinDetailService } from './services/CoinDetailService.js';
 import { http } from './lib/http.js';
 import { storage } from './lib/storage.js';
+import { PriceChart } from './lib/chart.js';
 
 /**
  * 加密货币价格查看器应用
@@ -20,6 +22,9 @@ class CryptoApp {
     this.showSettings = false;
     this.showFeedback = false;
     this.refreshTimer = null;
+    this.currentPage = 'main';
+    this.currentCoin = null;
+    this.priceChart = null;
 
     // DOM元素
     this.elements = {
@@ -44,7 +49,28 @@ class CryptoApp {
       lastUpdated: document.getElementById('lastUpdated'),
       imageModal: document.getElementById('imageModal'),
       modalImage: document.getElementById('modalImage'),
-      imageModalClose: document.getElementById('imageModalClose')
+      imageModalClose: document.getElementById('imageModalClose'),
+
+      // 页面元素
+      mainPage: document.getElementById('mainPage'),
+      coinDetailPage: document.getElementById('coinDetailPage'),
+      backButton: document.getElementById('backButton'),
+
+      // 币种详情元素
+      coinDetailIcon: document.getElementById('coinDetailIcon'),
+      coinDetailName: document.getElementById('coinDetailName'),
+      coinDetailSymbol: document.getElementById('coinDetailSymbol'),
+      coinDetailPrice: document.getElementById('coinDetailPrice'),
+      coinDetailChange24h: document.getElementById('coinDetailChange24h'),
+      priceChart: document.getElementById('priceChart'),
+      chartLoading: document.getElementById('chartLoading'),
+      coinMarketCap: document.getElementById('coinMarketCap'),
+      coinVolume24h: document.getElementById('coinVolume24h'),
+      coinCirculatingSupply: document.getElementById('coinCirculatingSupply'),
+      coinTotalSupply: document.getElementById('coinTotalSupply'),
+      coinAllTimeHigh: document.getElementById('coinAllTimeHigh'),
+      coinAllTimeLow: document.getElementById('coinAllTimeLow'),
+      coinNews: document.getElementById('coinNews')
     };
 
     // 初始化
@@ -127,12 +153,41 @@ class CryptoApp {
                         '').trim().toUpperCase();
 
         console.log(`[CLICK] crypto-info clicked, symbol=${symbol}`);
-        if (!symbol) return;
+        if (!symbol) {
+          console.warn('[CLICK] No valid symbol found, skipping detail view');
+          return;
+        }
 
-        const geckoId = itemEl.dataset.geckoId || null;
-        this.openCoinOnCoinGecko(symbol, geckoId);
+        const geckoId = itemEl.dataset.geckoId || this.getCoinGeckoId(symbol);
+        if (!geckoId || geckoId === symbol.toLowerCase()) {
+          console.warn(`[CLICK] Invalid geckoId for ${symbol}, falling back to CoinGecko external link`);
+          this.openCoinOnCoinGecko(symbol, geckoId);
+          return;
+        }
+
+        this.showCoinDetails(geckoId, symbol);
       });
     }
+
+    // 返回按钮事件
+    if (this.elements.backButton) {
+      this.elements.backButton.addEventListener('click', () => this.showMainPage());
+    }
+
+    // 图表周期选择器事件
+    document.addEventListener('click', (event) => {
+      if (event.target.classList.contains('period-btn')) {
+        const period = event.target.dataset.period;
+        this.updateChartPeriod(period);
+      }
+    });
+
+    // 调试模式快捷键 (Ctrl+Shift+D)
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        this.toggleDebugMode();
+      }
+    });
   }
 
   /**
@@ -1007,17 +1062,31 @@ class CryptoApp {
    * @returns {string} CoinGecko ID
    */
   getCoinGeckoId(coin) {
+    if (!coin || typeof coin !== 'string') {
+      console.warn('[getCoinGeckoId] Invalid coin parameter:', coin);
+      return null;
+    }
+
+    const upperCoin = coin.toUpperCase();
+    
     // 优先从localStorage中的动态映射读取
-    if (this.settings.coinGeckoIds && this.settings.coinGeckoIds[coin]) {
-      const result = this.settings.coinGeckoIds[coin];
-      console.log(`[DEBUG] getCoinGeckoId (动态映射): ${coin} -> ${result}`);
+    if (this.settings.coinGeckoIds && this.settings.coinGeckoIds[upperCoin]) {
+      const result = this.settings.coinGeckoIds[upperCoin];
+      console.log(`[DEBUG] getCoinGeckoId (动态映射): ${upperCoin} -> ${result}`);
       return result;
     }
     
     // 回退到config.js中的静态映射
-    const result = Config.COIN_GECKO_IDS[coin] || coin.toLowerCase();
-    console.log(`[DEBUG] getCoinGeckoId (静态映射): ${coin} -> ${result}`);
-    return result;
+    if (Config.COIN_GECKO_IDS && Config.COIN_GECKO_IDS[upperCoin]) {
+      const result = Config.COIN_GECKO_IDS[upperCoin];
+      console.log(`[DEBUG] getCoinGeckoId (静态映射): ${upperCoin} -> ${result}`);
+      return result;
+    }
+
+    // 最后回退：使用小写coin作为geckoId，但标记为不可靠
+    const fallback = coin.toLowerCase();
+    console.warn(`[DEBUG] getCoinGeckoId (fallback): ${upperCoin} -> ${fallback} (unreliable)`);
+    return fallback;
   }
 
   /**
@@ -1147,7 +1216,376 @@ class CryptoApp {
        document.body.style.overflow = ''; // 恢复滚动
      }
    }
+
+   /**
+    * 显示主页面
+    */
+   showMainPage() {
+     try {
+       this.currentPage = 'main';
+       this.currentCoin = null;
+       
+       // 切换到主页面
+       if (this.elements.coinDetailPage && this.elements.mainPage) {
+         this.elements.coinDetailPage.classList.remove('active');
+         this.elements.mainPage.classList.add('active');
+       }
+       
+       // 清理图表资源
+       if (this.priceChart) {
+         this.priceChart.destroy?.();
+         this.priceChart = null;
+       }
+       
+       console.log('[Navigation] Returned to main page');
+     } catch (error) {
+       console.error('[Navigation] Error showing main page:', error);
+     }
+   }
+
+   /**
+    * 显示币种详情页面
+    */
+   async showCoinDetails(coinId, symbol) {
+     try {
+       this.currentPage = 'detail';
+       this.currentCoin = { id: coinId, symbol: symbol };
+       
+       // 切换到详情页面
+       if (this.elements.mainPage && this.elements.coinDetailPage) {
+         this.elements.mainPage.classList.remove('active');
+         this.elements.coinDetailPage.classList.add('active');
+       }
+       
+       // 显示基本信息
+       if (this.elements.coinDetailSymbol) {
+         this.elements.coinDetailSymbol.textContent = symbol;
+       }
+       if (this.elements.coinDetailName) {
+         this.elements.coinDetailName.textContent = 'Loading...';
+       }
+       
+       // 初始化图表
+       if (this.elements.priceChart) {
+         this.priceChart = new PriceChart(this.elements.priceChart);
+         this.priceChart.showLoading();
+       }
+       
+       // 加载详细数据
+       await this.loadCoinDetails(coinId);
+       
+     } catch (error) {
+       console.error('[CoinDetails] Error showing coin details:', error);
+       this.showMainPage();
+     }
+   }
+
+   /**
+    * 加载币种详细信息
+    */
+   async loadCoinDetails(coinId) {
+     if (!coinId) {
+       console.error('[CoinDetails] Invalid coinId provided');
+       this.showMessage('无效的币种ID', 'error');
+       this.showMainPage();
+       return;
+     }
+
+     const currency = this.settings?.currency?.toLowerCase() || 'usd';
+     
+     try {
+       // 并行加载详情和历史数据
+       const [details, history] = await Promise.all([
+         coinDetailService.getCoinDetails(coinId, currency),
+         coinDetailService.getCoinHistory(coinId, currency, 7)
+       ]);
+       
+       // 验证返回的数据
+       if (!details || !details.symbol) {
+         throw new Error('Invalid coin details received');
+       }
+       
+       // 更新详情信息
+       this.updateCoinDetailsUI(details);
+       
+       // 更新图表
+       if (this.priceChart && history && history.length > 0) {
+         this.priceChart.setData(history);
+       } else if (this.priceChart) {
+         this.priceChart.showError('暂无历史数据');
+       }
+       
+       // 加载新闻（安全调用）
+       if (typeof this.showCoinNews === 'function') {
+         // 这里应该先获取新闻数据，然后调用showCoinNews显示
+         // 暂时显示空新闻状态，后续可以集成新闻API
+         this.showCoinNews([]);
+       } else {
+         console.warn('[CoinDetails] showCoinNews method not found');
+       }
+       
+     } catch (error) {
+       console.error('[CoinDetails] Error loading coin details:', error);
+       
+       // 根据错误类型显示用户友好的错误信息
+       let errorMessage = '加载币种详情失败，请稍后重试';
+       
+       if (error.message.includes('404')) {
+         errorMessage = '币种信息未找到，请检查币种ID是否正确';
+       } else if (error.message.includes('timeout')) {
+         errorMessage = '网络请求超时，请检查网络连接';
+       } else if (error.message.includes('Network error')) {
+         errorMessage = '网络连接失败，请检查网络设置';
+       } else if (error.message.includes('Invalid coin data')) {
+         errorMessage = '币种数据格式异常，请稍后重试';
+       } else if (error.message.includes('Failed to fetch')) {
+         errorMessage = 'API服务暂时不可用，请稍后重试';
+       }
+       
+       this.showMessage(errorMessage, 'error');
+       
+       // 清理图表状态
+       if (this.priceChart) {
+         this.priceChart.showError('数据加载失败');
+       }
+       
+       // 3秒后自动返回主页面
+       setTimeout(() => {
+         this.showMainPage();
+       }, 3000);
+     }
+   }
+
+   /**
+    * 更新币种详情UI
+    */
+   updateCoinDetailsUI(details) {
+     // 基本信息
+     if (this.elements.coinDetailName) {
+       this.elements.coinDetailName.textContent = details.name;
+     }
+     if (this.elements.coinDetailSymbol) {
+       this.elements.coinDetailSymbol.textContent = details.symbol;
+     }
+     
+     if (details.image && this.elements.coinDetailIcon) {
+       this.elements.coinDetailIcon.src = details.image;
+       this.elements.coinDetailIcon.alt = details.name;
+     }
+     
+     // 价格信息
+     const currencySymbol = Config.CURRENCY_SYMBOLS[details.currency] || '';
+     if (this.elements.coinDetailPrice) {
+       this.elements.coinDetailPrice.textContent = `${currencySymbol}${this.formatPrice(details.currentPrice)}`;
+     }
+     
+     // 24h变化
+     const change24h = details.priceChange24h;
+     if (this.elements.coinDetailChange24h) {
+       const changeEl = this.elements.coinDetailChange24h;
+       changeEl.textContent = `${change24h > 0 ? '+' : ''}${change24h.toFixed(2)}%`;
+       changeEl.className = 'change-value ' + (change24h > 0 ? 'positive' : 'negative');
+     }
+     
+     // 统计数据
+     if (this.elements.coinMarketCap) {
+       this.elements.coinMarketCap.textContent = this.formatLargeNumber(details.marketCap, currencySymbol);
+     }
+     if (this.elements.coinVolume24h) {
+       this.elements.coinVolume24h.textContent = this.formatLargeNumber(details.totalVolume, currencySymbol);
+     }
+     if (this.elements.coinCirculatingSupply) {
+       this.elements.coinCirculatingSupply.textContent = this.formatLargeNumber(details.circulatingSupply);
+     }
+     if (this.elements.coinTotalSupply) {
+       this.elements.coinTotalSupply.textContent = details.totalSupply ? this.formatLargeNumber(details.totalSupply) : 'N/A';
+     }
+     if (this.elements.coinAllTimeHigh) {
+       this.elements.coinAllTimeHigh.textContent = `${currencySymbol}${this.formatPrice(details.allTimeHigh)}`;
+     }
+     if (this.elements.coinAllTimeLow) {
+       this.elements.coinAllTimeLow.textContent = `${currencySymbol}${this.formatPrice(details.allTimeLow)}`;
+     }
+   }
+
+   /**
+    * 显示币种新闻
+    */
+   async showCoinNews(newsItems) {
+     const newsContainer = this.elements.coinNews;
+     if (!newsContainer) return;
+     
+     if (!newsItems || newsItems.length === 0) {
+       newsContainer.innerHTML = `<div class="news-loading">${I18N.t('noNews', this.settings.language)}</div>`;
+       return;
+     }
+     
+     const newsHTML = newsItems.map(news => `
+       <div class="news-item" onclick="window.open('${news.url}', '_blank')">
+         <div class="news-title">${news.title}</div>
+         <div class="news-meta">
+           ${news.source}
+           <span class="news-date">${this.formatNewsDate(news.publishedAt)}</span>
+         </div>
+       </div>
+     `).join('');
+     
+     newsContainer.innerHTML = newsHTML;
+   }
+
+   /**
+    * 更新价格图表数据
+    */
+   async updatePriceChart(period = 7) {
+     if (!this.currentCoin || !this.priceChart) return;
+     
+     try {
+       const chartLoading = document.getElementById('chartLoading');
+       if (chartLoading) chartLoading.style.display = 'block';
+       
+       const currency = this.settings?.currency?.toLowerCase() || 'usd';
+       const historyData = await coinDetailService.getCoinHistory(this.currentCoin.id, currency, period);
+       
+       if (historyData && historyData.length > 0) {
+         this.priceChart.setData(historyData);
+         if (chartLoading) chartLoading.style.display = 'none';
+       }
+     } catch (error) {
+       console.error('[Chart] Error updating price chart:', error);
+       if (this.priceChart) {
+         this.priceChart.showError();
+       }
+     }
+   }
+
+   /**
+    * 格式化大数字显示
+    */
+   formatLargeNumber(number, symbol = '') {
+     if (!number || number === 0) return 'N/A';
+     
+     if (number >= 1e12) {
+       return `${symbol}${(number / 1e12).toFixed(2)}T`;
+     } else if (number >= 1e9) {
+       return `${symbol}${(number / 1e9).toFixed(2)}B`;
+     } else if (number >= 1e6) {
+       return `${symbol}${(number / 1e6).toFixed(2)}M`;
+     } else if (number >= 1e3) {
+       return `${symbol}${(number / 1e3).toFixed(2)}K`;
+     } else {
+       return `${symbol}${number.toLocaleString()}`;
+     }
+   }
+
+   /**
+    * 格式化新闻日期
+    */
+   formatNewsDate(dateString) {
+     if (!dateString) return '';
+     
+     const date = new Date(dateString);
+     const now = new Date();
+     const diffMs = now - date;
+     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+     const diffDays = Math.floor(diffHours / 24);
+     
+     if (diffHours < 24) {
+       return `${diffHours}h ago`;
+     } else if (diffDays < 30) {
+       return `${diffDays}d ago`;
+     } else {
+       return date.toLocaleDateString();
+     }
+   }
+
+   /**
+    * 调试模式
+    */
+   toggleDebugMode() {
+     console.log('[Debug] 启动网络调试模式');
+     this.showMessage('调试模式已启动，检查控制台输出', 'info');
+     this.runNetworkDiagnostics();
+   }
+
+   /**
+    * 运行网络诊断
+    */
+   async runNetworkDiagnostics() {
+     console.log('[Debug] === 开始网络诊断 ===');
+     
+     // 1. 环境检测
+     console.log('[Debug] 1. 环境检测');
+     console.log('[Debug] Chrome扩展ID:', chrome.runtime?.id);
+     console.log('[Debug] Manifest:', chrome.runtime?.getManifest());
+     console.log('[Debug] API_BASE_URL:', Config.API_BASE_URL);
+     
+     // 2. 权限检测
+     console.log('[Debug] 2. 权限检测');
+     const manifest = chrome.runtime.getManifest();
+     console.log('[Debug] Host权限:', manifest.host_permissions);
+     console.log('[Debug] 基础权限:', manifest.permissions);
+     
+     // 3. 网络连通性测试
+     console.log('[Debug] 3. 网络连通性测试');
+     try {
+       const pingResponse = await fetch('https://api.coingecko.com/api/v3/ping');
+       console.log('[Debug] Ping测试:', pingResponse.ok ? '成功' : '失败', pingResponse.status);
+       
+       if (pingResponse.ok) {
+         const pingData = await pingResponse.json();
+         console.log('[Debug] Ping数据:', pingData);
+       }
+     } catch (error) {
+       console.error('[Debug] Ping测试失败:', error);
+     }
+     
+     // 4. HTTP库测试
+     console.log('[Debug] 4. HTTP库测试');
+     try {
+       const httpData = await http.getJson('https://api.coingecko.com/api/v3/ping');
+       console.log('[Debug] HTTP库测试: 成功', httpData);
+     } catch (error) {
+       console.error('[Debug] HTTP库测试失败:', error);
+     }
+     
+     // 5. CoinDetailService测试
+     console.log('[Debug] 5. CoinDetailService测试');
+     try {
+       console.log('[Debug] 测试getCoinDetails...');
+       const details = await coinDetailService.getCoinDetails('bitcoin', 'usd');
+       console.log('[Debug] getCoinDetails成功:', details.name, details.currentPrice);
+       
+       console.log('[Debug] 测试getCoinHistory...');
+       const history = await coinDetailService.getCoinHistory('bitcoin', 'usd', 1);
+       console.log('[Debug] getCoinHistory成功:', history.length, '个数据点');
+       
+       this.showMessage('网络诊断完成，所有测试通过！', 'success');
+     } catch (error) {
+       console.error('[Debug] CoinDetailService测试失败:', error);
+       console.error('[Debug] 错误堆栈:', error.stack);
+       
+       // 详细错误分析
+       if (error.message.includes('timeout')) {
+         console.error('[Debug] 错误类型: 网络超时');
+         this.showMessage('网络超时错误，请检查网络连接', 'error');
+       } else if (error.message.includes('Failed to fetch')) {
+         console.error('[Debug] 错误类型: 网络请求失败');
+         this.showMessage('网络请求失败，可能是CORS或权限问题', 'error');
+       } else if (error.message.includes('Invalid')) {
+         console.error('[Debug] 错误类型: 数据格式错误');
+         this.showMessage('API返回数据格式异常', 'error');
+       } else {
+         console.error('[Debug] 错误类型: 未知错误');
+         this.showMessage(`未知错误: ${error.message}`, 'error');
+       }
+     }
+     
+     console.log('[Debug] === 网络诊断完成 ===');
+   }
 }
+
+// 创建应用实例
+const app = new CryptoApp();
 
 // 搜索防抖定时器
 let searchDebounceTimer = null;
@@ -1345,25 +1783,3 @@ function getSelectedCoinsSync() {
     ? Config.DEFAULT_SETTINGS.selectedCoins
     : ['BTC', 'ETH', 'BNB', 'SOL'];
 }
-
-// 当DOM加载完成后初始化应用
-document.addEventListener('DOMContentLoaded', () => {
-  const app = new CryptoApp();
-  window.cryptoApp = app; // 保存到全局变量以便搜索功能使用
-  
-  // 搜索功能事件
-  const searchButton = document.getElementById('searchButton');
-  const searchInput = document.getElementById('searchInput');
-  
-  if (searchButton) {
-    searchButton.addEventListener('click', searchCoins);
-  }
-  
-  if (searchInput) {
-    searchInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        searchCoins();
-      }
-    });
-  }
-});

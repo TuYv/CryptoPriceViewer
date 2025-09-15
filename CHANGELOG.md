@@ -1,5 +1,22 @@
 # Crypto Price Viewer - Changelog
 
+## Version 0.0.4 (2025-09-05)
+
+### New
+- One-tap coin details: Open a coin’s page on CoinGecko in a new tab, automatically matched to your language.
+
+### Improvements
+- Faster adding: After you tap Add, it immediately shows Added and your list updates without a refresh.
+- Better language experience: Language changes take effect instantly, and your preference is remembered.
+- Smoother everyday use: Saving and loading are snappier to reduce stutter.
+
+### Fixes
+- Fixed the issue where the Add button didn’t update until you refreshed.
+- Fixed occasional settings desync that caused inconsistent display.
+
+### Compatibility
+- Your saved coins and settings remain intact. No action needed.
+
 ## Version 0.0.3 (2025-08-31)
 
 ### Bug Fixes

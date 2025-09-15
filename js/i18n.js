@@ -28,6 +28,15 @@ export const I18N = {
       loading: '加载中...',
       noData: '暂无数据',
       error: '加载失败，请稍后重试',
+      apiErrorPrefix: 'API错误',
+      unknownErrorShort: '未知错误',
+      unknownErrorFull: '发生未知错误，请刷新页面重试',
+      networkError: '网络连接失败，请检查网络连接',
+      apiErrorGeneric: 'API请求失败，请稍后重试',
+      storageError: '数据存储失败，请检查浏览器设置',
+      validationError: '输入的数据格式不正确',
+      authError: '身份验证失败，请重新登录',
+      rateLimitError: '请求过于频繁，请稍后再试',
       clickToOpenCoinGecko: '点击查看该币种在 CoinGecko 上的详细信息',
       
       // 搜索功能
@@ -53,9 +62,19 @@ export const I18N = {
       feedbackSuccess: '反馈发送成功！感谢您的宝贵意见。',
       feedbackError: '反馈发送失败，请稍后重试。',
       feedbackEmpty: '请输入反馈内容',
-      
-      // 设置面板
-      settingsTitle: '设置',
+      feedbackRateLimitPrefix: '发送过于频繁，请等待 ',
+      secondsSuffixRetry: ' 秒后再试',
+      feedbackSentWithIdPrefix: '反馈已成功发送！反馈ID: ',
+      feedbackSendFailedPrefix: '发送失败: ',
+      notionNotConfigured: '请先配置 Notion 集成后再发送反馈。',
+      notionConfigSaved: 'Notion 配置已保存',
+      notionConfigCleared: 'Notion 配置已清除',
+      notionConfigIncomplete: '请填写完整的 Notion 配置信息',
+      notionConfigSaveFailed: '保存 Notion 配置失败',
+      justNow: '刚刚',
+      minutesAgoSuffix: '分钟前',
+      hoursAgoSuffix: '小时前',
+      daysAgoSuffix: '天前',
       coinSelection: '币种选择',
       refreshInterval: '刷新间隔',
       currency: '显示货币',
@@ -82,6 +101,19 @@ export const I18N = {
       currencyJPY: '日元 (JPY)',
       currencyKRW: '韩元 (KRW)',
       
+      // 币种详情页面
+      back: '返回',
+      currentPrice: '当前价格',
+      change24h: '24h变化',
+      marketCap: '市值',
+      volume24h: '24h交易量',
+      circulatingSupply: '流通供应量',
+      totalSupply: '总供应量',
+      allTimeHigh: '历史最高',
+      allTimeLow: '历史最低',
+      relatedNews: '相关新闻',
+      loading: '加载中...',
+
       // 币种名称
       bitcoin: '比特币',
       ethereum: '以太坊',
@@ -107,6 +139,15 @@ export const I18N = {
       loading: 'Loading...',
       noData: 'No data available',
       error: 'Failed to load, please try again later',
+      apiErrorPrefix: 'API error',
+      unknownErrorShort: 'Unknown error',
+      unknownErrorFull: 'An unknown error occurred. Please refresh and try again.',
+      networkError: 'Network connection failed. Please check your network.',
+      apiErrorGeneric: 'API request failed, please try again later.',
+      storageError: 'Data storage failed, please check your browser settings.',
+      validationError: 'Invalid input format.',
+      authError: 'Authentication failed, please sign in again.',
+      rateLimitError: 'Too many requests, please try again later.',
       clickToOpenCoinGecko: 'Click to view detailed information on CoinGecko',
       
       // Search functionality
@@ -131,10 +172,20 @@ export const I18N = {
       sendFeedback: 'Send Feedback',
       feedbackSuccess: 'Feedback sent successfully! Thank you for your valuable input.',
       feedbackError: 'Failed to send feedback, please try again later.',
-      feedbackEmpty: 'Please enter feedback content',
-      
-      // Settings panel
-      settingsTitle: 'Settings',
+      feedbackEmpty: 'Please enter your feedback',
+      feedbackRateLimitPrefix: 'Too frequent. Please wait ',
+      secondsSuffixRetry: ' seconds before retrying',
+      feedbackSentWithIdPrefix: 'Feedback sent successfully! ID: ',
+      feedbackSendFailedPrefix: 'Send failed: ',
+      notionNotConfigured: 'Please configure Notion integration before sending feedback.',
+      notionConfigSaved: 'Notion configuration saved',
+      notionConfigCleared: 'Notion configuration cleared',
+      notionConfigIncomplete: 'Please complete the Notion configuration information',
+      notionConfigSaveFailed: 'Failed to save Notion configuration',
+      justNow: 'just now',
+      minutesAgoSuffix: ' minutes ago',
+      hoursAgoSuffix: ' hours ago',
+      daysAgoSuffix: ' days ago',
       coinSelection: 'Coin Selection',
       refreshInterval: 'Refresh Interval',
       currency: 'Display Currency',
@@ -161,6 +212,19 @@ export const I18N = {
       currencyJPY: 'Japanese Yen (JPY)',
       currencyKRW: 'Korean Won (KRW)',
       
+      // Coin Detail Page
+      back: 'Back',
+      currentPrice: 'Current Price',
+      change24h: '24h Change',
+      marketCap: 'Market Cap',
+      volume24h: '24h Volume',
+      circulatingSupply: 'Circulating Supply',
+      totalSupply: 'Total Supply',
+      allTimeHigh: 'All Time High',
+      allTimeLow: 'All Time Low',
+      relatedNews: 'Related News',
+      loading: 'Loading...',
+
       // 币种名称
       bitcoin: 'Bitcoin',
       ethereum: 'Ethereum',
@@ -186,6 +250,15 @@ export const I18N = {
       loading: '読み込み中...',
       noData: 'データがありません',
       error: '読み込みに失敗しました。後でもう一度お試しください',
+      apiErrorPrefix: 'APIエラー',
+      unknownErrorShort: '不明なエラー',
+      unknownErrorFull: '不明なエラーが発生しました。ページを更新して再試行してください。',
+      networkError: 'ネットワーク接続に失敗しました。ネットワークを確認してください。',
+      apiErrorGeneric: 'APIリクエストに失敗しました。後でもう一度お試しください。',
+      storageError: 'データの保存に失敗しました。ブラウザ設定を確認してください。',
+      validationError: '入力データの形式が正しくありません。',
+      authError: '認証に失敗しました。再度ログインしてください。',
+      rateLimitError: 'リクエストが多すぎます。しばらくしてから再試行してください。',
       clickToOpenCoinGecko: 'CoinGeckoで詳細情報を見るにはクリックしてください',
       
       // 検索機能
@@ -211,6 +284,126 @@ export const I18N = {
       feedbackSuccess: 'フィードバックが正常に送信されました！貴重なご意見をありがとうございます。',
       feedbackError: 'フィードバックの送信に失敗しました。後でもう一度お試しください。',
       feedbackEmpty: 'フィードバック内容を入力してください',
+      feedbackRateLimitPrefix: '送信頻度が高すぎます。 ',
+      secondsSuffixRetry: ' 秒後に再試行してください',
+      feedbackSentWithIdPrefix: 'フィードバックが正常に送信されました！ID: ',
+      feedbackSendFailedPrefix: '送信に失敗しました: ',
+      notionNotConfigured: 'フィードバックの送信前に Notion 連携を設定してください。',
+      notionConfigSaved: 'Notion 設定を保存しました',
+      notionConfigCleared: 'Notion 設定をクリアしました',
+      notionConfigIncomplete: 'Notion の設定情報を完全に入力してください',
+      notionConfigSaveFailed: 'Notion 設定の保存に失敗しました',
+      
+      // 設定パネル
+      // 设置面板（韩文）
+      settingsTitle: '설정',
+      coinSelection: '코인 선택',
+      refreshInterval: '새로고침 간격',
+      currency: '표시 통화',
+      language: '언어',
+      coinManagement: '코인 관리',
+      addedCoins: '추가된 코인',
+      noCoinsAdded: '아직 추가된 코인이 없습니다',
+      removeCoin: '코인 삭제',
+      save: '저장',
+      cancel: '취소',
+      
+      // 새로고침 간격 옵션（韩文）
+      interval30s: '30초',
+      interval1m: '1분',
+      interval5m: '5분',
+      interval10m: '10분',
+      interval30m: '30분',
+      refreshOff: '자동 새로고침 끄기',
+      
+      // 통화 옵션（韩文）
+      currencyUSD: '미국 달러 (USD)',
+      currencyCNY: '중국 위안 (CNY)',
+      currencyEUR: '유로 (EUR)',
+      currencyJPY: '일본 엔 (JPY)',
+      currencyKRW: '한국 원 (KRW)',
+      
+      // 코인 상세 페이지
+      back: '뒤로',
+      currentPrice: '현재 가격',
+      change24h: '24h 변동',
+      marketCap: '시가총액',
+      volume24h: '24h 거래량',
+      circulatingSupply: '유통 공급량',
+      totalSupply: '총 공급량',
+      allTimeHigh: '사상 최고가',
+      allTimeLow: '사상 최저가',
+      relatedNews: '관련 뉴스',
+      loading: '로딩 중...',
+
+      // 코인 이름（韩文）
+      bitcoin: '비트코인',
+      ethereum: '이더리움',
+      binancecoin: '바이낸스 코인',
+      solana: '솔라나',
+      ripple: '리플',
+      cardano: '카르다노',
+      dogecoin: '도지코인',
+      polkadot: '폴카닷',
+      
+      // Footer 텍스트（韩文）
+      dataSource: '데이터 소스: CoinGecko API'
+    },
+    
+    ko: {
+      // 앱 제목
+      appTitle: '암호화폐 가격 뷰어',
+      
+      // 메인 인터페이스
+      refresh: '새로고침',
+      settings: '설정',
+      lastUpdated: '마지막 업데이트',
+      loading: '로딩 중...',
+      noData: '데이터가 없습니다',
+      error: '로드에 실패했습니다. 나중에 다시 시도해주세요',
+      apiErrorPrefix: 'API 오류',
+      unknownErrorShort: '알 수 없는 오류',
+      unknownErrorFull: '알 수 없는 오류가 발생했습니다. 새로고침 후 다시 시도하세요.',
+      networkError: '네트워크 연결에 실패했습니다. 네트워크를 확인하세요.',
+      apiErrorGeneric: 'API 요청에 실패했습니다. 나중에 다시 시도하세요.',
+      storageError: '데이터 저장에 실패했습니다. 브라우저 설정을 확인하세요.',
+      validationError: '입력 데이터 형식이 올바르지 않습니다.',
+      authError: '인증에 실패했습니다. 다시 로그인하세요.',
+      rateLimitError: '요청이 너무 많습니다. 잠시 후 다시 시도하세요.',
+      clickToOpenCoinGecko: '클릭하여 CoinGecko에서 자세한 정보를 확인하세요',
+      
+      // 검색 기능
+      searchPlaceholder: '코인 검색...',
+      searchButton: '검색',
+      search: '검색',
+      searchResults: '검색 결과',
+      addCoin: '추가',
+      add: '추가',
+      coinAdded: '추가됨',
+      added: '추가됨',
+      searchLoading: '검색 중...',
+      noSearchResults: '코인을 찾을 수 없습니다',
+      searchError: '검색에 실패했습니다. 다시 시도해주세요',
+      searchRateLimit: '검색 요청이 너무 많습니다. 잠시 후 다시 시도해주세요...',
+      
+      // 피드백 기능
+      feedback: '피드백',
+      feedbackTitle: '사용자 피드백',
+      donationTip: '이 도구가 도움이 되셨다면 후원으로 응원해주세요!',
+      feedbackPlaceholder: '피드백을 입력해주세요... (연락처 정보도 포함해주세요)',
+      sendFeedback: '피드백 전송',
+      feedbackSuccess: '피드백이 성공적으로 전송되었습니다! 소중한 의견 감사합니다.',
+      feedbackError: '피드백 전송에 실패했습니다. 나중에 다시 시도해주세요.',
+      feedbackEmpty: '피드백 내용을 입력해주세요',
+      feedbackRateLimitPrefix: '너무 빈번합니다. ',
+      secondsSuffixRetry: ' 초 후에 다시 시도하세요',
+      feedbackSentWithIdPrefix: '피드백이 성공적으로 전송되었습니다! ID: ',
+      feedbackSendFailedPrefix: '전송 실패: ',
+      notionNotConfigured: '피드백을 보내기 전에 Notion 연동을 설정해주세요.',
+      notionConfigSaved: 'Notion 설정이 저장되었습니다',
+      notionConfigCleared: 'Notion 설정이 삭제되었습니다',
+      notionConfigIncomplete: 'Notion 설정 정보를 완전히 입력해주세요',
+      notionConfigSaveFailed: 'Notion 설정 저장에 실패했습니다',
       
       // 設定パネル
       settingsTitle: '設定',
@@ -240,6 +433,19 @@ export const I18N = {
       currencyJPY: '日本円 (JPY)',
       currencyKRW: '韓国ウォン (KRW)',
       
+      // コイン詳細ページ
+      back: '戻る',
+      currentPrice: '現在価格',
+      change24h: '24h変動',
+      marketCap: '時価総額',
+      volume24h: '24h取引量',
+      circulatingSupply: '流通供給量',
+      totalSupply: '総供給量',
+      allTimeHigh: '過去最高値',
+      allTimeLow: '過去最安値',
+      relatedNews: '関連ニュース',
+      loading: '読み込み中...',
+
       // 币种名称
       bitcoin: 'ビットコイン',
       ethereum: 'イーサリアム',
@@ -252,84 +458,6 @@ export const I18N = {
       
       // Footer文本
       dataSource: 'データソース: CoinGecko API'
-    },
-    
-    ko: {
-      // 앱 제목
-      appTitle: '암호화폐 가격 뷰어',
-      
-      // 메인 인터페이스
-      refresh: '새로고침',
-      settings: '설정',
-      lastUpdated: '마지막 업데이트',
-      loading: '로딩 중...',
-      noData: '데이터가 없습니다',
-      error: '로드에 실패했습니다. 나중에 다시 시도해주세요',
-      
-      // 검색 기능
-      searchPlaceholder: '코인 검색...',
-      searchButton: '검색',
-      search: '검색',
-      searchResults: '검색 결과',
-      addCoin: '추가',
-      add: '추가',
-      coinAdded: '추가됨',
-      added: '추가됨',
-      searchLoading: '검색 중...',
-      noSearchResults: '코인을 찾을 수 없습니다',
-      searchError: '검색에 실패했습니다. 다시 시도해주세요',
-      searchRateLimit: '검색 요청이 너무 많습니다. 잠시 후 다시 시도해주세요...',
-      
-      // 피드백 기능
-      feedback: '피드백',
-      feedbackTitle: '사용자 피드백',
-      donationTip: '이 도구가 도움이 되셨다면 후원으로 응원해주세요!',
-      feedbackPlaceholder: '피드백을 입력해주세요... (연락처 정보도 포함해주세요)',
-      sendFeedback: '피드백 전송',
-      feedbackSuccess: '피드백이 성공적으로 전송되었습니다! 소중한 의견 감사합니다.',
-      feedbackError: '피드백 전송에 실패했습니다. 나중에 다시 시도해주세요.',
-      feedbackEmpty: '피드백 내용을 입력해주세요',
-      
-      // 설정 패널
-      settingsTitle: '설정',
-      coinSelection: '코인 선택',
-      refreshInterval: '새로고침 간격',
-      currency: '표시 통화',
-      language: '언어',
-      coinManagement: '코인 관리',
-      addedCoins: '추가된 코인',
-      noCoinsAdded: '아직 추가된 코인이 없습니다',
-      removeCoin: '코인 삭제',
-      save: '저장',
-      cancel: '취소',
-      
-      // 새로고침 간격 옵션
-      interval30s: '30초',
-      interval1m: '1분',
-      interval5m: '5분',
-      interval10m: '10분',
-      interval30m: '30분',
-      refreshOff: '자동 새로고침 끄기',
-      
-      // 통화 옵션
-      currencyUSD: '미국 달러 (USD)',
-      currencyCNY: '중국 위안 (CNY)',
-      currencyEUR: '유로 (EUR)',
-      currencyJPY: '일본 엔 (JPY)',
-      currencyKRW: '한국 원 (KRW)',
-      
-      // 币种名称
-      bitcoin: '비트코인',
-      ethereum: '이더리움',
-      binancecoin: '바이낸스 코인',
-      solana: '솔라나',
-      ripple: '리플',
-      cardano: '카르다노',
-      dogecoin: '도지코인',
-      polkadot: '폴카닷',
-      
-      // Footer文本
-      dataSource: '데이터 소스: CoinGecko API'
     }
   },
 

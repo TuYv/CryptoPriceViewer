@@ -4,6 +4,7 @@
  */
 
 import { Config } from '../config.js';
+import { I18N } from '../i18n.js';
 
 export class DataFormatter {
   constructor() {
@@ -186,14 +187,18 @@ export class DataFormatter {
     const diffHours = Math.floor(diffMinutes / 60);
     const diffDays = Math.floor(diffHours / 24);
 
+    const lang = (I18N && typeof I18N.getCurrentLanguage === 'function')
+      ? I18N.getCurrentLanguage()
+      : I18N.DEFAULT_LANGUAGE;
+
     if (diffSeconds < 60) {
-      return '刚刚';
+      return I18N.t('justNow', lang);
     } else if (diffMinutes < 60) {
-      return `${diffMinutes}分钟前`;
+      return `${diffMinutes}${I18N.t('minutesAgoSuffix', lang)}`;
     } else if (diffHours < 24) {
-      return `${diffHours}小时前`;
+      return `${diffHours}${I18N.t('hoursAgoSuffix', lang)}`;
     } else if (diffDays < 7) {
-      return `${diffDays}天前`;
+      return `${diffDays}${I18N.t('daysAgoSuffix', lang)}`;
     } else {
       return time.toLocaleDateString();
     }

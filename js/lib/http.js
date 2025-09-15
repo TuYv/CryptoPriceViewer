@@ -14,9 +14,22 @@ class HttpError extends Error {
 }
 
 async function request(url, options = {}) {
-  const { method = 'GET', headers = {}, body } = options;
-  const res = await fetch(url, { method, headers, body });
-  const contentType = res.headers.get('content-type') || '';
+  const { method = 'GET', headers = {}, body, timeout = 10000 } = options;
+  
+  // 创建带超时的fetch请求
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const res = await fetch(url, { 
+      method, 
+      headers, 
+      body, 
+      signal: controller.signal 
+    });
+    clearTimeout(timeoutId);
+    
+    const contentType = res.headers.get('content-type') || '';
 
   let payload = null;
   if (contentType.includes('application/json')) {
@@ -25,9 +38,30 @@ async function request(url, options = {}) {
     try { payload = await res.text(); } catch (_) { payload = null; }
   }
 
-  if (!res.ok) {
-    const msg = `HTTP ${res.status}`;
-    throw new HttpError(msg, res.status, payload);
+    if (!res.ok) {
+      const msg = `HTTP ${res.status}: ${res.statusText}`;
+      console.error(`[HTTP] Request failed: ${method} ${url} - ${msg}`, payload);
+      throw new HttpError(msg, res.status, payload);
+    }
+    
+    return payload;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error.name === 'AbortError') {
+      const msg = `Request timeout after ${timeout}ms`;
+      console.error(`[HTTP] ${msg}: ${method} ${url}`);
+      throw new HttpError(msg, 408, null);
+    }
+    
+    if (error instanceof HttpError) {
+      throw error;
+    }
+    
+    // 网络错误或其他异常
+    const msg = `Network error: ${error.message}`;
+    console.error(`[HTTP] ${msg}: ${method} ${url}`, error);
+    throw new HttpError(msg, 0, null);
   }
 
   return payload;
