@@ -336,6 +336,7 @@ h1 {
   display: flex;
   align-items: center;
   flex: 1;
+  cursor: pointer;
 }
 
 .crypto-icon {
@@ -370,6 +371,7 @@ h1 {
 }
 
 .crypto-price {
+  position: relative; /* 为绝对定位的子元素提供基准 */
   text-align: right;
   flex-shrink: 0;
   margin-right: 30px;
@@ -396,6 +398,53 @@ h1 {
   padding: 1px 4px;
   border-radius: 4px;
   display: inline-block;
+}
+
+/* 收藏按钮样式 - 覆盖层方案 */
+.pin-button {
+  /* 覆盖层定位 */
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%; /* 覆盖整个价格区域 */
+  
+  /* 样式与布局 */
+  background: transparent; /* 完全透明 */
+  border: none;
+  box-shadow: none;      /* 彻底移除继承的阴影 */
+  padding: 0;
+  color: rgba(209, 206, 206, 0.8); /* 半透明的灰色星星 */
+  font-size: 26px; /* 增大星星图标 */
+  cursor: pointer;
+  
+  /* Flexbox居中 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 悬停动画：默认隐藏 */
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+/* 悬停在整个项目上时显示按钮 */
+.crypto-item:hover .pin-button {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* “已收藏”状态只改变颜色 */
+.pin-button.pinned {
+  color: rgba(229, 202, 46, 0.85); /* 半透明的金色 */
+}
+
+/* 鼠标直接悬停在按钮上时放大图标 */
+.pin-button:hover {
+  background: transparent; /* 强制覆盖全局按钮悬停样式 */
+  box-shadow: none;        /* 移除继承来的阴-影 */
+  transform: scale(1.2);   /* 保留放大动画，并覆盖全局的translateY */
 }
 
 .price-change.positive {
@@ -980,7 +1029,7 @@ select:focus {
   margin-bottom: 20px;
 }
 
-.current-price, .price-change {
+.current-price, .detail-price-change {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 16px;
@@ -1151,3 +1200,4 @@ select:focus {
   font-size: 11px;
   float: right;
 }
+/* Cache buster: 1758097910 */

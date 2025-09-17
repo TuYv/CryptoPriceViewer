@@ -14,7 +14,7 @@ class CryptoApp {
   constructor() {
     // 应用状态
     this.cryptoData = [];
-    this.settings = { ...Config.DEFAULT_SETTINGS };
+    this.settings = { ...Config.DEFAULT_SETTINGS, pinnedCoin: null };
 
     this.isLoading = true;
     this.hasError = false;
@@ -139,7 +139,15 @@ class CryptoApp {
     // 事件委托：点击列表中的 crypto-info / crypto-item 打开 CoinGecko 页面 [OPT-1]
     if (this.elements.cryptoList) {
       this.elements.cryptoList.addEventListener('click', (event) => {
-        // 排除删除按钮
+        // 收藏按钮逻辑
+        const pinBtn = event.target.closest('.pin-button');
+        if (pinBtn) {
+          const symbol = pinBtn.dataset.symbol;
+          this.togglePinCoin(symbol);
+          return;
+        }
+
+        // 排除删除按钮和收藏按钮
         const deleteBtn = event.target.closest('.crypto-delete-btn');
         if (deleteBtn) return;
 
@@ -197,7 +205,7 @@ class CryptoApp {
     try {
       const savedSettings = await storage.get(Config.STORAGE_KEY);
       if (savedSettings) {
-        this.settings = { ...Config.DEFAULT_SETTINGS, ...savedSettings };
+        this.settings = { ...this.settings, ...savedSettings };
       } else {
         this.settings = { ...Config.DEFAULT_SETTINGS };
         await this.saveSettings();
@@ -521,6 +529,15 @@ class CryptoApp {
     const lastUpdatedLabel = document.querySelector('[data-i18n="lastUpdated"]');
     if (lastUpdatedLabel) lastUpdatedLabel.textContent = I18N.t('lastUpdated', currentLang);
     
+    // 更新详情页面文本
+    this.updateCoinDetailPageLanguage(currentLang);
+    
+    // 更新详情页面文本
+    this.updateCoinDetailPageLanguage(currentLang);
+    
+    // 更新详情页面文本
+    this.updateCoinDetailPageLanguage(currentLang);
+    
     // 重新渲染数据以更新币种名称
     this.renderCryptoData();
   }
@@ -596,7 +613,7 @@ class CryptoApp {
     // 获取语言设置
     this.settings.language = this.elements.languageSelect.value;
     
-    // 保存到存储（保持现有的selectedCoins不变）
+    // 保存到存储（保持现有的selectedCoins和pinnedCoin不变）
     try {
       await storage.set(Config.STORAGE_KEY, this.settings);
     } catch (error) {
@@ -919,6 +936,10 @@ class CryptoApp {
       
       this.renderCryptoData();
       this.updateLastUpdated();
+
+      // 更新徽章
+      const pinnedData = this.cryptoData.find(c => c.symbol === this.settings.pinnedCoin);
+      this.updateBadge(pinnedData);
     } catch (error) {
       console.error('[DEBUG] fetchCryptoData 错误:', error);
       this.hasError = true;
@@ -968,7 +989,6 @@ class CryptoApp {
       // 创建左侧信息容器
       const cryptoInfo = document.createElement('div');
       cryptoInfo.className = 'crypto-info';
-      cryptoInfo.style.cursor = 'pointer'; // UX 提示 [OPT-1]
       try {
         const tip = I18N.t('clickToOpenCoinGecko', this.settings.language || I18N.DEFAULT_LANGUAGE);
         if (tip) cryptoInfo.title = tip;
@@ -1033,6 +1053,17 @@ class CryptoApp {
       
       priceContainer.appendChild(priceElement);
       priceContainer.appendChild(changeElement);
+
+      // 创建收藏按钮
+      const pinButton = document.createElement('button');
+      pinButton.className = 'pin-button';
+      pinButton.innerHTML = '★'; // 使用星星符号作为示例
+      pinButton.title = '点击收藏，将价格固定到扩展图标上';
+      pinButton.setAttribute('data-symbol', crypto.symbol);
+      if (crypto.symbol === this.settings.pinnedCoin) {
+        pinButton.classList.add('pinned');
+      }
+      priceContainer.appendChild(pinButton);
       
       // 创建删除按钮
       const deleteButton = document.createElement('button');
@@ -1286,7 +1317,7 @@ class CryptoApp {
    async loadCoinDetails(coinId) {
      if (!coinId) {
        console.error('[CoinDetails] Invalid coinId provided');
-       this.showMessage('无效的币种ID', 'error');
+       this.showMessage(I18N.t('invalidCoinId'), 'error');
        this.showMainPage();
        return;
      }
@@ -1312,7 +1343,7 @@ class CryptoApp {
        if (this.priceChart && history && history.length > 0) {
          this.priceChart.setData(history);
        } else if (this.priceChart) {
-         this.priceChart.showError('暂无历史数据');
+         this.priceChart.showError(I18N.t('noHistoricalData'));
        }
        
        // 加载新闻（安全调用）
@@ -1328,25 +1359,25 @@ class CryptoApp {
        console.error('[CoinDetails] Error loading coin details:', error);
        
        // 根据错误类型显示用户友好的错误信息
-       let errorMessage = '加载币种详情失败，请稍后重试';
+       let errorMessage = I18N.t('loadingCoinDetailsFailed');
        
        if (error.message.includes('404')) {
-         errorMessage = '币种信息未找到，请检查币种ID是否正确';
+         errorMessage = I18N.t('coinNotFound');
        } else if (error.message.includes('timeout')) {
-         errorMessage = '网络请求超时，请检查网络连接';
+         errorMessage = I18N.t('networkRequestTimeout');
        } else if (error.message.includes('Network error')) {
-         errorMessage = '网络连接失败，请检查网络设置';
+         errorMessage = I18N.t('networkConnectionFailed');
        } else if (error.message.includes('Invalid coin data')) {
-         errorMessage = '币种数据格式异常，请稍后重试';
+         errorMessage = I18N.t('invalidCoinData');
        } else if (error.message.includes('Failed to fetch')) {
-         errorMessage = 'API服务暂时不可用，请稍后重试';
+         errorMessage = I18N.t('apiServiceUnavailable');
        }
        
        this.showMessage(errorMessage, 'error');
        
        // 清理图表状态
        if (this.priceChart) {
-         this.priceChart.showError('数据加载失败');
+         this.priceChart.showError(I18N.t('chartDataLoadingFailed'));
        }
        
        // 3秒后自动返回主页面
@@ -1582,6 +1613,43 @@ class CryptoApp {
      
      console.log('[Debug] === 网络诊断完成 ===');
    }
+  /**
+   * 更新币种详情页面语言
+   */
+  updateCoinDetailPageLanguage(lang) {
+    document.querySelectorAll('#coinDetailPage [data-i18n]').forEach(element => {
+      const key = element.dataset.i18n;
+      element.textContent = I18N.t(key, lang);
+    });
+  }
+  /**
+   * 切换币种的收藏状态
+   */
+  async togglePinCoin(symbol) {
+    if (this.settings.pinnedCoin === symbol) {
+      this.settings.pinnedCoin = null; // 取消收藏
+    } else {
+      this.settings.pinnedCoin = symbol; // 收藏新币种
+    }
+
+    await this.saveSettings(); // 保存设置
+    this.renderCryptoData(); // 重新渲染UI
+  }
+
+  /**
+   * 更新扩展图标的徽章
+   */
+  updateBadge(coinData) {
+    if (coinData) {
+      const price = coinData.price.toFixed(0);
+      const color = coinData.change24h >= 0 ? '#38a169' : '#e53e3e';
+      chrome.action.setBadgeText({ text: price });
+      chrome.action.setBadgeBackgroundColor({ color: color });
+    } else {
+      chrome.action.setBadgeText({ text: '' });
+    }
+  }
+
 }
 
 // 创建应用实例
