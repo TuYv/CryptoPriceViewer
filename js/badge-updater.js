@@ -7,11 +7,15 @@ function formatPriceForBadge(price) {
   if (price >= 10000) {
     return (price / 1000).toFixed(1) + 'k';
   } else if (price >= 1000) {
-    return (price / 1000).toFixed(1) + 'k';
-  } else if (price >= 1) {
+    return (price / 1000).toFixed(2) + 'k';
+  } else if (price >= 100) {
     return Math.floor(price).toString();
-  } else {
+  } else if (price >= 10) {
+    return price.toFixed(1);
+  } else if (price >= 1) {
     return price.toFixed(2);
+  } else {
+    return price.toFixed(3);
   }
 }
 
