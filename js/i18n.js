@@ -102,6 +102,8 @@ export const I18N = {
       currencyKRW: '韩元 (KRW)',
       
       // 币种详情页面
+      pinTooltip: '点击收藏，将价格固定到扩展图标上',
+      removeCoinTooltip: '删除币种',
       back: '返回',
       currentPrice: '当前价格',
       change24h: '24h变化',
@@ -225,6 +227,8 @@ export const I18N = {
       currencyKRW: 'Korean Won (KRW)',
       
       // Coin Detail Page
+      pinTooltip: 'Click to pin the price to the extension icon',
+      removeCoinTooltip: 'Remove Coin',
       back: 'Back',
       currentPrice: 'Current Price',
       change24h: '24h Change',
@@ -348,6 +352,8 @@ export const I18N = {
       currencyKRW: '한국 원 (KRW)',
       
       // 코인 상세 페이지
+      pinTooltip: '클릭하여 가격을 확장 아이콘에 고정',
+      removeCoinTooltip: '코인 삭제',
       back: '뒤로',
       currentPrice: '현재 가격',
       change24h: '24h 변동',
@@ -458,6 +464,8 @@ export const I18N = {
       currencyKRW: '韓国ウォン (KRW)',
       
       // コイン詳細ページ
+      pinTooltip: 'クリックして価格を拡張機能アイコンに固定します',
+      removeCoinTooltip: 'コインを削除',
       back: '戻る',
       currentPrice: '現在価格',
       change24h: '24h変動',
