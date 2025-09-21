@@ -36,7 +36,8 @@ export const I18N = {
       storageError: '数据存储失败，请检查浏览器设置',
       validationError: '输入的数据格式不正确',
       authError: '身份验证失败，请重新登录',
-      rateLimitError: '请求过于频繁，请稍后再试',
+      rateLimitError: '请求过于频繁，请一分钟后再试。',
+      fetchDataFailed: '获取数据失败，请稍后再试',
       clickToOpenCoinGecko: '点击查看该币种在 CoinGecko 上的详细信息',
       
       // 搜索功能
@@ -161,7 +162,8 @@ export const I18N = {
       storageError: 'Data storage failed, please check your browser settings.',
       validationError: 'Invalid input format.',
       authError: 'Authentication failed, please sign in again.',
-      rateLimitError: 'Too many requests, please try again later.',
+      rateLimitError: 'Too many requests. Please try again in one minute.',
+      fetchDataFailed: 'Failed to fetch data, please try again later',
       clickToOpenCoinGecko: 'Click to view detailed information on CoinGecko',
       
       // Search functionality
@@ -286,7 +288,8 @@ export const I18N = {
       storageError: 'データの保存に失敗しました。ブラウザ設定を確認してください。',
       validationError: '入力データの形式が正しくありません。',
       authError: '認証に失敗しました。再度ログインしてください。',
-      rateLimitError: 'リクエストが多すぎます。しばらくしてから再試行してください。',
+      rateLimitError: 'リクエストが多すぎます。1分後にもう一度お試しください。',
+      fetchDataFailed: 'データの取得に失敗しました。後でもう一度お試しください',
       clickToOpenCoinGecko: 'CoinGeckoで詳細情報を見るにはクリックしてください',
       
       // 検索機能
@@ -399,7 +402,8 @@ export const I18N = {
       storageError: '데이터 저장에 실패했습니다. 브라우저 설정을 확인하세요.',
       validationError: '입력 데이터 형식이 올바르지 않습니다.',
       authError: '인증에 실패했습니다. 다시 로그인하세요.',
-      rateLimitError: '요청이 너무 많습니다. 잠시 후 다시 시도하세요.',
+      rateLimitError: '요청이 너무 많습니다. 1분 후에 다시 시도해주세요.',
+      fetchDataFailed: '데이터를 가져오는데 실패했습니다. 나중에 다시 시도해주세요',
       clickToOpenCoinGecko: '클릭하여 CoinGecko에서 자세한 정보를 확인하세요',
       
       // 검색 기능

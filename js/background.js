@@ -1,6 +1,6 @@
 import { Config } from './config.js';
 import { storage } from './lib/storage.js';
-import { http } from './lib/http.js';
+import coinGeckoClient from './clients/CoinGeckoClient.js';
 import { updateBadge } from './badge-updater.js';
 
 const ALARM_NAME = 'refreshPriceAlarm';
@@ -62,9 +62,16 @@ async function refreshBadgePrice() {
       return;
     }
 
-    const url = `${Config.API_BASE_URL}/coins/markets?vs_currency=${currency.toLowerCase()}&ids=${geckoId}&price_change_percentage=24h`;
+    const data = await coinGeckoClient.getMarkets([geckoId], currency);
 
-    const data = await http.getJson(url);
+    if (!data || (data && data.error)) {
+      if (data && data.error === 'API_LOCKED') {
+        console.warn('[Background] API is locked. Gracefully skipping badge update.');
+      } else {
+        console.warn('[Background] API returned no or invalid data. Skipping badge update.');
+      }
+      return;
+    }
 
     if (data && data[0]) {
       const coinData = {

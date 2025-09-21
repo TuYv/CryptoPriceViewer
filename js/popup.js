@@ -3,7 +3,7 @@ import { Config } from './config.js';
 import { I18N } from './i18n.js';
 import { notionService } from './services/NotionService.js';
 import { coinDetailService } from './services/CoinDetailService.js';
-import { http } from './lib/http.js';
+import coinGeckoClient from './clients/CoinGeckoClient.js';
 import { storage } from './lib/storage.js';
 import { PriceChart } from './lib/chart.js';
 import { updateBadge } from './badge-updater.js';
@@ -63,16 +63,17 @@ class SearchHandler {
 
     try {
       this.lastSearchTime = Date.now();
-      const url = `https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`;
-      const data = await http.getJson(url);
+      const data = await coinGeckoClient.search(query);
+
+      if (data && data.error === 'API_LOCKED') {
+        this.elements.searchResults.innerHTML = `<div class="search-error">${I18N.t('rateLimitError', currentLang)}</div>`;
+        return;
+      }
+      
       this.displaySearchResults((data && data.coins) || []);
     } catch (error) {
       console.error('搜索失败:', error);
-      if (error.status === 429 || (error.message && String(error.message).includes('429'))) {
-        this.elements.searchResults.innerHTML = `<div class="search-error">${I18N.t('searchRateLimit', currentLang)}</div>`;
-      } else {
-        this.elements.searchResults.innerHTML = `<div class="search-empty">${I18N.t('searchError', currentLang)}</div>`;
-      }
+      this.elements.searchResults.innerHTML = `<div class="search-empty">${I18N.t('searchError', currentLang)}</div>`;
     }
   }
 
@@ -300,14 +301,14 @@ class CryptoApp {
           return;
         }
 
-        const geckoId = itemEl.dataset.geckoId || this.getCoinGeckoId(symbol);
-        if (!geckoId || geckoId === symbol.toLowerCase()) {
-          console.warn(`[CLICK] Invalid geckoId for ${symbol}, falling back to CoinGecko external link`);
-          this.openCoinOnCoinGecko(symbol, geckoId);
-          return;
-        }
+        const geckoId = itemEl.dataset.geckoId;
 
-        this.showCoinDetails(geckoId, symbol);
+        if (geckoId) {
+          this.showCoinDetails(geckoId, symbol);
+        } else {
+          console.warn(`[CLICK] No geckoId found in dataset for ${symbol}, falling back to CoinGecko external link`);
+          this.openCoinOnCoinGecko(symbol, symbol.toLowerCase());
+        }
       });
 
       this.elements.cryptoList.addEventListener('mouseover', (event) => {
@@ -338,7 +339,7 @@ class CryptoApp {
     document.addEventListener('click', (event) => {
       if (event.target.classList.contains('period-btn')) {
         const period = event.target.dataset.period;
-        this.updateChartPeriod(period);
+        this.updatePriceChart(period);
       }
     });
 
@@ -794,15 +795,19 @@ class CryptoApp {
     this.elements.noDataMessage.style.display = 'none';
     
     try {
-      const ids = this.settings.selectedCoins.map(coin => this.getCoinGeckoId(coin)).join(',');
-      if (!ids) {
+      const ids = this.settings.selectedCoins.map(coin => this.getCoinGeckoId(coin));
+      if (ids.length === 0) {
           this.cryptoData = [];
           this.renderCryptoData(this.settings.language);
           return;
       }
-      const url = `${Config.API_BASE_URL}/coins/markets?vs_currency=${this.settings.currency.toLowerCase()}&ids=${ids}&order=market_cap_desc&per_page=250&page=1&sparkline=false&price_change_percentage=24h`;
       
-      const data = await http.getJson(url);
+      const data = await coinGeckoClient.getMarkets(ids, this.settings.currency);
+
+      if (!data || (data && data.error === 'API_LOCKED')) {
+        this.showMessage(I18N.t('rateLimitError'), 'error');
+        return; 
+      }
       
       this.cryptoData = this.settings.selectedCoins.map(coin => {
         const geckoId = this.getCoinGeckoId(coin);
@@ -830,9 +835,7 @@ class CryptoApp {
     } catch (error) {
       console.error('[DEBUG] fetchCryptoData 错误:', error);
       this.hasError = true;
-      this.errorMessage = '获取数据失败，请稍后再试';
-      this.elements.errorMessage.textContent = this.errorMessage;
-      this.elements.errorMessage.style.display = 'block';
+      this.showMessage(I18N.t('loadingDataFailed'), 'error');
     } finally {
       this.isLoading = false;
       this.elements.loadingIndicator.style.display = 'none';
@@ -1101,23 +1104,33 @@ class CryptoApp {
          coinDetailService.getCoinHistory(coinId, currency, 7)
        ]);
        
+      if (details && details.error === 'API_LOCKED') {
+        this.showMessage(I18N.t('rateLimitError'), 'error');
+        this.showMainPage();
+        return; 
+      }
+
        if (!details || !details.symbol) {
          throw new Error('Invalid coin details received');
        }
        
        this.updateCoinDetailsUI(details);
        
-       if (this.priceChart && history && history.length > 0) {
-         this.priceChart.setData(history);
-         if (this.elements.chartLoading) {
-           this.elements.chartLoading.style.display = 'none';
-         }
-       } else if (this.priceChart) {
-         this.priceChart.showError(I18N.t('noHistoricalData'));
-         if (this.elements.chartLoading) {
-           this.elements.chartLoading.style.display = 'none';
-         }
-       }
+      if (history && history.error === 'API_LOCKED') {
+        if (this.priceChart) {
+          this.priceChart.showError(I18N.t('rateLimitError'));
+        }
+      } else if (this.priceChart && history && history.length > 0) {
+        this.priceChart.setData(history);
+        if (this.elements.chartLoading) {
+          this.elements.chartLoading.style.display = 'none';
+        }
+      } else if (this.priceChart) {
+        this.priceChart.showError(I18N.t('noHistoricalData'));
+        if (this.elements.chartLoading) {
+          this.elements.chartLoading.style.display = 'none';
+        }
+      }
        
        if (typeof this.showCoinNews === 'function') {
          this.showCoinNews([]);

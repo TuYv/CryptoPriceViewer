@@ -3,14 +3,12 @@
  * 处理币种详细信息、历史价格数据和新闻获取
  */
 
-import { http } from '../lib/http.js';
 import { Config } from '../config.js';
+import coinGeckoClient from '../clients/CoinGeckoClient.js';
 
 export class CoinDetailService {
-  constructor() {
-    this.cache = new Map();
-    this.cacheTimeout = 5 * 60 * 1000; // 5分钟缓存
-  }
+  cache = new Map();
+  cacheTimeout = 5 * 60 * 1000; // 5分钟缓存
 
   /**
    * 获取币种详细信息
@@ -26,9 +24,12 @@ export class CoinDetailService {
     }
 
     try {
-      const url = `${Config.API_BASE_URL}/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
-      const rawData = await http.getJson(url);
+      const rawData = await coinGeckoClient.getCoin(coinId);
       
+      if (rawData && rawData.error === 'API_LOCKED') {
+        return rawData;
+      }
+
       if (!rawData || !rawData.id) {
         throw new Error('Invalid coin data received from API');
       }
@@ -38,7 +39,7 @@ export class CoinDetailService {
       return data;
     } catch (error) {
       console.error('[CoinDetailService] Error fetching coin details:', error);
-      throw new Error(`Failed to fetch coin details: ${error.message}`);
+      throw error;
     }
   }
 
@@ -48,7 +49,7 @@ export class CoinDetailService {
    * @param {string} currency - 货币类型
    * @param {number} days - 天数 (1, 7, 30, 90, 365)
    */
-  async getCoinHistory(coinId, currency = 'usd', days = 7) {
+  async getCoinHistory(coinId, currency = 'usd', days = 1) {
     const cacheKey = `history-${coinId}-${currency}-${days}`;
     const cached = this.cache.get(cacheKey);
     
@@ -57,9 +58,12 @@ export class CoinDetailService {
     }
 
     try {
-      const url = `${Config.API_BASE_URL}/coins/${coinId}/market_chart?vs_currency=${currency}&days=${days}&interval=${this.getInterval(days)}`;
-      const rawData = await http.getJson(url);
+      const rawData = await coinGeckoClient.getMarketChart(coinId, currency, days);
       
+      if (rawData && rawData.error === 'API_LOCKED') {
+        return rawData;
+      }
+
       if (!rawData || !rawData.prices || !Array.isArray(rawData.prices)) {
         throw new Error('Invalid price history data received from API');
       }
@@ -69,7 +73,7 @@ export class CoinDetailService {
       return data;
     } catch (error) {
       console.error('[CoinDetailService] Error fetching price history:', error);
-      throw new Error(`Failed to fetch price history: ${error.message}`);
+      throw error;
     }
   }
 

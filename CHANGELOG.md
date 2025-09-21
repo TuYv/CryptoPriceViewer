@@ -1,6 +1,42 @@
-# Crypto Price Viewer - Changelog
+# Changelog
 
-## Version 0.0.4 (2025-09-05)
+All notable changes to this project will be documented in this file.
+
+## [0.1.0] - 2025-01-27
+
+### 🎉 New Features
+- **Coin Detail Page**: Added comprehensive coin detail view with price charts, market data, and historical information
+- **Extension Badge**: Implemented dynamic badge showing real-time price updates on extension icon
+- **Price Charts**: Integrated interactive price charts using custom Canvas-based chart library
+- **Enhanced Navigation**: Added seamless navigation between coin list and detail views
+
+### 🔧 Major Refactoring
+- **Modular Architecture**: Restructured codebase with dedicated lib modules:
+  - `js/lib/http.js`: Lightweight HTTP wrapper with unified error handling and JSON parsing
+  - `js/lib/storage.js`: Storage abstraction layer supporting both localStorage and chrome.storage
+  - `js/lib/chart.js`: Custom price chart library with Canvas rendering
+- **Service Layer**: Introduced dedicated service classes:
+  - `CoinDetailService`: Handles coin detail data fetching and formatting
+  - `BadgeUpdater`: Manages extension badge updates and price formatting
+- **Client Separation**: Improved API client architecture with better error handling and rate limiting
+- **Code Organization**: Enhanced file structure following SOLID principles with single responsibility modules
+
+### 🚀 Improvements
+- **Performance**: Optimized data fetching with intelligent caching and request scheduling
+- **User Experience**: Smoother transitions and loading states across all views
+- **Error Handling**: Comprehensive error handling with user-friendly messages
+- **Code Quality**: Reduced complexity with better separation of concerns and modular design
+
+### 🐛 Bug Fixes
+- **API Rate Limiting**: Improved handling of CoinGecko API rate limits with proper retry mechanisms
+- **Memory Management**: Fixed potential memory leaks in chart rendering and data updates
+- **Cross-browser Compatibility**: Enhanced compatibility across different browser environments
+
+### 📚 Documentation
+- **Code Documentation**: Added comprehensive inline documentation for all new modules
+- **Architecture Notes**: Updated development documentation with new architectural patterns
+
+## [0.0.4] - 2024-12-30
 
 ### New
 - One-tap coin details: Open a coin’s page on CoinGecko in a new tab, automatically matched to your language.
