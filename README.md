@@ -4,7 +4,7 @@
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Available-brightgreen)](https://chrome.google.com/webstore)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/yourusername/crypto-price-viewer)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/yourusername/crypto-price-viewer)
 
 ## 🌍 Multi-Language Documentation
 
@@ -26,6 +26,12 @@ Cryptocurrency Price Viewer is a comprehensive Chrome extension that provides re
 - **Multi-currency Support**: Display prices in USD, EUR, JPY, and more
 - **Price Trend Indicators**: Visual indicators for price movements
 - **Market Data**: Comprehensive market cap, volume, and 24h change data
+
+### 🆕 0.1.0 New Features
+- **Coin Detail Pages**: Click any coin to view detailed information, price charts, and market data
+- **Browser Badge Integration**: Extension icon displays real-time price of selected cryptocurrency
+- **Interactive Price Charts**: Visual price trend analysis with historical data
+- **Modular Architecture**: Complete code restructuring with lib layer and services separation
 
 ### 🌍 Internationalization
 - **4 Languages Supported**: 
@@ -58,10 +64,12 @@ Cryptocurrency Price Viewer is a comprehensive Chrome extension that provides re
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6+)
 - **APIs**: CoinGecko API for cryptocurrency data
-- **Storage**: Chrome Extension Storage API
-- **Architecture**: Modular ES6 classes
-- **Styling**: Modern CSS with Flexbox and Grid
-- **Internationalization**: Custom i18n implementation
+- **Storage**: Chrome Extension Storage API & Local Storage
+- **Architecture**: Layered modular design with lib/services/clients separation
+- **Background Processing**: Service Worker for badge updates and data sync
+- **Charts**: Custom chart implementation with Canvas API
+- **Styling**: Modern CSS with Flexbox, Grid, and Glassmorphism design
+- **Internationalization**: Custom i18n implementation with dynamic loading
 
 ## 📁 Project Structure
 
@@ -74,16 +82,24 @@ chromeTools/
 │   └── style.css         # Styling and themes
 ├── js/
 │   ├── popup.js          # Main application logic
+│   ├── background.js     # Service worker for badge updates
+│   ├── badge-updater.js  # Badge price update functionality
 │   ├── config.js         # Configuration and constants
 │   ├── i18n.js           # Internationalization
-│   ├── app/
-│   │   └── CryptoApp.js  # Core application class
-│   ├── services/         # API and data services
-│   │   ├── ApiService.js
-│   │   ├── NotionService.js
-│   │   └── SettingsManager.js
-│   └── ui/
-│       └── UIManager.js  # UI management
+│   ├── lib/              # 🆕 Core utility library
+│   │   ├── chart.js      # Chart rendering and data visualization
+│   │   ├── http.js       # HTTP client with error handling
+│   │   ├── storage.js    # Storage abstraction layer
+│   │   ├── dom-manager.js # DOM manipulation utilities
+│   │   ├── error-handler.js # Centralized error handling
+│   │   ├── data-formatter.js # Data formatting utilities
+│   │   └── ...           # Other utility modules
+│   ├── services/         # 🆕 Business logic services
+│   │   ├── CoinDetailService.js # Coin detail data management
+│   │   ├── NotionService.js     # Notion API integration
+│   │   └── StorageService.js    # Data persistence service
+│   └── clients/          # 🆕 External API clients
+│       └── CoinGeckoClient.js   # CoinGecko API client
 └── images/               # Icons and assets
     ├── icon16.svg
     ├── icon48.svg
