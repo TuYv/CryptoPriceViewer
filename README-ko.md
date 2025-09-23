@@ -4,7 +4,7 @@
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Available-brightgreen)](https://chrome.google.com/webstore)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/yourusername/crypto-price-viewer)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/yourusername/crypto-price-viewer)
 
 ## 🌍 다국어 문서
 

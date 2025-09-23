@@ -8,9 +8,9 @@ const ALARM_NAME = 'refreshPriceAlarm';
 // ... (所有监听器和 scheduleNextRefresh 函数保持不变) ...
 chrome.runtime.onStartup.addListener(async () => { await scheduleNextRefresh(); });
 chrome.runtime.onInstalled.addListener(async () => { await scheduleNextRefresh(); });
-chrome.storage.onChanged.addListener((changes, area) => {
+chrome.storage.onChanged.addListener(async (changes, area) => {
   if (area === 'local' && (changes.settings?.newValue?.refreshInterval !== changes.settings?.oldValue?.refreshInterval || changes.settings?.newValue?.pinnedCoin !== changes.settings?.oldValue?.pinnedCoin)) {
-    scheduleNextRefresh();
+    await scheduleNextRefresh();
   }
 });
 
