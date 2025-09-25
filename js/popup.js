@@ -625,6 +625,7 @@ class CryptoApp {
   async saveNotionConfig() {
     const notionToken = this.elements.notionToken.value.trim();
     const notionDatabaseId = this.elements.notionDatabaseId.value.trim();
+    const currentLang = this.settings.language || I18N.DEFAULT_LANGUAGE;
     
     try {
       if (notionToken) {
@@ -641,15 +642,15 @@ class CryptoApp {
       
       if (notionToken && notionDatabaseId) {
         notionService.setConfig(notionToken, notionDatabaseId);
-        this.showMessage('Notion 配置已保存', 'success');
+        this.showMessage(I18N.t('notionConfigSaved', currentLang), 'success');
       } else if (!notionToken && !notionDatabaseId) {
-        this.showMessage('Notion 配置已清除', 'info');
+        this.showMessage(I18N.t('notionConfigCleared', currentLang), 'info');
       } else {
-        this.showMessage('请填写完整的 Notion 配置信息', 'warning');
+        this.showMessage(I18N.t('notionConfigIncomplete', currentLang), 'warning');
       }
     } catch (error) {
       console.error('保存 Notion 配置失败:', error);
-      this.showMessage('保存 Notion 配置失败', 'error');
+      this.showMessage(I18N.t('notionConfigSaveFailed', currentLang), 'error');
     }
   }
 
@@ -697,15 +698,15 @@ class CryptoApp {
     const now = Date.now();
     const lastSendTime = await this.getLastFeedbackTime();
     const oneMinute = 60 * 1000;
+    const currentLang = this.settings.language || 'en';
     
     if (lastSendTime && (now - lastSendTime) < oneMinute) {
       const remainingTime = Math.ceil((oneMinute - (now - lastSendTime)) / 1000);
-      this.showMessage(`发送过于频繁，请等待 ${remainingTime} 秒后再试`, 'error');
+      this.showMessage(I18N.t('feedbackRateLimitPrefix', currentLang) + remainingTime + I18N.t('secondsSuffixRetry', currentLang), 'error');
       return;
     }
     
     const feedbackText = this.elements.feedbackText.value.trim();
-    const currentLang = this.settings.language || 'zh';
     
     if (!feedbackText) {
       this.showMessage(I18N.t('feedbackEmpty', currentLang), 'error');
@@ -726,17 +727,17 @@ class CryptoApp {
           const result = await notionService.createFeedbackPage(feedback);
           if (result) {
             await this.setLastFeedbackTime(now);
-            this.showMessage(`反馈已成功发送！反馈ID: ${feedback.id}`, 'success');
+            this.showMessage(I18N.t('feedbackSentWithIdPrefix', currentLang) + feedback.id, 'success');
           } else {
-            this.showMessage('发送失败，请稍后重试。', 'error');
+            this.showMessage(I18N.t('feedbackError', currentLang), 'error');
           }
         } catch (error) {
           console.error('发送到 Notion 失败:', error);
-          const errorMessage = error.message || error.toString() || '未知错误';
-          this.showMessage('发送失败: ' + errorMessage, 'error');
+          const errorMessage = error.message || error.toString() || I18N.t('unknownErrorShort', currentLang);
+          this.showMessage(I18N.t('feedbackSendFailedPrefix', currentLang) + errorMessage, 'error');
         }
       } else {
-        this.showMessage('请先配置 Notion 集成后再发送反馈。', 'error');
+        this.showMessage(I18N.t('notionNotConfigured', currentLang), 'error');
       }
       
       this.elements.feedbackText.value = '';
@@ -744,7 +745,7 @@ class CryptoApp {
       
     } catch (error) {
       console.error('发送反馈失败:', error);
-      this.showMessage('发送反馈失败，请稍后重试', 'error');
+      this.showMessage(I18N.t('feedbackError', currentLang), 'error');
     }
   }
 
@@ -1265,8 +1266,9 @@ class CryptoApp {
    }
 
    toggleDebugMode() {
+     const currentLang = this.settings.language || I18N.DEFAULT_LANGUAGE;
      console.log('[Debug] 启动网络调试模式');
-     this.showMessage('调试模式已启动，检查控制台输出', 'info');
+     this.showMessage(I18N.t('debugModeStarted', currentLang), 'info');
      this.runNetworkDiagnostics();
    }
 

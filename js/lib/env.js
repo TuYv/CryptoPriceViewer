@@ -1,5 +1,5 @@
-// Lightweight .env loader for browser/extension runtime
-// - Loads ".env" from the extension root (same directory level as popup.html)
+// Lightweight config loader for browser/extension runtime
+// - Loads "config.properties" from the extension root (same directory level as popup.html)
 // - Parses KEY=VALUE lines, ignores comments (#) and empty lines
 // - Exposes Env.load() and Env.get(key, defaultValue)
 // - Safe to call multiple times; subsequent calls are no-ops
@@ -12,7 +12,7 @@ export const Env = {
     if (this._loaded) return;
     try {
       // Path relative to popup.html (extension root)
-      const res = await fetch('.env', { cache: 'no-store' });
+      const res = await fetch('config.properties', { cache: 'no-store' });
       if (!res.ok) {
         this._loaded = true; // Mark as loaded even if not found; we just have no env
         return;
