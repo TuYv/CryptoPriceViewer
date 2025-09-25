@@ -140,7 +140,10 @@ export const I18N = {
       polkadot: '波卡',
       
       // Footer文本
-      dataSource: '数据来源: CoinGecko API'
+      dataSource: '数据来源: CoinGecko API',
+      
+      // Debug messages
+      debugModeStarted: '调试模式已启动，检查控制台输出'
     },
     
     en: {
@@ -266,7 +269,10 @@ export const I18N = {
       polkadot: 'Polkadot',
       
       // Footer文本
-      dataSource: 'Data Source: CoinGecko API'
+      dataSource: 'Data Source: CoinGecko API',
+      
+      // Debug messages
+      debugModeStarted: 'Debug mode started, check console output'
     },
     
     ja: {
@@ -493,7 +499,139 @@ export const I18N = {
       polkadot: 'ポルカドット',
       
       // Footer文本
-      dataSource: 'データソース: CoinGecko API'
+      dataSource: 'データソース: CoinGecko API',
+      
+      // Debug messages
+      debugModeStarted: 'デバッグモードが開始されました。コンソール出力を確認してください'
+    },
+    
+    ko: {
+      // 基础UI文本
+      appTitle: '암호화폐 가격 뷰어',
+      
+      // 通用操作
+      refresh: '새로고침',
+      settings: '설정',
+      lastUpdated: '마지막 업데이트',
+      loading: '로딩 중...',
+      noData: '데이터가 없습니다',
+      error: '로드에 실패했습니다. 나중에 다시 시도해주세요',
+      apiErrorPrefix: 'API 오류',
+      unknownErrorShort: '알 수 없는 오류',
+      unknownErrorFull: '알 수 없는 오류가 발생했습니다. 새로고침 후 다시 시도하세요.',
+      networkError: '네트워크 연결에 실패했습니다. 네트워크를 확인하세요.',
+      apiErrorGeneric: 'API 요청에 실패했습니다. 나중에 다시 시도하세요.',
+      storageError: '데이터 저장에 실패했습니다. 브라우저 설정을 확인하세요.',
+      validationError: '입력 데이터 형식이 올바르지 않습니다.',
+      authError: '인증에 실패했습니다. 다시 로그인하세요.',
+      rateLimitError: '요청이 너무 많습니다. 1분 후에 다시 시도해주세요.',
+      fetchDataFailed: '데이터를 가져오는데 실패했습니다. 나중에 다시 시도해주세요',
+      clickToOpenCoinGecko: '클릭하여 CoinGecko에서 자세한 정보를 확인하세요',
+      
+      // 搜索相关
+      searchPlaceholder: '코인 검색...',
+      searchButton: '검색',
+      search: '검색',
+      searchResults: '검색 결과',
+      addCoin: '추가',
+      add: '추가',
+      coinAdded: '추가됨',
+      added: '추가됨',
+      searchLoading: '검색 중...',
+      noSearchResults: '코인을 찾을 수 없습니다',
+      searchError: '검색에 실패했습니다. 다시 시도해주세요',
+      searchRateLimit: '검색 요청이 너무 많습니다. 잠시 후 다시 시도해주세요...',
+      
+      // 反馈相关
+      feedback: '피드백',
+      feedbackTitle: '사용자 피드백',
+      donationTip: '이 도구가 도움이 되셨다면 후원으로 응원해주세요!',
+      feedbackPlaceholder: '피드백을 입력해주세요... (연락처 정보도 포함해주세요)',
+      sendFeedback: '피드백 전송',
+      feedbackSuccess: '피드백이 성공적으로 전송되었습니다! 소중한 의견 감사합니다.',
+      feedbackError: '피드백 전송에 실패했습니다. 나중에 다시 시도해주세요.',
+      feedbackEmpty: '피드백 내용을 입력해주세요',
+      feedbackRateLimitPrefix: '너무 빈번합니다. ',
+      secondsSuffixRetry: ' 초 후에 다시 시도하세요',
+      feedbackSentWithIdPrefix: '피드백이 성공적으로 전송되었습니다! ID: ',
+      feedbackSendFailedPrefix: '전송 실패: ',
+      notionNotConfigured: '피드백을 보내기 전에 Notion 연동을 설정해주세요.',
+      notionConfigSaved: 'Notion 설정이 저장되었습니다',
+      notionConfigCleared: 'Notion 설정이 삭제되었습니다',
+      notionConfigIncomplete: 'Notion 설정 정보를 완전히 입력해주세요',
+      notionConfigSaveFailed: 'Notion 설정 저장에 실패했습니다',
+      justNow: '방금',
+      minutesAgoSuffix: '분 전',
+      hoursAgoSuffix: '시간 전',
+      daysAgoSuffix: '일 전',
+      coinSelection: '코인 선택',
+      refreshInterval: '새로고침 간격',
+      currency: '표시 통화',
+      language: '언어',
+      coinManagement: '코인 관리',
+      addedCoins: '추가된 코인',
+      noCoinsAdded: '아직 추가된 코인이 없습니다',
+      removeCoin: '코인 삭제',
+      save: '저장',
+      cancel: '취소',
+      
+      // 刷新间隔选项
+      interval30s: '30초',
+      interval1m: '1분',
+      interval5m: '5분',
+      interval10m: '10분',
+      interval30m: '30분',
+      refreshOff: '자동 새로고침 끄기',
+      
+      // 货币选项
+      currencyUSD: '미국 달러 (USD)',
+      currencyCNY: '중국 위안 (CNY)',
+      currencyEUR: '유로 (EUR)',
+      currencyJPY: '일본 엔 (JPY)',
+      currencyKRW: '한국 원 (KRW)',
+      
+      // 币种详情页面
+      pinTooltip: '클릭하여 가격을 확장 아이콘에 고정',
+      removeCoinTooltip: '코인 삭제',
+      back: '뒤로',
+      currentPrice: '현재 가격',
+      change24h: '24h 변동',
+      marketCap: '시가총액',
+      volume24h: '24h 거래량',
+      circulatingSupply: '유통 공급량',
+      totalSupply: '총 공급량',
+      allTimeHigh: '사상 최고가',
+      allTimeLow: '사상 최저가',
+      relatedNews: '관련 뉴스',
+      priceChart: '가격 차트',
+      marketStats: '시장 통계',
+      noNews: '뉴스가 없습니다',
+      invalidCoinId: '잘못된 코인 ID',
+      loadingCoinDetailsFailed: '코인 세부 정보 로드에 실패했습니다. 나중에 다시 시도해주세요',
+      coinNotFound: '코인 정보를 찾을 수 없습니다. 코인 ID를 확인해주세요',
+      networkRequestTimeout: '네트워크 요청 시간 초과. 네트워크 연결을 확인해주세요',
+      networkConnectionFailed: '네트워크 연결에 실패했습니다. 네트워크 설정을 확인해주세요',
+      invalidCoinData: '잘못된 코인 데이터 형식입니다. 나중에 다시 시도해주세요',
+      apiServiceUnavailable: 'API 서비스를 일시적으로 사용할 수 없습니다. 나중에 다시 시도해주세요',
+      chartDataLoadingFailed: '차트 데이터 로드에 실패했습니다',
+      noHistoricalData: '과거 데이터가 없습니다',
+      loading: '로딩 중...',
+      
+      // 币种名称
+      bitcoin: '비트코인',
+      ethereum: '이더리움',
+      binancecoin: '바이낸스 코인',
+      solana: '솔라나',
+      ripple: '리플',
+      cardano: '카르다노',
+      dogecoin: '도지코인',
+      polkadot: '폴카닷',
+      
+      // Footer文本
+      dataSource: '데이터 소스: CoinGecko API',
+      
+      // Debug messages
+      debugModeStarted: '디버그 모드가 시작되었습니다. 콘솔 출력을 확인하세요'
     }
   },
 
