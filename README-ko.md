@@ -1,225 +1,84 @@
-# 🚀 암호화폐 가격 뷰어
+# Crypto Price Viewer
 
-> 실시간 암호화폐 가격 모니터링, 다국어 지원, 아름다운 UI 디자인을 갖춘 현대적인 Chrome 확장 프로그램.
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Available-brightgreen)](https://chrome.google.com/webstore)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
+[English](./README.md) · [中文](./README-zh.md) · [日本語](./README-ja.md) · **한국어**
 
-## 🌍 다국어 문서
+툴바 아이콘을 누르면 관심 코인의 시세를 바로 보여 주는 Chrome 확장 프로그램입니다. 코인 하나를 툴바 아이콘에 고정하면 열지 않아도 가격을 볼 수 있습니다. 암호화폐 뉴스 타임라인도 함께 제공합니다.
 
-- 🇺🇸 **[English](./README.md)**
-- 🇨🇳 **[中文](./README-zh.md)**
-- 🇯🇵 **[日本語](./README-ja.md)**
-- 🇰🇷 **한국어** (현재)
+![시세](./store-assets/screenshots/en/1-market.png)
 
-## 📖 개요
+## 기능
 
-암호화폐 가격 뷰어는 현대적이고 사용자 친화적인 인터페이스로 실시간 암호화폐 가격 모니터링을 제공하는 포괄적인 Chrome 확장 프로그램입니다. 좋아하는 암호화폐를 추적하고, 즉시 가격 업데이트를 받고, 관심 목록을 쉽게 관리하세요.
+**시세**
+- 코인마다 고유 브랜드 색상의 타일로 표시하고, 아래에 최근 7일 추이를 그립니다
+- 툴바에 고정한 코인은 한 줄 전체를 차지합니다
+- 타일을 끌어서 순서를 바꿀 수 있습니다. 타일의 “⋯” 메뉴에서 고정, 자세히 보기, 맨 앞으로 이동, 삭제를 할 수 있고, 삭제는 5초 안에 실행 취소할 수 있습니다
+- 검색은 입력하는 대로 결과를 보여 주며 ↑↓로 선택, Enter로 추가합니다
+- CoinGecko가 요청을 제한하거나 오프라인일 때도 마지막 가격을 몇 시 기준인지와 함께 계속 보여 줍니다
 
-## ✨ 기능
+**코인 상세**
+- 1일·7일·30일·90일·1년 가격 차트. 기간 중 최고가와 최저가를 표시하고, 마우스를 올리면 그 시점의 가격을 보여 줍니다
+- 시가총액, 24시간 거래량, 유통량, 역대 최고가(와 현재 얼마나 낮은지), 시가총액 순위
+- 해당 코인 관련 뉴스
 
-### 🔥 핵심 기능
-- **실시간 가격 모니터링**: 자동 업데이트되는 실시간 암호화폐 가격
-- **스마트 검색**: 자동완성 제안이 있는 지능형 암호화폐 검색
-- **동적 코인 관리**: 모든 암호화폐를 동적으로 추가/제거
-- **다중 통화 지원**: USD, CNY, EUR 중 하나로 가격 표시
-- **가격 추세 지표**: 가격 변동의 시각적 지표
-- **시장 데이터**: 포괄적인 시가총액, 거래량, 24시간 변동 데이터
+**툴바 아이콘**
+- 고정한 코인의 가격 또는 24시간 등락률을 표시합니다
+- 색상은 등락 색상 설정을 따르며, 아이콘에 마우스를 올리면 코인 이름·가격·등락률이 보입니다
+- 설정한 간격으로 백그라운드에서 새로고침합니다
 
-### 🌍 국제화
-- **4개 언어 지원**: 
-  - 🇨🇳 중국어 (简体中文)
-  - 🇺🇸 영어
-  - 🇯🇵 일본어 (日本語)
-  - 🇰🇷 한국어
-- **즉시 언어 전환**: 페이지 새로고침 없이 언어 변경
-- **지속적인 설정**: 세션 간 언어 선택 기억
+**뉴스**
+- 날짜별로 묶은 타임라인. 내 코인이나 특정 코인 관련 뉴스만 볼 수 있습니다
+- 여러 사이트가 같은 소식을 보도하면 가장 먼저 나온 한 건만 보여 줍니다
+- 처음 열 때 어떤 사이트에 접속하는지 설명하고, 허용한 뒤에만 가져옵니다
 
-### 🎨 현대적 UI/UX
-- **글래스모피즘 디자인**: 현대적이고 반투명한 인터페이스
-- **반응형 레이아웃**: 다양한 화면 크기에 적응
-- **부드러운 애니메이션**: CSS 전환 및 호버 효과
-- **직관적인 내비게이션**: 명확한 섹션이 있는 탭 기반 인터페이스
+**설정**
+- 표시 통화: 미국 달러, 중국 위안, 유로
+- 언어: 简体中文, English, 日本語, 한국어 (기본값은 브라우저 설정)
+- 등락 색상: 빨강 상승·초록 하락, 초록 상승·빨강 하락, 빨강 상승·파랑 하락. 기본값은 언어별 관례를 따릅니다(한국어는 국내 거래소처럼 빨강 상승·파랑 하락)
+- 화면 모드: 시스템, 라이트, 다크
+- 무료 CoinGecko API 키를 등록하면 요청 제한에 덜 걸립니다
+- 코인 목록은 같은 Chrome 계정으로 로그인한 컴퓨터끼리 동기화됩니다
 
-### ⚙️ 고급 설정
-- **사용자 정의 새로고침 간격**: 선호하는 업데이트 빈도 설정
-- **로컬 저장소**: 개인정보 보호를 위해 모든 데이터를 로컬에 저장
+## 설치
 
-### 💬 사용자 피드백 시스템
-- **GitHub 피드백**: 피드백 버튼을 누르면 프로젝트의 GitHub Issues 페이지가 열립니다
-- **기부 지원**: BNB 및 SOL 기부 QR 코드
+- **Chrome 웹 스토어**: “Crypto Price Viewer”를 검색하세요.
+- **직접 빌드** (Node.js 22 이상 필요):
 
-## 🛠️ 기술 스택
+  ```bash
+  git clone https://github.com/TuYv/CryptoPriceViewer.git
+  cd CryptoPriceViewer
+  npm install
+  npm run build
+  ```
 
-- **프론트엔드**: HTML5, CSS3, 바닐라 JavaScript (ES6+)
-- **API**: 암호화폐 데이터용 CoinGecko API
-- **저장소**: Chrome 확장 저장소 API
-- **아키텍처**: 모듈식 ES6 클래스
-- **스타일링**: Flexbox 및 Grid를 사용한 현대적 CSS
-- **국제화**: 사용자 정의 i18n 구현
+  `chrome://extensions`를 열고 개발자 모드를 켠 뒤 “압축해제된 확장 프로그램을 로드합니다”를 눌러 `.output/chrome-mv3` 폴더를 선택합니다.
 
-## 📁 프로젝트 구조
+0.1.x에서 업데이트하면 코인 목록, 고정한 코인, 통화, 언어, 새로고침 간격이 그대로 유지됩니다.
 
-```
-CryptoPriceViewer/
-├── manifest.json          # 확장 프로그램 구성
-├── popup.html             # 메인 화면
-├── privacy-policy.html    # Chrome Web Store용 개인정보 보호정책
-├── css/
-│   └── style.css          # 스타일
-├── js/
-│   ├── popup.js           # 팝업 메인 로직
-│   ├── background.js      # Service Worker: 아이콘에 고정한 코인의 배지 가격 새로고침
-│   ├── badge-updater.js   # 배지 텍스트와 색상
-│   ├── config.js          # 상수 및 기본 설정
-│   ├── i18n.js            # 번역 (zh / en / ja / ko)
-│   ├── lib/
-│   │   ├── chart.js       # Canvas 가격 차트
-│   │   ├── storage.js     # chrome.storage / localStorage 래퍼
-│   │   └── deep-storage.js # 경로로 중첩된 값 읽기/쓰기
-│   ├── services/
-│   │   ├── CoinDetailService.js # 코인 상세 정보와 가격 기록 (캐시 포함)
-│   │   └── StorageService.js    # API 요청 제한 상태
-│   └── clients/
-│       └── CoinGeckoClient.js   # CoinGecko API 클라이언트
-└── images/                # 아이콘 및 기부용 QR 코드
-```
+## 데이터 출처
 
-## 🚀 설치
+- **시세**: [CoinGecko](https://www.coingecko.com/) 공개 API
+- **뉴스**: [PANews](https://www.panewslab.com/), [Odaily](https://www.odaily.news/), [Decrypt](https://decrypt.co/). 확장 프로그램은 제목과 링크만 보여 주고, 기사는 원래 사이트에서 열립니다. 기사의 저작권은 각 사이트에 있습니다. 설정 › 뉴스 출처에서 출처별로 끌 수 있습니다.
 
-### Chrome Web Store에서 설치 (권장)
-1. [Chrome Web Store 페이지](https://chrome.google.com/webstore) 방문 (곧 출시)
-2. "Chrome에 추가" 클릭
-3. 설치 확인
+## 개인정보
 
-### 수동 설치 (개발자 모드)
-1. 이 저장소 복제:
-   ```bash
-   git clone https://github.com/TuYv/CryptoPriceViewer.git
-   ```
-2. Chrome을 열고 `chrome://extensions/`로 이동
-3. 오른쪽 상단에서 "개발자 모드" 활성화
-4. "압축해제된 확장 프로그램 로드"를 클릭하고 프로젝트 폴더 선택
-5. 확장 프로그램이 Chrome 도구 모음에 나타납니다
+- 개인정보를 수집하거나 전송하지 않으며, 분석 도구나 광고가 없습니다
+- 설정은 Chrome 기본 동기화 저장소에 저장되고, 내 Chrome 계정 안에서만 동기화됩니다
+- CoinGecko API 키는 이 컴퓨터에만 저장됩니다
+- 접속하는 곳은 CoinGecko와 사용자가 허용한 뉴스 사이트뿐입니다
 
-## 📱 사용법
+자세한 내용은 [개인정보처리방침](./privacy-policy.html)을 참고하세요.
 
-### 시작하기
-1. **확장 프로그램 아이콘 클릭** Chrome 도구 모음에서
-2. **암호화폐 검색** 검색 바 사용
-3. **코인 추가** "+" 버튼을 클릭하여 관심 목록에 추가
-4. **가격 모니터링** 자동 업데이트로 실시간 가격 확인
+## 피드백
 
-### 주요 기능
-- **검색**: 암호화폐 이름 또는 기호 입력
-- **추가/제거**: 관심 목록을 쉽게 관리
-- **설정**: 언어, 통화, 새로고침 빈도 사용자 정의
-- **피드백**: 생각과 제안 공유
+문제 신고나 제안은 [GitHub Issues](https://github.com/TuYv/CryptoPriceViewer/issues)에 남겨 주세요.
 
-## 🔧 구성
+## 개발
 
-### API 구성
-확장 프로그램은 암호화폐 데이터에 CoinGecko API를 사용합니다. 기본 사용에는 API 키가 필요하지 않습니다.
+[DEVELOPMENT.md](./DEVELOPMENT.md)를 참고하세요(중국어).
 
-### 사용자 정의
-- **언어**: 지원되는 4개 언어 중 선택
-- **통화**: 선호하는 법정 통화 선택
-- **새로고침 빈도**: 업데이트 간격 설정 (끄기, 30초, 1분, 5분, 10분)
+## 라이선스
 
-## 🤝 기여
-
-기여를 환영합니다! 다음 단계를 따라주세요:
-
-1. **저장소 포크**
-2. **기능 브랜치 생성**: `git checkout -b feature/amazing-feature`
-3. **변경사항 커밋**: `git commit -m 'Add amazing feature'`
-4. **브랜치에 푸시**: `git push origin feature/amazing-feature`
-5. **풀 리퀘스트 열기**
-
-### 개발 환경 설정
-```bash
-# 저장소 복제
-git clone https://github.com/TuYv/CryptoPriceViewer.git
-
-# 프로젝트 디렉토리로 이동
-cd CryptoPriceViewer
-
-# 개발 서버 시작 (선택사항)
-python3 -m http.server 8080
-```
-
-### 코드 스타일
-- ES6+ 기능 사용
-- 모듈식 아키텍처 따르기
-- 복잡한 로직에 주석 추가
-- 일관된 들여쓰기 유지
-- 다양한 브라우저에서 테스트
-
-## 🐛 버그 리포트 및 기능 요청
-
-- **버그 리포트**: [GitHub Issues](https://github.com/TuYv/CryptoPriceViewer/issues)에 등록해주세요
-- **기능 요청**: 마찬가지로 GitHub Issues에 등록해주세요
-- **보안 문제**: GitHub Issues에 등록해주세요 (비밀 키나 개인 정보는 적지 마세요)
-
-## 📄 개인정보 보호정책
-
-귀하의 개인정보를 진지하게 생각합니다. 데이터 처리 방법을 이해하려면 전체 [개인정보 보호정책](./privacy-policy.html)을 읽어보세요.
-
-**주요 사항**:
-- ✅ 모든 데이터는 브라우저에 로컬로 저장
-- ✅ 개인 정보 수집 안 함
-- ✅ 추적 또는 분석 없음
-- ✅ 네트워크 요청은 CoinGecko 시세 데이터 요청뿐입니다
-
-## 📜 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 라이선스됩니다 - 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
-
-## 🙏 감사의 말
-
-- **CoinGecko**: 우수한 암호화폐 API 제공
-- **Chrome 확장 팀**: 강력한 확장 플랫폼 제공
-- **오픈 소스 커뮤니티**: 영감과 모범 사례 제공
-- **기여자**: 이 프로젝트 개선을 도와주는 모든 분들께 감사
-
-## 📊 로드맵
-
-### 버전 1.1 (곧 출시)
-- [ ] 손익 계산이 포함된 포트폴리오 추적
-- [ ] 가격 알림 및 알림
-- [ ] 과거 가격 차트
-- [ ] 고급 필터링 옵션
-
-### 버전 1.2 (미래)
-- [ ] 뉴스 통합
-- [ ] DeFi 프로토콜 지원
-- [ ] NFT 플로어 가격 추적
-- [ ] 소셜 기능 및 관심 목록 공유
-
-### 버전 2.0 (장기)
-- [ ] 모바일 앱 컴패니언
-- [ ] 고급 분석 대시보드
-- [ ] 타사 통합 API
-- [ ] 프리미엄 기능
-
-## 📞 지원
-
-- **확장 프로그램 피드백**: 확장 프로그램의 피드백 버튼으로 GitHub Issues를 엽니다
-- **GitHub 이슈**: 버그나 기능에 대한 이슈 생성
-
-## 🌟 지원 보여주기
-
-이 프로젝트가 도움이 된다면 다음을 고려해 주세요:
-- ⭐ 이 저장소에 별표 주기
-- 🐛 버그 신고
-- 💡 새로운 기능 제안
-- 🤝 코드 기여
-- 💰 개발 지원 (확장 프로그램 내 기부 QR 코드)
-
----
-
-<div align="center">
-  <p>암호화폐 커뮤니티를 위해 ❤️로 제작</p>
-  <p>© 2024 암호화폐 가격 뷰어. 모든 권리 보유.</p>
-</div>
+[MIT](./LICENSE)

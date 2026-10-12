@@ -1,233 +1,84 @@
-# 🚀 加密货币价格查看器
+# Crypto Price Viewer
 
-> 一个现代化的Chrome扩展程序，提供实时加密货币价格监控，支持多语言和精美的UI设计。
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Available-brightgreen)](https://chrome.google.com/webstore)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
+[English](./README.md) · **中文** · [日本語](./README-ja.md) · [한국어](./README-ko.md)
 
-## 🌍 多语言文档
+一个 Chrome 扩展：点开工具栏图标就能看到自选币的行情，还可以把一个币的价格固定在工具栏图标上，不用打开也能看到。另外附带一条币圈新闻时间线。
 
-- 🇺🇸 **[English](./README.md)**
-- 🇨🇳 **中文** (当前)
-- 🇯🇵 **[日本語](./README-ja.md)**
-- 🇰🇷 **[한국어](./README-ko.md)**
+![行情页](./store-assets/screenshots/zh/1-market.png)
 
-## 📖 项目概述
+## 功能
 
-加密货币价格查看器是一个功能全面的Chrome扩展程序，提供实时加密货币价格监控，拥有现代化、用户友好的界面。轻松跟踪您喜爱的加密货币，获取即时价格更新，并便捷管理您的观察列表。
+**行情**
+- 每个币用自己的品牌色显示成一个色块，下面画着近 7 天的走势
+- 固定到工具栏的币占一整行
+- 拖动色块调整顺序；色块右上角的“⋯”菜单可以固定、查看详情、移到最前、删除，删除后 5 秒内可以撤销
+- 搜索框边输入边出结果，可以用上下键选择、回车添加
+- 被 CoinGecko 限速或者断网时，继续显示上一次的价格，并写明是几点的价格
 
-## ✨ 功能特性
+**币种详情**
+- 1 天、7 天、30 天、90 天、1 年的价格图表，标出这段时间的最高和最低，鼠标移上去显示那个时间点的价格
+- 市值、24 小时成交量、流通量、历史最高（以及现在比最高低多少）、市值排名
+- 和这个币相关的新闻
 
-### 🔥 核心功能
-- **实时价格监控**: 实时加密货币价格，自动更新
-- **智能搜索**: 智能加密货币搜索，支持自动完成建议
-- **动态币种管理**: 动态添加/删除任何加密货币
-- **多货币支持**: 可用美元（USD）、人民币（CNY）或欧元（EUR）显示价格
-- **价格趋势指标**: 价格变动的可视化指标
-- **市场数据**: 全面的市值、交易量和24小时变化数据
+**工具栏图标**
+- 显示固定币的价格或者 24 小时涨跌幅
+- 颜色跟着涨跌颜色设置走；鼠标停在图标上显示币名、价格和涨跌幅
+- 后台按设置的间隔自动刷新
 
-### 🆕 0.1.0 版本新功能
-- **币种详情页面**: 点击任意币种查看详细信息、价格图表和市场数据
-- **浏览器徽章集成**: 扩展图标显示选定加密货币的实时价格
-- **交互式价格图表**: 可视化价格趋势分析和历史数据
-- **模块化架构**: 完整代码重构，采用lib层和services分离设计
+**资讯**
+- 按天分组的新闻时间线，可以只看提到自选币的，或者只看某一个币的
+- 几家网站报道同一件事时只显示最早的一条
+- 第一次打开时会先说明要访问哪些网站，你同意后才开始抓取
 
-### 🌍 国际化支持
-- **支持4种语言**: 
-  - 🇨🇳 中文（简体中文）
-  - 🇺🇸 英语
-  - 🇯🇵 日语（日本語）
-  - 🇰🇷 韩语（한국어）
-- **即时语言切换**: 无需重新加载页面即可切换语言
-- **持久化偏好**: 语言选择在会话间保持
+**设置**
+- 显示货币：美元、人民币、欧元
+- 语言：简体中文、English、日本語、한국어，默认跟随浏览器
+- 涨跌颜色：红涨绿跌、绿涨红跌、红涨蓝跌，默认按语言的习惯（中文红涨绿跌，韩文红涨蓝跌，日文和英文绿涨红跌）
+- 外观：跟随系统、浅色、深色
+- 可以填自己的 CoinGecko 免费密钥，减少被限速的情况
+- 自选列表在登录同一个 Chrome 账号的电脑之间同步
 
-### 🎨 现代化UI/UX
-- **玻璃拟态设计**: 现代化、半透明界面
-- **响应式布局**: 适应不同屏幕尺寸
-- **流畅动画**: CSS过渡和悬停效果
-- **直观导航**: 基于标签的界面，清晰的分区
+## 安装
 
-### ⚙️ 高级设置
-- **可自定义刷新间隔**: 设置您偏好的更新频率
-- **本地存储**: 所有数据本地存储，保护隐私
+- **Chrome 网上应用店**：搜索 “Crypto Price Viewer”。
+- **自己构建**：需要 Node.js 22 或更新版本。
 
-### 💬 用户反馈系统
-- **GitHub 反馈**: 点击“反馈”按钮打开项目的 GitHub Issues 页面
-- **捐赠支持**: BNB和SOL捐赠二维码
+  ```bash
+  git clone https://github.com/TuYv/CryptoPriceViewer.git
+  cd CryptoPriceViewer
+  npm install
+  npm run build
+  ```
 
-## 🛠️ 技术栈
+  打开 `chrome://extensions`，开启“开发者模式”，点“加载已解压的扩展程序”，选择 `.output/chrome-mv3` 文件夹。
 
-- **前端**: HTML5, CSS3, 原生JavaScript (ES6+)
-- **API**: CoinGecko API 获取加密货币数据
-- **存储**: Chrome扩展存储API & 本地存储
-- **架构**: 分层模块化设计，lib/services/clients分离
-- **后台处理**: Service Worker用于徽章更新和数据同步
-- **图表**: 基于Canvas API的自定义图表实现
-- **样式**: 现代CSS，使用Flexbox、Grid和玻璃拟态设计
-- **国际化**: 自定义i18n实现，支持动态加载
+从 0.1.x 升级时，自选币、固定的币、货币、语言和刷新间隔都会自动保留。
 
-## 📁 项目结构
+## 数据从哪里来
 
-```
-CryptoPriceViewer/
-├── manifest.json          # 扩展配置
-├── popup.html             # 主界面
-├── privacy-policy.html    # 提交 Chrome Web Store 用的隐私政策
-├── css/
-│   └── style.css          # 样式
-├── js/
-│   ├── popup.js           # 弹出窗口的主逻辑
-│   ├── background.js      # Service Worker：刷新固定到图标上的币种价格
-│   ├── badge-updater.js   # 图标徽章的文字和颜色
-│   ├── config.js          # 常量和默认设置
-│   ├── i18n.js            # 翻译文本（zh / en / ja / ko）
-│   ├── lib/
-│   │   ├── chart.js       # Canvas 价格图表
-│   │   ├── storage.js     # 对 chrome.storage / localStorage 的封装
-│   │   └── deep-storage.js # 按路径读写嵌套的值
-│   ├── services/
-│   │   ├── CoinDetailService.js # 币种详情和历史价格，带缓存
-│   │   └── StorageService.js    # 记录 API 限流状态
-│   └── clients/
-│       └── CoinGeckoClient.js   # CoinGecko API 客户端
-└── images/                # 图标和捐赠二维码
-```
+- **行情**：[CoinGecko](https://www.coingecko.com/) 的公共接口。
+- **新闻**：[PANews](https://www.panewslab.com/)、[Odaily 星球日报](https://www.odaily.news/)、[Decrypt](https://decrypt.co/)。扩展只显示标题和链接，点进去在原网站阅读，内容版权归各网站所有。每个来源都可以在“设置 › 资讯来源”里单独关掉。
 
-## 🚀 安装方法
+## 隐私
 
-### 从Chrome Web Store安装（推荐）
-1. 访问[Chrome Web Store页面](https://chrome.google.com/webstore)（即将推出）
-2. 点击"添加至Chrome"
-3. 确认安装
+- 不收集、不上传任何个人信息，没有统计和广告
+- 设置保存在 Chrome 自带的同步存储里，只会在你自己的 Chrome 账号下同步
+- CoinGecko 密钥只保存在这台电脑上
+- 只访问 CoinGecko，以及你同意过的新闻网站
 
-### 手动安装（开发者模式）
-1. 克隆此仓库：
-   ```bash
-   git clone https://github.com/TuYv/CryptoPriceViewer.git
-   ```
-2. 打开Chrome并导航至`chrome://extensions/`
-3. 在右上角启用"开发者模式"
-4. 点击"加载已解压的扩展程序"并选择项目文件夹
-5. 扩展程序将出现在您的Chrome工具栏中
+完整内容见[隐私政策](./privacy-policy.html)。
 
-## 📱 使用方法
+## 反馈
 
-### 快速开始
-1. **点击扩展图标** 在Chrome工具栏中
-2. **搜索加密货币** 使用搜索栏
-3. **添加币种** 点击"+"按钮将币种添加到观察列表
-4. **监控价格** 实时自动更新价格
+遇到问题或有建议，请到 [GitHub Issues](https://github.com/TuYv/CryptoPriceViewer/issues) 提交。
 
-### 主要功能
-- **搜索**: 输入加密货币名称或符号
-- **添加/删除**: 轻松管理您的观察列表
-- **设置**: 自定义语言、货币和刷新频率
-- **反馈**: 分享您的想法和建议
+## 开发
 
-## 🔧 配置
+见 [DEVELOPMENT.md](./DEVELOPMENT.md)。
 
-### API配置
-扩展使用CoinGecko API获取加密货币数据。基本使用无需API密钥。
+## 许可证
 
-### 自定义设置
-- **语言**: 从4种支持的语言中选择
-- **货币**: 选择您偏好的法定货币
-- **刷新频率**: 设置更新间隔（关闭、30秒、1分钟、5分钟、10分钟）
-
-## 🤝 贡献
-
-我们欢迎贡献！请按照以下步骤：
-
-1. **Fork仓库**
-2. **创建功能分支**: `git checkout -b feature/amazing-feature`
-3. **提交更改**: `git commit -m 'Add amazing feature'`
-4. **推送到分支**: `git push origin feature/amazing-feature`
-5. **打开Pull Request**
-
-### 开发环境设置
-```bash
-# 克隆仓库
-git clone https://github.com/TuYv/CryptoPriceViewer.git
-
-# 导航到项目目录
-cd CryptoPriceViewer
-
-# 启动开发服务器（可选）
-python3 -m http.server 8080
-```
-
-### 代码规范
-- 使用ES6+特性
-- 遵循模块化架构
-- 为复杂逻辑添加注释
-- 保持一致的缩进
-- 在不同浏览器中测试
-
-## 🐛 Bug报告和功能请求
-
-- **Bug报告**: 在 [GitHub Issues](https://github.com/TuYv/CryptoPriceViewer/issues) 提交
-- **功能请求**: 同样在 GitHub Issues 提交
-- **安全问题**: 在 GitHub Issues 提交（不要贴出密钥或个人信息）
-
-## 📄 隐私政策
-
-我们认真对待您的隐私。阅读我们完整的[隐私政策](./privacy-policy.html)了解我们如何处理您的数据。
-
-**要点**:
-- ✅ 所有数据本地存储在您的浏览器中
-- ✅ 不收集个人信息
-- ✅ 无跟踪或分析
-- ✅ 唯一的网络请求是向 CoinGecko 获取行情数据
-
-## 📜 许可证
-
-本项目采用MIT许可证 - 查看[LICENSE](LICENSE)文件了解详情。
-
-## 🙏 致谢
-
-- **CoinGecko**: 提供优秀的加密货币API
-- **Chrome扩展团队**: 提供强大的扩展平台
-- **开源社区**: 提供灵感和最佳实践
-- **贡献者**: 感谢所有帮助改进此项目的人
-
-## 📊 路线图
-
-### 版本1.1（即将推出）
-- [ ] 投资组合跟踪，包含盈亏计算
-- [ ] 价格警报和通知
-- [ ] 历史价格图表
-- [ ] 高级筛选选项
-
-### 版本1.2（未来）
-- [ ] 新闻集成
-- [ ] DeFi协议支持
-- [ ] NFT底价跟踪
-- [ ] 社交功能和观察列表分享
-
-### 版本2.0（长期）
-- [ ] 移动应用伴侣
-- [ ] 高级分析仪表板
-- [ ] 第三方集成API
-- [ ] 高级功能
-
-## 📞 支持
-
-- **扩展反馈**: 点击扩展里的“反馈”按钮打开 GitHub Issues
-- **GitHub Issues**: 为bug或功能创建issue
-
-## 🌟 支持我们
-
-如果您觉得这个项目有帮助，请考虑：
-- ⭐ 为此仓库点星
-- 🐛 报告bug
-- 💡 建议新功能
-- 🤝 贡献代码
-- 💰 支持开发（扩展中的捐赠二维码）
-
----
-
-<div align="center">
-  <p>用❤️为加密货币社区制作</p>
-  <p>© 2024 加密货币价格查看器。保留所有权利。</p>
-</div>
+[MIT](./LICENSE)

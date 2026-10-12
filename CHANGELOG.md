@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2026-10-12
+
+A complete rewrite of the extension: new design, new code, new features. Your coins, pinned coin, currency, language and refresh interval are kept when you upgrade from 0.1.x.
+
+### New
+- A new design: each coin is a tile in its own brand color with a 7-day trend line, in light and dark themes
+- Drag tiles to reorder them; each tile's “⋯” menu can pin it, open details, move it to the top or remove it, with 5 seconds to undo
+- Search with keyboard support (↑ ↓ to choose, Enter to add) that shows each coin's market cap rank
+- Coin details: charts for 1 day to 1 year with the high and low marked, a price tooltip, and market cap, volume, supply, all-time high and rank
+- A crypto news timeline from PANews, Odaily and Decrypt, grouped by day and filterable by coin. Stories reported by several sites are shown once. The extension only visits these sites after you allow it
+- The toolbar icon can show the pinned coin's price or its 24h change, and shows the coin, price and change when you hover it
+- Price colors: red up / green down, green up / red down, or red up / blue down, defaulting to what's usual for your language
+- Optional free CoinGecko API key, checked before it's saved
+- Your settings sync across computers signed in to the same Chrome account
+
+### Improvements
+- All requests go through the background script, are queued under CoinGecko's rate limit, and are cached. Opening the popup shows cached prices at once
+- When CoinGecko limits requests or you're offline, the last prices stay on screen with the time they're from
+- Coin icons fall back to the coin's initial when they can't be loaded
+- No new required permissions: storage, alarms and api.coingecko.com, as before
+
 ## [0.1.3] - 2026-10-12
 
 ### Fixes
