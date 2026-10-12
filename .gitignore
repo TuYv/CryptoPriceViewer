@@ -1,4 +1,12 @@
 /.idea/
-config.properties
 .DS_Store
 *.zip
+
+# 依赖和构建产物
+node_modules/
+.output/
+.wxt/
+
+# 测试结果
+test-results/
+playwright-report/

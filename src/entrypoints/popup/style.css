@@ -1,0 +1,95 @@
+@import "tailwindcss";
+@import "@fontsource-variable/figtree";
+
+/* 设计稿 C（币色）的颜色。默认跟随系统深浅色，设置里选了固定外观时 html 上会有 data-theme */
+:root {
+  color-scheme: light;
+  --c-bg: #ffffff;
+  --c-ink: #15171c;
+  --c-sub: #6b7080;
+  --c-soft: #f3f4f7;
+  --c-line: #d8dbe2;
+  --c-red: #e5383b;
+  --c-green: #12a26e;
+  --c-tabbar: #15171c;
+  --c-tabbar-fg: #a3a8b4;
+  --c-tabbar-active: #ffffff;
+  --c-tabbar-active-fg: #15171c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --c-bg: #17191e;
+    --c-ink: #f1f2f5;
+    --c-sub: #9ca2af;
+    --c-soft: #252830;
+    --c-line: #3b3f49;
+    --c-red: #ff6166;
+    --c-green: #2fd08e;
+    --c-tabbar: #f1f2f5;
+    --c-tabbar-fg: #5f6573;
+    --c-tabbar-active: #17191e;
+    --c-tabbar-active-fg: #f1f2f5;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-bg: #17191e;
+  --c-ink: #f1f2f5;
+  --c-sub: #9ca2af;
+  --c-soft: #252830;
+  --c-line: #3b3f49;
+  --c-red: #ff6166;
+  --c-green: #2fd08e;
+  --c-tabbar: #f1f2f5;
+  --c-tabbar-fg: #5f6573;
+  --c-tabbar-active: #17191e;
+  --c-tabbar-active-fg: #f1f2f5;
+}
+
+/* 涨跌颜色：默认绿涨红跌，设置为红涨绿跌时 html 上有 data-updown="red" */
+:root {
+  --c-up: var(--c-green);
+  --c-down: var(--c-red);
+}
+:root[data-updown="red"] {
+  --c-up: var(--c-red);
+  --c-down: var(--c-green);
+}
+
+@theme inline {
+  --color-bg: var(--c-bg);
+  --color-ink: var(--c-ink);
+  --color-sub: var(--c-sub);
+  --color-soft: var(--c-soft);
+  --color-line: var(--c-line);
+  --color-up: var(--c-up);
+  --color-down: var(--c-down);
+  --color-tabbar: var(--c-tabbar);
+  --color-tabbar-fg: var(--c-tabbar-fg);
+  --color-tabbar-active: var(--c-tabbar-active);
+  --color-tabbar-active-fg: var(--c-tabbar-active-fg);
+  --font-sans:
+    "Figtree Variable", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans", "Hiragino Sans GB",
+    "Apple SD Gothic Neo", "Microsoft YaHei", "Malgun Gothic", sans-serif;
+}
+
+html,
+body {
+  width: 380px;
+  height: 580px;
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100%;
+}
