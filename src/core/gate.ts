@@ -47,7 +47,7 @@ export class RequestGate {
   constructor(
     private readonly store: GateStore,
     private readonly limit: () => Promise<number>,
-    private readonly now: () => number = Date.now,
+    private readonly now: () => number = () => Date.now(),
   ) {}
 
   run<T>(fn: () => Promise<T>, maxWaitMs = 8000): Promise<T> {

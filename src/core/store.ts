@@ -15,6 +15,8 @@ export const apiKeyItem = storage.defineItem<string>('local:apiKey', { fallback:
 export interface MarketsCache {
   currency: Currency;
   fetchedAt: number;
+  /** 这次请求了哪些币。CoinGecko 不认识的 id 不会出现在 coins 里 */
+  ids: string[];
   coins: Record<string, MarketCoin>;
 }
 export const marketsItem = storage.defineItem<MarketsCache | null>('local:markets', { fallback: null });
