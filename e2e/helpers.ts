@@ -11,5 +11,5 @@ export async function openMenu(page: Page, symbol: string) {
   await t.locator('.c-more').click();
 }
 
-export const RED = [229, 56, 59, 255];
-export const GREEN = [18, 162, 110, 255];
+export const RED = [196, 43, 46, 255];
+export const GREEN = [10, 112, 73, 255];

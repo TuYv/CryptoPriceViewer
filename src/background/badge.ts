@@ -5,9 +5,9 @@ import { getSettings, type MarketsCache, marketsItem } from '@/core/store';
 import type { Language } from '@/i18n';
 import { languageOf } from './context';
 
-const RED = '#E5383B';
-const GREEN = '#12A26E';
-const BLUE = '#1375EC';
+const RED = '#C42B2E';
+const GREEN = '#0A7049';
+const BLUE = '#0F5FC4';
 
 export const BADGE_COLORS: Record<UpDownStyle, { up: string; down: string }> = {
   'red-green': { up: RED, down: GREEN },

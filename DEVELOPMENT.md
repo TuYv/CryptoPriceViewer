@@ -25,7 +25,7 @@
 | `src/core/` | 不依赖界面的逻辑：设置格式和 0.1.x 数据转换、CoinGecko 请求、请求排队和限速、格式化、新闻解析和去重、存储项 |
 | `src/background/` | 后台：刷新行情、工具栏图标、图表缓存、抓新闻、处理弹窗发来的请求 |
 | `src/entrypoints/background.ts` | 后台入口：定时器、设置变化、权限变化、消息 |
-| `src/entrypoints/popup/` | 弹窗的页面和样式（设计稿 C 的颜色都在 `style.css` 的变量里） |
+| `src/entrypoints/popup/` | 弹窗的页面和样式。字号、颜色、圆角、阴影都是 `style.css` 开头的变量，每一档什么时候用写在 `DESIGN.md` |
 | `src/popup/` | 弹窗的界面：各个页面在 `views/`，部件在 `components/` |
 | `src/i18n/` | 四种语言的界面文字。`messages/en.ts` 是基准，其他语言少了或多了词条，类型检查会报错；占位符不一致时单元测试会失败 |
 | `public/_locales/` | 扩展名称和简介，Chrome 商店和扩展管理页显示的就是这里的文字 |

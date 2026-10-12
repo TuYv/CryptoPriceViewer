@@ -58,6 +58,8 @@ export function NewsView() {
     [settings.coins, markets],
   );
 
+  const symbols = useMemo(() => new Map(coins.map((c) => [c.id, c.symbol])), [coins]);
+
   const items = useMemo(() => {
     if (!news || news.lang !== lang) return [];
     return news.items.map((n) => ({ ...n, coins: mentionedCoins(n.title, coins) }));
@@ -174,6 +176,11 @@ export function NewsView() {
                   >
                     <span className="c-item-meta">
                       {formatClock(n.publishedAt, lang)}
+                      {n.coins.slice(0, 3).map((id) => (
+                        <span key={id} className="c-item-coin" style={{ '--coin': coinColor(id) } as CSSProperties}>
+                          {symbols.get(id)}
+                        </span>
+                      ))}
                       <span>{sourceName(n.source, lang)}</span>
                       {NEWS_SOURCES[n.source].languages.includes(lang) ? null : <em>{t('news.english')}</em>}
                     </span>

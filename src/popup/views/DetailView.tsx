@@ -87,13 +87,22 @@ export function DetailView({ id }: { id: string }) {
         </div>
         {markets?.ids.includes(id) && !coin && <p className="c-detail-note">{t('detail.notFound')}</p>}
 
-        <div className="c-range" role="radiogroup" aria-label={rangeLabel}>
-          {CHART_DAYS.map((d) => (
-            // biome-ignore lint/a11y/useSemanticElements: 分段按钮
-            <button key={d} type="button" role="radio" aria-checked={d === days} onClick={() => setDays(d)}>
-              {t(`range.${d}` as MessageKey)}
-            </button>
-          ))}
+        <div className="c-range-row">
+          <div className="c-range" role="radiogroup" aria-label={rangeLabel}>
+            {CHART_DAYS.map((d) => (
+              // biome-ignore lint/a11y/useSemanticElements: 分段按钮
+              <button key={d} type="button" role="radio" aria-checked={d === days} onClick={() => setDays(d)}>
+                {t(`range.${d}` as MessageKey)}
+              </button>
+            ))}
+          </div>
+          {/* 紧挨着时间范围按钮，只显示涨跌幅；“近 7 天”这几个字留给读屏软件 */}
+          {rangeChange != null && (
+            <p className={`c-range-pct ${sign(rangeChange)}`}>
+              <span className="sr-only">{rangeLabel} </span>
+              {formatChange(rangeChange)}
+            </p>
+          )}
         </div>
 
         {chart.kind === 'ok' && points.length > 1 ? (
@@ -123,9 +132,6 @@ export function DetailView({ id }: { id: string }) {
             )}
           </div>
         )}
-        <p className={`c-range-pct ${sign(rangeChange)}`}>
-          {rangeChange != null ? `${rangeLabel} ${formatChange(rangeChange)}` : ' '}
-        </p>
 
         <dl className="c-stats">
           <div>

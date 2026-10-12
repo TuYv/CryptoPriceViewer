@@ -85,9 +85,9 @@ describe('badgeFor：工具栏图标', () => {
 
   it('按语言的习惯上色：中文上涨是红色，英文上涨是绿色，韩文下跌是蓝色', () => {
     const btc = { ...DEFAULT_SETTINGS, coins: ['bitcoin', 'ethereum'], pinned: 'bitcoin' };
-    expect(badgeFor(btc, cache, 'zh')).toMatchObject({ text: '83.7k', color: '#E5383B' });
-    expect(badgeFor(btc, cache, 'en')?.color).toBe('#12A26E');
-    expect(badgeFor({ ...btc, pinned: 'ethereum' }, cache, 'ko')?.color).toBe('#1375EC');
+    expect(badgeFor(btc, cache, 'zh')).toMatchObject({ text: '83.7k', color: '#C42B2E' });
+    expect(badgeFor(btc, cache, 'en')?.color).toBe('#0A7049');
+    expect(badgeFor({ ...btc, pinned: 'ethereum' }, cache, 'ko')?.color).toBe('#0F5FC4');
   });
 
   it('用户选的涨跌颜色优先，显示涨跌幅模式', () => {
@@ -98,7 +98,7 @@ describe('badgeFor：工具栏图标', () => {
       upDown: 'green-red' as const,
       badge: 'change' as const,
     };
-    expect(badgeFor(s, cache, 'zh')).toMatchObject({ text: '+0.9%', color: '#12A26E' });
+    expect(badgeFor(s, cache, 'zh')).toMatchObject({ text: '+0.9%', color: '#0A7049' });
   });
 
   it('鼠标停在图标上显示币名、价格和涨跌幅', () => {
