@@ -6,13 +6,14 @@ import { ask } from '@/core/messages';
 import { MAX_COINS } from '@/core/settings';
 import { apiKeyItem, coinMetaItem, marketsItem, marketsProblemItem } from '@/core/store';
 import { CoinIcon } from '../components/CoinIcon';
+import { CoinRow } from '../components/CoinRow';
 import { SearchBox } from '../components/SearchBox';
 import { Tile } from '../components/Tile';
 import { type TileAction, TileMenu } from '../components/TileMenu';
-import { TabBar } from '../components/ui';
+import { Segmented, TabBar } from '../components/ui';
 import { usePopup } from '../context';
 import { useNow, useStorageItem } from '../hooks';
-import { AlertIcon, OfflineIcon, PlusIcon, RefreshIcon } from '../icons';
+import { AlertIcon, ListIcon, OfflineIcon, PlusIcon, RefreshIcon, TilesIcon } from '../icons';
 
 interface Removed {
   id: string;
@@ -197,6 +198,17 @@ export function MarketView() {
       setMenu((m) => (m?.id === coinId ? null : { id: coinId, anchor })),
   });
 
+  const addButton = settings.coins.length < MAX_COINS && (
+    <button
+      type="button"
+      className="c-add"
+      onClick={() => document.querySelector<HTMLInputElement>('.c-search input')?.focus()}
+    >
+      <PlusIcon />
+      <span>{t('tile.add')}</span>
+    </button>
+  );
+
   return (
     <div className="c-screen">
       <header className="c-head">
@@ -204,6 +216,17 @@ export function MarketView() {
         <span className={`c-status${stale ? ' is-stale' : ''}`} aria-live="polite">
           {settings.coins.length > 0 ? status : ''}
         </span>
+        {settings.coins.length > 0 && (
+          <Segmented
+            label={t('market.layout')}
+            value={settings.layout}
+            options={[
+              { value: 'tiles', label: t('market.layoutTiles'), icon: <TilesIcon /> },
+              { value: 'list', label: t('market.layoutList'), icon: <ListIcon /> },
+            ]}
+            onChange={(layout) => void update((s) => ({ ...s, layout }))}
+          />
+        )}
         <button
           type="button"
           className={`c-icon-btn${refreshing || loading ? ' is-loading' : ''}`}
@@ -240,6 +263,21 @@ export function MarketView() {
               })}
             </div>
           </div>
+        ) : settings.layout === 'list' ? (
+          <div className="c-list">
+            {pinned && <CoinRow {...tileProps(pinned)} pinned />}
+            {others.map((id) => (
+              <CoinRow
+                key={id}
+                {...tileProps(id)}
+                dragging={dragId.current === id && !!dragOrder}
+                onDragStart={onDragStart}
+                onDragOver={onDragOver}
+                onDragEnd={onDragEnd}
+              />
+            ))}
+            {addButton}
+          </div>
         ) : (
           <>
             {pinned && <Tile {...tileProps(pinned)} wide pinned />}
@@ -254,16 +292,7 @@ export function MarketView() {
                   onDragEnd={onDragEnd}
                 />
               ))}
-              {settings.coins.length < MAX_COINS && (
-                <button
-                  type="button"
-                  className="c-add"
-                  onClick={() => document.querySelector<HTMLInputElement>('.c-search input')?.focus()}
-                >
-                  <PlusIcon />
-                  <span>{t('tile.add')}</span>
-                </button>
-              )}
+              {addButton}
             </div>
           </>
         )}

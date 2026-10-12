@@ -14,6 +14,9 @@ export const ja: Messages = {
   'market.loading': '価格を取得中',
   'market.refresh': '価格を更新',
   'market.pricesAt': '{time} 時点の価格',
+  'market.layout': '表示方法',
+  'market.layoutTiles': 'タイル',
+  'market.layoutList': 'リスト',
 
   'search.label': 'コインを検索',
   'search.placeholder': 'コインを検索（例：SOL、Solana）',

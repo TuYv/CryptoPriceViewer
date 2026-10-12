@@ -14,6 +14,7 @@ A Chrome extension that shows prices for the coins you follow as soon as you cli
 **Markets**
 - Each coin is a tile in its own brand color, with its 7-day trend drawn underneath
 - The coin pinned to the toolbar takes a full row
+- The button next to the title switches between tiles and a compact list. The list shows one coin per row, with the pinned coin first
 - Drag tiles to reorder them. The “⋯” menu on each tile can pin it, open details, move it to the top or remove it, and you can undo a removal for 5 seconds
 - Search shows results as you type; use ↑ and ↓ to choose and Enter to add
 - When CoinGecko limits requests or you are offline, the last prices stay on screen with the time they are from

@@ -1,5 +1,5 @@
 import { badge, expect, syncSettings, test } from './fixtures';
-import { GREEN, openMenu, RED, tile } from './helpers';
+import { GREEN, openMenu, RED, row, tile } from './helpers';
 
 const SIX = { language: 'zh', coins: ['bitcoin', 'ethereum', 'solana', 'binancecoin', 'ripple', 'dogecoin'] };
 
@@ -78,6 +78,46 @@ test('拖动排序', async ({ openPopup, worker }) => {
   await expect
     .poll(async () => (await syncSettings(worker)).coins)
     .toEqual(['dogecoin', 'bitcoin', 'ethereum', 'solana', 'binancecoin', 'ripple']);
+});
+
+test('列表显示：切换后一个币一行，固定的币在最前面；关掉再打开还是列表；点一行打开详情', async ({
+  openPopup,
+  worker,
+}) => {
+  const page = await openPopup({ settings: { ...SIX, pinned: 'solana' } });
+  await expect(tile(page, 'BTC').locator('.c-tile-q b')).toHaveText('$83,698');
+  await page.getByRole('radio', { name: '列表' }).click();
+  await expect(page.locator('.c-row')).toHaveCount(6);
+  await expect(page.locator('.c-tile')).toHaveCount(0);
+  await expect(page.locator('.c-row').first()).toHaveAttribute('data-id', 'solana');
+  await expect(row(page, 'solana')).toContainText('工具栏显示中');
+  await expect(row(page, 'bitcoin').locator('.c-row-q b')).toHaveText('$83,698');
+  await expect.poll(async () => (await syncSettings(worker)).layout).toBe('list');
+
+  await page.reload();
+  await expect(page.locator('.c-row')).toHaveCount(6);
+  await expect(page.getByRole('radio', { name: '列表' })).toHaveAttribute('aria-checked', 'true');
+  await row(page, 'ethereum').locator('.c-row-open').click();
+  await expect(page.locator('.c-dtitle b')).toHaveText('Ethereum');
+  await page.getByRole('button', { name: '返回' }).click();
+  await page.getByRole('radio', { name: '色块' }).click();
+  await expect(page.locator('.c-tile')).toHaveCount(6);
+  await expect.poll(async () => (await syncSettings(worker)).layout).toBe('tiles');
+});
+
+test('列表显示：拖动排序，“⋯”菜单里删除', async ({ openPopup, worker }) => {
+  const page = await openPopup({ settings: { ...SIX, layout: 'list' } });
+  await expect(row(page, 'dogecoin').locator('.c-row-q b')).toBeVisible();
+  await row(page, 'dogecoin').dragTo(row(page, 'bitcoin'));
+  await expect
+    .poll(async () => (await syncSettings(worker)).coins)
+    .toEqual(['dogecoin', 'bitcoin', 'ethereum', 'solana', 'binancecoin', 'ripple']);
+
+  await row(page, 'ripple').hover();
+  await row(page, 'ripple').locator('.c-more').click();
+  await page.getByRole('menuitem', { name: '从自选里删除' }).click();
+  await expect(row(page, 'ripple')).toHaveCount(0);
+  await expect(page.getByText('已删除 XRP')).toBeVisible();
 });
 
 test('被 CoinGecko 限速：继续显示旧价格，提示写明是几点的价格', async ({ openPopup, net }) => {

@@ -20,9 +20,17 @@ describe('normalizeSettings', () => {
   });
 
   it('不认识的选项换回默认值', () => {
-    const s = normalizeSettings({ currency: 'jpy', theme: 'pink', refreshInterval: 45, badge: 'x', upDown: 'purple' });
+    const s = normalizeSettings({
+      currency: 'jpy',
+      theme: 'pink',
+      layout: 'cards',
+      refreshInterval: 45,
+      badge: 'x',
+      upDown: 'purple',
+    });
     expect(s.currency).toBe('usd');
     expect(s.theme).toBe('auto');
+    expect(s.layout).toBe('tiles');
     expect(s.refreshInterval).toBe(60);
     expect(s.badge).toBe('price');
     expect(s.upDown).toBeNull();
@@ -33,6 +41,7 @@ describe('normalizeSettings', () => {
       currency: 'eur',
       language: 'ko',
       upDown: 'red-blue',
+      layout: 'list',
       refreshInterval: 0,
       newsSources: ['decrypt'],
     });
@@ -40,6 +49,7 @@ describe('normalizeSettings', () => {
       currency: 'eur',
       language: 'ko',
       upDown: 'red-blue',
+      layout: 'list',
       refreshInterval: 0,
       newsSources: ['decrypt'],
     });

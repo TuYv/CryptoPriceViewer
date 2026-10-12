@@ -10,6 +10,10 @@ export type UpDownStyle = (typeof UP_DOWN_STYLES)[number];
 export const THEMES = ['auto', 'light', 'dark'] as const;
 export type Theme = (typeof THEMES)[number];
 
+/** 行情页的显示方式：色块或列表 */
+export const LAYOUTS = ['tiles', 'list'] as const;
+export type Layout = (typeof LAYOUTS)[number];
+
 export const BADGE_MODES = ['price', 'change'] as const;
 export type BadgeMode = (typeof BADGE_MODES)[number];
 
@@ -34,6 +38,7 @@ export interface Settings {
   /** null 表示按语言的习惯 */
   upDown: UpDownStyle | null;
   theme: Theme;
+  layout: Layout;
   refreshInterval: RefreshInterval;
   badge: BadgeMode;
   /** 打开的资讯来源 */
@@ -49,6 +54,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: null,
   upDown: null,
   theme: 'auto',
+  layout: 'tiles',
   refreshInterval: 60,
   badge: 'price',
   newsSources: [...NEWS_SOURCE_IDS],
@@ -76,6 +82,7 @@ export function normalizeSettings(raw: unknown): Settings {
     language: r.language === null ? null : oneOf<Language | null>(LANGUAGES, r.language, null),
     upDown: r.upDown === null ? null : oneOf<UpDownStyle | null>(UP_DOWN_STYLES, r.upDown, null),
     theme: oneOf(THEMES, r.theme, DEFAULT_SETTINGS.theme),
+    layout: oneOf(LAYOUTS, r.layout, DEFAULT_SETTINGS.layout),
     refreshInterval: oneOf(REFRESH_INTERVALS, r.refreshInterval, DEFAULT_SETTINGS.refreshInterval),
     badge: oneOf(BADGE_MODES, r.badge, DEFAULT_SETTINGS.badge),
     newsSources,

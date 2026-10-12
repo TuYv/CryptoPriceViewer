@@ -13,6 +13,9 @@ export const en = {
   'market.loading': 'Getting prices',
   'market.refresh': 'Refresh prices',
   'market.pricesAt': 'Prices from {time}',
+  'market.layout': 'Layout',
+  'market.layoutTiles': 'Tiles',
+  'market.layoutList': 'List',
 
   'search.label': 'Search coins',
   'search.placeholder': 'Search coins, like SOL or Solana',

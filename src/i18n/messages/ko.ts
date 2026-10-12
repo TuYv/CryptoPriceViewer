@@ -14,6 +14,9 @@ export const ko: Messages = {
   'market.loading': '가격을 가져오는 중',
   'market.refresh': '가격 새로고침',
   'market.pricesAt': '{time} 기준 가격',
+  'market.layout': '보기 방식',
+  'market.layoutTiles': '타일',
+  'market.layoutList': '목록',
 
   'search.label': '코인 검색',
   'search.placeholder': '코인 검색 (예: SOL, Solana)',

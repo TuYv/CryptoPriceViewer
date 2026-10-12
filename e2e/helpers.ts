@@ -4,6 +4,9 @@ import type { Page } from '@playwright/test';
 export const tile = (page: Page, symbol: string) =>
   page.locator('.c-tile', { has: page.locator('.c-tile-name b', { hasText: new RegExp(`^${symbol}$`) }) });
 
+/** 列表显示方式下按币种 id 找到一行，比如 row(page, 'bitcoin') */
+export const row = (page: Page, id: string) => page.locator(`.c-row[data-id="${id}"]`);
+
 /** 打开某个色块的“⋯”菜单 */
 export async function openMenu(page: Page, symbol: string) {
   const t = tile(page, symbol);

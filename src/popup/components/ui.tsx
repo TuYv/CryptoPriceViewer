@@ -39,7 +39,7 @@ export function SubHeader({ title, onBack }: { title: string; onBack: () => void
   );
 }
 
-/** 一组互斥的选项按钮 */
+/** 一组互斥的选项按钮。选项带图标时只显示图标，文字用作读屏和鼠标悬停提示 */
 export function Segmented<T extends string>({
   label,
   value,
@@ -48,11 +48,12 @@ export function Segmented<T extends string>({
 }: {
   label: string;
   value: T;
-  options: { value: T; label: string }[];
+  options: { value: T; label: string; icon?: ReactNode }[];
   onChange: (value: T) => void;
 }) {
+  const icons = options.some((o) => o.icon);
   return (
-    <div className="c-seg" role="radiogroup" aria-label={label}>
+    <div className={`c-seg${icons ? ' c-seg--icons' : ''}`} role="radiogroup" aria-label={label}>
       {options.map((o) => (
         // biome-ignore lint/a11y/useSemanticElements: 用按钮做成分段选择，外观和设计稿一致
         <button
@@ -60,9 +61,11 @@ export function Segmented<T extends string>({
           type="button"
           role="radio"
           aria-checked={o.value === value}
+          aria-label={o.icon ? o.label : undefined}
+          title={o.icon ? o.label : undefined}
           onClick={() => onChange(o.value)}
         >
-          {o.label}
+          {o.icon ?? o.label}
         </button>
       ))}
     </div>

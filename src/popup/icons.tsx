@@ -135,3 +135,19 @@ export const SettingsIcon = (p: IconProps) => (
     <circle cx="7" cy="14" r="2" />
   </Icon>
 );
+
+export const TilesIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3.5" y="3.5" width="5.5" height="5.5" rx="1.5" />
+    <rect x="11" y="3.5" width="5.5" height="5.5" rx="1.5" />
+    <rect x="3.5" y="11" width="5.5" height="5.5" rx="1.5" />
+    <rect x="11" y="11" width="5.5" height="5.5" rx="1.5" />
+  </Icon>
+);
+
+export const ListIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M7.5 5.5h9M7.5 10h9M7.5 14.5h9" />
+    <path d="M3.75 5.5h.01M3.75 10h.01M3.75 14.5h.01" strokeWidth={2.4} />
+  </Icon>
+);

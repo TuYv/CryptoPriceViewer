@@ -156,6 +156,7 @@
  * 这几个元素自己带着 --coin，所以要在它们身上重新算一次。
  */
 .c-tile,
+.c-row,
 .c-detail,
 .c-quick button,
 .c-chips button.is-coin,
@@ -225,7 +226,8 @@ select {
   .c-result,
   .c-add
 ):active:not(:disabled),
-.c-tile:has(> .c-tile-open:active) {
+.c-tile:has(> .c-tile-open:active),
+.c-row:has(> .c-row-open:active) {
   filter: var(--c-press);
 }
 
@@ -536,6 +538,8 @@ select {
 }
 .c-tile:hover .c-more,
 .c-tile.is-menu-open .c-more,
+.c-row:hover .c-more,
+.c-row.is-menu-open .c-more,
 .c-more:focus-visible {
   color: var(--c-ink);
   background: color-mix(in srgb, var(--c-tile-base) 75%, transparent);
@@ -657,6 +661,128 @@ select {
 .c-tile--wide .c-skel--spark {
   height: 14px;
   margin-bottom: 18px;
+}
+
+/* ---------- 列表 ---------- */
+/* 行的左右各伸出 8px，鼠标移上去的底色两边留出空隙，图标仍然和上面的搜索框对齐 */
+.c-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0 -8px;
+}
+.c-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 4px 0 8px;
+  border-radius: var(--r-md);
+  transition:
+    box-shadow 0.15s ease-out,
+    transform 0.15s ease-out;
+}
+/* 固定到工具栏的那一行一直带币色，其余行鼠标移上去才有 */
+.c-row:hover,
+.c-row.is-menu-open,
+.c-row.is-pinned,
+.c-row.is-dragging {
+  background: color-mix(in srgb, var(--coin) var(--c-tile-mix), var(--c-tile-base));
+}
+.c-row[draggable="true"] {
+  cursor: grab;
+}
+.c-row.is-dragging {
+  z-index: 2;
+  box-shadow: var(--shadow-4);
+  transform: scale(1.02);
+}
+.c-row-open {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.c-row > :not(.c-row-open) {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+.c-row .c-more {
+  pointer-events: auto;
+}
+.c-row-name {
+  flex: 1;
+  min-width: 0;
+  line-height: var(--lh-tight);
+}
+.c-row-name b {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+}
+.c-row-pin {
+  display: inline-flex;
+  color: var(--c-sub);
+}
+.c-row-name small {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--c-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.c-row-spark {
+  flex: none;
+  display: flex;
+  align-items: center;
+  width: 56px;
+  height: 28px;
+}
+.c-row-spark .c-spark {
+  margin-top: 0;
+}
+.c-row-spark .c-skel--spark {
+  width: 100%;
+  height: 8px;
+  margin: 0;
+}
+.c-row-q {
+  flex: none;
+  min-width: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  line-height: var(--lh-tight);
+  font-variant-numeric: tabular-nums;
+}
+.c-row-q b {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+}
+.c-row-q span {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+}
+.c-row-q .c-row-nodata {
+  color: var(--c-sub);
+  font-weight: var(--fw-normal);
+}
+.c-row.is-stale .c-row-q b {
+  color: var(--c-sub);
+}
+.c-list .c-add {
+  flex-direction: row;
+  height: 48px;
+  margin: 8px 8px 0;
+  border-radius: var(--r-md);
 }
 
 /* ---------- 菜单、撤销提示 ---------- */
@@ -1331,6 +1457,15 @@ select {
   white-space: nowrap;
   cursor: pointer;
 }
+.c-seg--icons button {
+  width: 30px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+.c-head .c-seg {
+  align-self: center;
+}
 .c-seg button[aria-checked="true"] {
   background: var(--c-raised);
   color: var(--c-ink);
@@ -1481,6 +1616,7 @@ select {
     animation: none;
   }
   .c-tile,
+  .c-row,
   .c-switch,
   .c-switch i {
     transition: none;

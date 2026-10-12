@@ -14,7 +14,7 @@
 
 Crypto Price Viewer shows the coins you follow as soon as you click its toolbar icon.
 
-• Your coins at a glance: each coin is a tile in its own color with its 7-day trend. Drag tiles to reorder them.
+• Your coins at a glance: each coin is a tile in its own color with its 7-day trend. Drag tiles to reorder them, or switch to a compact list.
 • A price on your toolbar: pin one coin and its price (or 24h change) stays on the extension icon.
 • Price history: charts for 1 day to 1 year with the high and low marked; hover to see the price at any point.
 • Market data: market cap, 24h volume, circulating supply, all-time high and rank.
@@ -31,7 +31,7 @@ Privacy: no account, no analytics, no ads. The extension only connects to CoinGe
 
 点一下工具栏图标，就能看到你关注的币的行情。
 
-• 一眼看清自选币：每个币用自己的颜色显示，下面画着近 7 天的走势，可以拖动排序。
+• 一眼看清自选币：每个币用自己的颜色显示，下面画着近 7 天的走势，可以拖动排序，也可以切换成列表。
 • 价格挂在工具栏上：固定一个币，它的价格（或 24 小时涨跌幅）就一直显示在扩展图标上。
 • 价格走势：1 天到 1 年的图表，标出最高和最低，鼠标移上去显示那个时间点的价格。
 • 行情数据：市值、24 小时成交量、流通量、历史最高、市值排名。
@@ -48,7 +48,7 @@ Privacy: no account, no analytics, no ads. The extension only connects to CoinGe
 
 ツールバーのアイコンをクリックするだけで、登録したコインの価格を確認できます。
 
-• ひと目でわかる：コインごとに色分けしたタイルに、直近7日間の値動きを表示。ドラッグで並べ替えできます。
+• ひと目でわかる：コインごとに色分けしたタイルに、直近7日間の値動きを表示。ドラッグで並べ替えでき、リスト表示にも切り替えられます。
 • ツールバーに価格を表示：1つのコインを固定すると、その価格（または24時間の騰落率）がアイコンに表示されます。
 • 価格チャート：1日から1年まで。最高値・最安値を表示し、マウスを乗せるとその時点の価格がわかります。
 • マーケットデータ：時価総額、24時間出来高、流通量、過去最高値、ランキング。
@@ -65,7 +65,7 @@ CoinGecko の制限やオフラインのときも、前回の価格をその時�
 
 툴바 아이콘을 누르면 관심 코인의 시세를 바로 보여 줍니다.
 
-• 한눈에 보는 시세: 코인마다 고유 색상의 타일에 최근 7일 추이를 표시하며, 끌어서 순서를 바꿀 수 있습니다.
+• 한눈에 보는 시세: 코인마다 고유 색상의 타일에 최근 7일 추이를 표시하며, 끌어서 순서를 바꾸거나 목록 보기로 바꿀 수 있습니다.
 • 툴바에 가격 표시: 코인 하나를 고정하면 그 가격(또는 24시간 등락률)이 아이콘에 계속 표시됩니다.
 • 가격 차트: 1일부터 1년까지. 최고가와 최저가를 표시하고, 마우스를 올리면 그 시점의 가격을 보여 줍니다.
 • 시장 데이터: 시가총액, 24시간 거래량, 유통량, 역대 최고가, 순위.
@@ -92,7 +92,7 @@ CoinGecko가 요청을 제한하거나 오프라인일 때도 마지막 가격�
 
 | 权限 | 粘贴的内容 |
 |---|---|
-| storage | Saves the user's settings (followed coins, pinned coin, currency, language, colors, theme, refresh interval, news sources), an optional CoinGecko API key, and caches of prices, charts and news headlines so the popup can show data immediately. |
+| storage | Saves the user's settings (followed coins, pinned coin, currency, language, colors, theme, market page layout, refresh interval, news sources), an optional CoinGecko API key, and caches of prices, charts and news headlines so the popup can show data immediately. |
 | alarms | Refreshes prices for the toolbar badge and the news cache at the interval the user picks, while the popup is closed. |
 | Host permission: https://api.coingecko.com/* | Requests market prices, price history and coin search results from the CoinGecko API, which is the extension's only price data source. |
 | Optional host permissions: www.panewslab.com, api.odaily.news, decrypt.co | Requested only when the user opens the News tab and agrees. Used to download these sites' public news feeds (headlines and links) for the news timeline. The user can turn off each source and the extension then removes the permission. |

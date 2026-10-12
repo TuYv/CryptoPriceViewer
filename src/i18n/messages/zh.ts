@@ -14,6 +14,9 @@ export const zh: Messages = {
   'market.loading': '正在获取价格',
   'market.refresh': '刷新价格',
   'market.pricesAt': '{time} 的价格',
+  'market.layout': '显示方式',
+  'market.layoutTiles': '色块',
+  'market.layoutList': '列表',
 
   'search.label': '搜索币种',
   'search.placeholder': '搜索币种，比如 SOL 或 Solana',
