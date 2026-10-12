@@ -5,6 +5,7 @@ import { formatChange, formatClock, formatCompactMoney, formatCompactNumber, for
 import { ask, type Problem } from '@/core/messages';
 import { coinMetaItem, marketsItem, newsItem } from '@/core/store';
 import type { MessageKey } from '@/i18n';
+import { CoinIcon } from '../components/CoinIcon';
 import { PriceChart } from '../components/PriceChart';
 import { usePopup } from '../context';
 import { useStorageItem } from '../hooks';
@@ -61,7 +62,7 @@ export function DetailView({ id }: { id: string }) {
           <BackIcon />
         </button>
         <span className="c-dtitle">
-          {info?.image ? <img src={info.image} alt="" /> : <span className="c-tile-ph" />}
+          <CoinIcon src={info?.image} symbol={info?.symbol} size={30} />
           <span>
             <b>{name}</b>
             <small>{info?.symbol}</small>

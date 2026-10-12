@@ -4,6 +4,7 @@ import { coinColor } from '@/core/coins';
 import { formatChange, formatPrice } from '@/core/format';
 import { usePopup } from '../context';
 import { MoreIcon, PinIcon } from '../icons';
+import { CoinIcon } from './CoinIcon';
 import { Sparkline } from './Sparkline';
 
 export interface TileProps {
@@ -53,7 +54,7 @@ export function Tile(props: TileProps) {
     >
       <button type="button" className="c-tile-open" onClick={() => props.onOpen(id)} aria-label={name} />
       <div className="c-tile-top">
-        {coin?.image ? <img src={coin.image} alt="" /> : <span className="c-tile-ph" />}
+        <CoinIcon src={coin?.image} symbol={coin?.symbol} size={wide ? 30 : 24} />
         <span className="c-tile-name">
           <b>{coin?.symbol || id}</b>
           <small>{name}</small>

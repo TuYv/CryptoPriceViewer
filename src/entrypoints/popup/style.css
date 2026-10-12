@@ -254,16 +254,20 @@ select {
 .c-result.is-active {
   background: var(--c-soft);
 }
-.c-result img,
-.c-tile-ph {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+.c-icon {
   flex: none;
+  border-radius: 50%;
+  object-fit: cover;
 }
-.c-tile-ph {
-  display: inline-block;
-  background: color-mix(in srgb, var(--c-sub) 25%, transparent);
+.c-icon-ph {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--coin, var(--c-sub)) 70%, var(--c-ink));
+  color: #fff;
+  font-weight: 800;
+  line-height: 1;
 }
 .c-result-name {
   flex: 1;
@@ -393,15 +397,6 @@ select {
   gap: 8px;
   padding: 12px 10px 0 12px;
 }
-.c-tile-top img {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-}
-.c-tile-top .c-tile-ph {
-  width: 24px;
-  height: 24px;
-}
 .c-tile-name {
   flex: 1;
   min-width: 0;
@@ -484,11 +479,6 @@ select {
 }
 .c-tile--wide .c-tile-top {
   gap: 6px;
-}
-.c-tile--wide .c-tile-top img,
-.c-tile--wide .c-tile-top .c-tile-ph {
-  width: 30px;
-  height: 30px;
 }
 .c-tile--wide .c-tile-name b {
   font-size: 15px;
@@ -698,11 +688,6 @@ select {
   font-weight: 800;
   cursor: pointer;
 }
-.c-quick img {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-}
 .c-quick svg {
   color: var(--c-sub);
 }
@@ -730,12 +715,6 @@ select {
   align-items: center;
   gap: 8px;
   line-height: 1.15;
-}
-.c-dtitle img,
-.c-dtitle .c-tile-ph {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
 }
 .c-dtitle b {
   display: block;

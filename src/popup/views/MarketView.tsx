@@ -5,6 +5,7 @@ import { formatAgo, formatClock, formatIn } from '@/core/format';
 import { ask } from '@/core/messages';
 import { MAX_COINS } from '@/core/settings';
 import { apiKeyItem, coinMetaItem, marketsItem, marketsProblemItem } from '@/core/store';
+import { CoinIcon } from '../components/CoinIcon';
 import { SearchBox } from '../components/SearchBox';
 import { Tile } from '../components/Tile';
 import { type TileAction, TileMenu } from '../components/TileMenu';
@@ -231,7 +232,7 @@ export function MarketView() {
                     aria-label={t('empty.add', { symbol: known?.symbol ?? id })}
                     onClick={() => addCoin(id)}
                   >
-                    <img src={known?.image} alt="" />
+                    <CoinIcon src={known?.image} symbol={known?.symbol} size={24} />
                     {known?.symbol}
                     <PlusIcon width={13} height={13} />
                   </button>

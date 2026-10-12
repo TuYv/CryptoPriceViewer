@@ -4,6 +4,7 @@ import { ask, type Problem } from '@/core/messages';
 import { MAX_COINS } from '@/core/settings';
 import { usePopup } from '../context';
 import { CheckIcon, SearchIcon } from '../icons';
+import { CoinIcon } from './CoinIcon';
 
 type State =
   | { kind: 'idle' }
@@ -117,7 +118,7 @@ export function SearchBox({ onAdd }: { onAdd: (coin: SearchCoin) => void }) {
                 onMouseEnter={() => setActive(i)}
                 onClick={() => add(coin)}
               >
-                {coin.image ? <img src={coin.image} alt="" /> : <span className="c-tile-ph" />}
+                <CoinIcon src={coin.image} symbol={coin.symbol} size={28} />
                 <span className="c-result-name">
                   <b>{coin.name}</b>
                   <small>
