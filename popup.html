@@ -49,10 +49,10 @@
         </div>
         
         <div class="feedback-input">
-          <textarea id="feedbackText" placeholder="请输入您的反馈意见..." data-i18n-placeholder="feedbackPlaceholder"></textarea>
+          <p class="feedback-tip" data-i18n="feedbackTip">遇到问题或有建议，欢迎到 GitHub 上提交，我会尽快回复。</p>
           <div class="common-actions">
-            <button id="sendFeedbackButton" data-i18n="sendFeedback">发送反馈</button>
-            <button id="cancelFeedbackButton" data-i18n="cancel">取消</button>
+            <button id="openFeedbackPageButton" data-i18n="openFeedbackPage">去 GitHub 反馈</button>
+            <button id="closeFeedbackButton" data-i18n="close">关闭</button>
           </div>
         </div>
       </div>
@@ -139,8 +139,8 @@
         <!-- 价格图表 -->
         <div class="chart-section">
           <div class="chart-period-selector">
-            <button class="period-btn active" data-period="1">1D</button>
-            <button class="period-btn" data-period="7">7D</button>
+            <button class="period-btn" data-period="1">1D</button>
+            <button class="period-btn active" data-period="7">7D</button>
             <button class="period-btn" data-period="30">30D</button>
             <button class="period-btn" data-period="90">90D</button>
           </div>
@@ -198,7 +198,6 @@
     </div>
   </div>
 
-  <!-- 移除了冗余的早期 .env 注入脚本，统一使用 js/lib/env.js 的 Env.load() -->
   <script type="module" src="js/popup.js"></script>
 </body>
 </html>

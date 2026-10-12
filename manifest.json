@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Crypto Price Viewer",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Real-time crypto currency price viewer for Bitcoin, Ethereum, Solana, BNB and other digital currencies",
   "action": {
     "default_popup": "popup.html",
@@ -20,8 +20,7 @@
     "type": "module"
   },
   "host_permissions": [
-    "https://api.coingecko.com/*",
-    "https://api.notion.com/*"
+    "https://api.coingecko.com/*"
   ],
   "icons": {
     "16": "images/icon_base_16.jpg",

@@ -5,25 +5,27 @@ import { updateBadge } from './badge-updater.js';
 
 const ALARM_NAME = 'refreshPriceAlarm';
 
-// ... (所有监听器和 scheduleNextRefresh 函数保持不变) ...
 chrome.runtime.onStartup.addListener(async () => { await scheduleNextRefresh(); });
 chrome.runtime.onInstalled.addListener(async () => { await scheduleNextRefresh(); });
+
+// 设置存在 Config.STORAGE_KEY 下；刷新间隔或置顶币种变化时重新安排定时刷新
 chrome.storage.onChanged.addListener(async (changes, area) => {
-  if (area === 'local' && (changes.settings?.newValue?.refreshInterval !== changes.settings?.oldValue?.refreshInterval || changes.settings?.newValue?.pinnedCoin !== changes.settings?.oldValue?.pinnedCoin)) {
+  const change = changes[Config.STORAGE_KEY];
+  if (area !== 'local' || !change) return;
+  const oldSettings = change.oldValue || {};
+  const newSettings = change.newValue || {};
+  if (newSettings.refreshInterval !== oldSettings.refreshInterval || newSettings.pinnedCoin !== oldSettings.pinnedCoin) {
     await scheduleNextRefresh();
   }
 });
 
-// 监听闹钟事件，这次将调用完整的刷新函数
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
-    console.log(`[${new Date().toLocaleTimeString()}] Alarm triggered! Executing refreshBadgePrice...`);
     await refreshBadgePrice();
   }
 });
 
 async function scheduleNextRefresh() {
-  // ... (之前已验证无问题的代码) ...
   await chrome.alarms.clear(ALARM_NAME);
   const settings = await storage.get(Config.STORAGE_KEY);
   if (!settings) return;
@@ -36,14 +38,13 @@ async function scheduleNextRefresh() {
   }
 }
 
-// 刷新徽章价格的核心函数 - 带有详细的诊断日志
+// 刷新扩展图标徽章上的置顶币种价格
 async function refreshBadgePrice() {
-  console.log('STEP 1: Entering refreshBadgePrice function.');
   try {
     const settings = await storage.get(Config.STORAGE_KEY);
 
     if (!settings) {
-        console.error('ERROR at STEP 2: Failed to get settings from storage.');
+        console.error('[Background] Failed to get settings from storage.');
         return;
     }
 
@@ -58,7 +59,7 @@ async function refreshBadgePrice() {
 
     const geckoId = getCoinGeckoId(settings, pinnedCoinSymbol);
     if (!geckoId) {
-      console.error(`ERROR at STEP 4: No Gecko ID found for symbol '${pinnedCoinSymbol}'.`);
+      console.error(`[Background] No Gecko ID found for symbol '${pinnedCoinSymbol}'.`);
       return;
     }
 
@@ -80,16 +81,15 @@ async function refreshBadgePrice() {
       };
       await updateBadge(coinData);
     } else {
-      console.warn('WARN at STEP 7: API returned no data for the requested coin. Clearing badge.');
+      console.warn('[Background] API returned no data for the requested coin. Clearing badge.');
       await updateBadge(null);
     }
   } catch (error) {
-    console.error('FATAL ERROR in refreshBadgePrice:', error);
+    console.error('[Background] refreshBadgePrice failed:', error);
     await updateBadge(null, true); // 在出错时显示错误徽章
   }
 }
 
-// 辅助函数 - 保持不变
 function getCoinGeckoId(settings, coin) {
     if (!coin || typeof coin !== 'string') return null;
     const upperCoin = coin.toUpperCase();

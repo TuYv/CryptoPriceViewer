@@ -1,6 +1,6 @@
 /**
  * 币种详情服务
- * 处理币种详细信息、历史价格数据和新闻获取
+ * 处理币种详细信息和历史价格数据获取
  */
 
 import { Config } from '../config.js';
@@ -78,31 +78,6 @@ export class CoinDetailService {
   }
 
   /**
-   * 获取币种相关新闻
-   * @param {string} coinSymbol - 币种符号
-   * @param {number} limit - 新闻数量限制
-   */
-  async getCoinNews(coinSymbol, limit = 10) {
-    const cacheKey = `news-${coinSymbol}-${limit}`;
-    const cached = this.cache.get(cacheKey);
-    
-    if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
-      return cached.data;
-    }
-
-    try {
-      // 注意：这里使用CoinGecko的新闻API，实际可能需要其他新闻API
-      // 由于CoinGecko免费版本可能不包含新闻，这里提供模拟数据结构
-      const mockNews = this.getMockNews(coinSymbol);
-      this.cache.set(cacheKey, { data: mockNews, timestamp: Date.now() });
-      return mockNews;
-    } catch (error) {
-      console.error('[CoinDetailService] Error fetching coin news:', error);
-      return [];
-    }
-  }
-
-  /**
    * 格式化币种详细信息
    */
   formatCoinDetails(rawData, currency) {
@@ -153,51 +128,6 @@ export class CoinDetailService {
     if (days <= 1) return 'hourly';
     if (days <= 90) return 'daily';
     return 'daily';
-  }
-
-  /**
-   * 获取模拟新闻数据
-   * 实际项目中应该替换为真实的新闻API
-   */
-  getMockNews(coinSymbol) {
-    const newsTemplates = [
-      {
-        title: `${coinSymbol} Price Analysis: Technical Indicators Show Bullish Momentum`,
-        source: 'CryptoNews',
-        publishedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString(),
-        url: '#',
-        description: `Latest technical analysis suggests ${coinSymbol} may continue its upward trend...`
-      },
-      {
-        title: `Market Update: ${coinSymbol} Trading Volume Surges`,
-        source: 'BlockchainDaily',
-        publishedAt: new Date(Date.now() - Math.random() * 48 * 60 * 60 * 1000).toISOString(),
-        url: '#',
-        description: `${coinSymbol} sees increased trading activity as institutional interest grows...`
-      },
-      {
-        title: `${coinSymbol} Integration: New Partnership Announced`,
-        source: 'CoinTelegraph',
-        publishedAt: new Date(Date.now() - Math.random() * 72 * 60 * 60 * 1000).toISOString(),
-        url: '#',
-        description: `Major platform announces ${coinSymbol} integration, expanding utility...`
-      }
-    ];
-
-    // 随机选择2-4条新闻
-    const selectedNews = newsTemplates
-      .sort(() => Math.random() - 0.5)
-      .slice(0, Math.floor(Math.random() * 3) + 2);
-
-    return selectedNews.map((news, index) => ({
-      ...news,
-      id: `${coinSymbol}-${index}`,
-      title: news.title,
-      source: news.source,
-      publishedAt: news.publishedAt,
-      url: news.url,
-      description: news.description
-    }));
   }
 
   /**

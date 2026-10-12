@@ -43,7 +43,9 @@ class CoinGeckoClient {
         if (response.status === 429) {
           const unlockTime = Date.now() + 60000; // Lock for 1 minute
           await storageService.set('appStatus.coinGeckoApiLock', { unlockTime });
-          console.error(`[Circuit Breaker] Rate limit hit. Locking API until ${new Date(unlockTime).toLocaleTimeString()}`);
+          console.warn(`[Circuit Breaker] Rate limit hit. Locking API until ${new Date(unlockTime).toLocaleTimeString()}`);
+          // 和已锁定时的返回值一致，调用方会显示“请求过于频繁”的提示
+          return { error: 'API_LOCKED' };
         }
         console.error(`HTTP error! status: ${response.status}`, await response.text());
         throw new Error(`HTTP error! status: ${response.status}`);

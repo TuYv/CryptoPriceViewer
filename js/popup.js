@@ -1,12 +1,14 @@
 // 导入配置
 import { Config } from './config.js';
 import { I18N } from './i18n.js';
-import { notionService } from './services/NotionService.js';
 import { coinDetailService } from './services/CoinDetailService.js';
 import coinGeckoClient from './clients/CoinGeckoClient.js';
 import { storage } from './lib/storage.js';
 import { PriceChart } from './lib/chart.js';
 import { updateBadge } from './badge-updater.js';
+
+// 打开详情页时默认显示的图表天数，需与 popup.html 中默认高亮的 period-btn 一致
+const DEFAULT_CHART_DAYS = 7;
 
 class SearchHandler {
   constructor(app) {
@@ -160,7 +162,11 @@ class CryptoApp {
   constructor() {
     // 应用状态
     this.cryptoData = [];
-    this.settings = { ...Config.DEFAULT_SETTINGS, pinnedCoin: null };
+    this.settings = {
+      ...Config.DEFAULT_SETTINGS,
+      selectedCoins: [...Config.DEFAULT_SETTINGS.selectedCoins],
+      pinnedCoin: null
+    };
 
     this.isLoading = true;
     this.hasError = false;
@@ -183,9 +189,8 @@ class CryptoApp {
       settingsPanel: document.getElementById('settingsPanel'),
       feedbackButton: document.getElementById('feedbackButton'),
       feedbackPanel: document.getElementById('feedbackPanel'),
-      feedbackText: document.getElementById('feedbackText'),
-      sendFeedbackButton: document.getElementById('sendFeedbackButton'),
-      cancelFeedbackButton: document.getElementById('cancelFeedbackButton'),
+      openFeedbackPageButton: document.getElementById('openFeedbackPageButton'),
+      closeFeedbackButton: document.getElementById('closeFeedbackButton'),
       refreshInterval: document.getElementById('refreshInterval'),
       currencySelect: document.getElementById('currencySelect'),
       languageSelect: document.getElementById('languageSelect'),
@@ -224,23 +229,7 @@ class CryptoApp {
    */
   async init() {
     await this.loadSettings();
-    await this.loadNotionConfig();
     this.setupEventListeners();
-  }
-
-  /**
-   * 加载 Notion 配置
-   */
-  async loadNotionConfig() {
-    try {
-      const notionToken = await storage.get('notionToken');
-      const notionDatabaseId = await storage.get('notionDatabaseId');
-      if (notionToken && notionDatabaseId) {
-        notionService.setConfig(notionToken, notionDatabaseId);
-      }
-    } catch (e) {
-      console.warn('Failed to load Notion config:', e);
-    }
   }
 
   /**
@@ -252,8 +241,8 @@ class CryptoApp {
     this.elements.feedbackButton.addEventListener('click', () => this.toggleFeedback());
     this.elements.saveSettingsButton.addEventListener('click', () => this.saveSettings());
     this.elements.cancelSettingsButton.addEventListener('click', () => this.cancelSettings());
-    this.elements.sendFeedbackButton.addEventListener('click', () => this.sendFeedback());
-    this.elements.cancelFeedbackButton.addEventListener('click', () => this.cancelFeedback());
+    this.elements.openFeedbackPageButton.addEventListener('click', () => this.openUrlWithTabs(Config.FEEDBACK_URL));
+    this.elements.closeFeedbackButton.addEventListener('click', () => this.toggleFeedback(false));
     this.elements.languageSelect.addEventListener('change', () => this.onLanguageChange());
     
     // 为二维码图片添加点击事件
@@ -339,13 +328,8 @@ class CryptoApp {
     document.addEventListener('click', (event) => {
       if (event.target.classList.contains('period-btn')) {
         const period = event.target.dataset.period;
+        this.setActivePeriod(period);
         this.updatePriceChart(period);
-      }
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-        this.toggleDebugMode();
       }
     });
   }
@@ -359,13 +343,11 @@ class CryptoApp {
       if (savedSettings) {
         this.settings = { ...this.settings, ...savedSettings };
       } else {
-        this.settings = { ...Config.DEFAULT_SETTINGS };
-        await this.saveSettings();
+        // 首次使用：直接保存默认设置。saveSettings 会读取设置面板的下拉框，此时界面还没按设置初始化
+        await storage.set(Config.STORAGE_KEY, this.settings);
       }
     } catch (error) {
       console.warn('Failed to load settings:', error);
-      this.settings = { ...Config.DEFAULT_SETTINGS };
-      await this.saveSettings();
     }
     
     if (!this.settings.language) {
@@ -393,26 +375,6 @@ class CryptoApp {
     this.elements.refreshInterval.value = this.settings.refreshInterval;
     this.elements.currencySelect.value = this.settings.currency;
     this.elements.languageSelect.value = this.settings.language || I18N.DEFAULT_LANGUAGE;
-  }
-
-  async getLastFeedbackTime() {
-    try {
-      const time = await storage.get('lastFeedbackTime');
-      if (typeof time === 'number') return time;
-      if (typeof time === 'string') return parseInt(time);
-      return null;
-    } catch (error) {
-      console.error('获取反馈时间失败:', error);
-      return null;
-    }
-  }
-
-  async setLastFeedbackTime(timestamp) {
-    try {
-      await storage.set('lastFeedbackTime', timestamp);
-    } catch (error) {
-      console.error('保存反馈时间失败:', error);
-    }
   }
 
   showMessage(message, type = 'info') {
@@ -510,15 +472,24 @@ class CryptoApp {
     const index = this.settings.selectedCoins.indexOf(coinSymbol);
     if (index > -1) {
       this.settings.selectedCoins.splice(index, 1);
-      
+      if (this.settings.pinnedCoin === coinSymbol) {
+        this.settings.pinnedCoin = null;
+      }
+
       try {
         await storage.set(Config.STORAGE_KEY, this.settings);
       } catch (error) {
         console.warn('Failed to save settings:', error);
       }
-      
+
+      // 其余币种的数据还在，直接在本地移除，不用重新请求（被限速时也能立即生效）
+      this.cryptoData = this.cryptoData.filter(c => c.symbol !== coinSymbol);
+      this.renderCryptoData(this.settings.language);
+      if (this.cryptoData.length === 0) {
+        this.elements.noDataMessage.style.display = 'block';
+      }
+      updateBadge(this.cryptoData.find(c => c.symbol === this.settings.pinnedCoin));
       this.updateSettingsUI();
-      this.fetchCryptoData();
     }
   }
 
@@ -622,38 +593,6 @@ class CryptoApp {
     this.toggleSettings(false);
   }
 
-  async saveNotionConfig() {
-    const notionToken = this.elements.notionToken.value.trim();
-    const notionDatabaseId = this.elements.notionDatabaseId.value.trim();
-    const currentLang = this.settings.language || I18N.DEFAULT_LANGUAGE;
-    
-    try {
-      if (notionToken) {
-        await storage.set('notionToken', notionToken);
-      } else {
-        await storage.remove('notionToken');
-      }
-      
-      if (notionDatabaseId) {
-        await storage.set('notionDatabaseId', notionDatabaseId);
-      } else {
-        await storage.remove('notionDatabaseId');
-      }
-      
-      if (notionToken && notionDatabaseId) {
-        notionService.setConfig(notionToken, notionDatabaseId);
-        this.showMessage(I18N.t('notionConfigSaved', currentLang), 'success');
-      } else if (!notionToken && !notionDatabaseId) {
-        this.showMessage(I18N.t('notionConfigCleared', currentLang), 'info');
-      } else {
-        this.showMessage(I18N.t('notionConfigIncomplete', currentLang), 'warning');
-      }
-    } catch (error) {
-      console.error('保存 Notion 配置失败:', error);
-      this.showMessage(I18N.t('notionConfigSaveFailed', currentLang), 'error');
-    }
-  }
-
   cancelSettings() {
     this.updateSettingsUI();
     this.toggleSettings(false);
@@ -686,72 +625,11 @@ class CryptoApp {
     if (this.showFeedback) {
       this.elements.feedbackPanel.classList.remove('hidden');
       this.elements.settingsPanel.classList.add('hidden');
-      this.elements.feedbackText.focus();
       document.body.style.overflow = 'hidden';
     } else {
       this.elements.feedbackPanel.classList.add('hidden');
       document.body.style.overflow = 'auto';
     }
-  }
-
-  async sendFeedback() {
-    const now = Date.now();
-    const lastSendTime = await this.getLastFeedbackTime();
-    const oneMinute = 60 * 1000;
-    const currentLang = this.settings.language || 'en';
-    
-    if (lastSendTime && (now - lastSendTime) < oneMinute) {
-      const remainingTime = Math.ceil((oneMinute - (now - lastSendTime)) / 1000);
-      this.showMessage(I18N.t('feedbackRateLimitPrefix', currentLang) + remainingTime + I18N.t('secondsSuffixRetry', currentLang), 'error');
-      return;
-    }
-    
-    const feedbackText = this.elements.feedbackText.value.trim();
-    
-    if (!feedbackText) {
-      this.showMessage(I18N.t('feedbackEmpty', currentLang), 'error');
-      return;
-    }
-
-    try {
-      const feedback = {
-        id: Date.now(),
-        content: feedbackText,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        version: chrome.runtime.getManifest().version
-      };
-
-      if (notionService.isConfigured()) {
-        try {
-          const result = await notionService.createFeedbackPage(feedback);
-          if (result) {
-            await this.setLastFeedbackTime(now);
-            this.showMessage(I18N.t('feedbackSentWithIdPrefix', currentLang) + feedback.id, 'success');
-          } else {
-            this.showMessage(I18N.t('feedbackError', currentLang), 'error');
-          }
-        } catch (error) {
-          console.error('发送到 Notion 失败:', error);
-          const errorMessage = error.message || error.toString() || I18N.t('unknownErrorShort', currentLang);
-          this.showMessage(I18N.t('feedbackSendFailedPrefix', currentLang) + errorMessage, 'error');
-        }
-      } else {
-        this.showMessage(I18N.t('notionNotConfigured', currentLang), 'error');
-      }
-      
-      this.elements.feedbackText.value = '';
-      this.toggleFeedback(false);
-      
-    } catch (error) {
-      console.error('发送反馈失败:', error);
-      this.showMessage(I18N.t('feedbackError', currentLang), 'error');
-    }
-  }
-
-  cancelFeedback() {
-    this.elements.feedbackText.value = '';
-    this.toggleFeedback(false);
   }
 
   refreshData() {
@@ -1083,6 +961,7 @@ class CryptoApp {
          this.priceChart = new PriceChart(this.elements.priceChart);
          this.priceChart.showLoading();
        }
+       this.setActivePeriod(DEFAULT_CHART_DAYS);
        await this.loadCoinDetails(coinId);
      } catch (error) {
        console.error('[CoinDetails] Error showing coin details:', error);
@@ -1102,7 +981,7 @@ class CryptoApp {
      try {
        const [details, history] = await Promise.all([
          coinDetailService.getCoinDetails(coinId, currency),
-         coinDetailService.getCoinHistory(coinId, currency, 7)
+         coinDetailService.getCoinHistory(coinId, currency, DEFAULT_CHART_DAYS)
        ]);
        
       if (details && details.error === 'API_LOCKED') {
@@ -1168,9 +1047,10 @@ class CryptoApp {
        this.elements.coinDetailIcon.src = details.image;
        this.elements.coinDetailIcon.alt = details.name;
      }
+     // formatPrice 自带货币符号；currencySymbol 只给 formatLargeNumber 用
      const currencySymbol = Config.CURRENCY_SYMBOLS[details.currency] || '';
      if (this.elements.coinDetailPrice) {
-       this.elements.coinDetailPrice.textContent = `${currencySymbol}${this.formatPrice(details.currentPrice)}`;
+       this.elements.coinDetailPrice.textContent = this.formatPrice(details.currentPrice);
      }
      const change24h = details.priceChange24h;
      if (this.elements.coinDetailChange24h) {
@@ -1191,10 +1071,10 @@ class CryptoApp {
        this.elements.coinTotalSupply.textContent = details.totalSupply ? this.formatLargeNumber(details.totalSupply) : 'N/A';
      }
      if (this.elements.coinAllTimeHigh) {
-       this.elements.coinAllTimeHigh.textContent = `${currencySymbol}${this.formatPrice(details.allTimeHigh)}`;
+       this.elements.coinAllTimeHigh.textContent = this.formatPrice(details.allTimeHigh);
      }
      if (this.elements.coinAllTimeLow) {
-       this.elements.coinAllTimeLow.textContent = `${currencySymbol}${this.formatPrice(details.allTimeLow)}`;
+       this.elements.coinAllTimeLow.textContent = this.formatPrice(details.allTimeLow);
      }
    }
 
@@ -1217,23 +1097,36 @@ class CryptoApp {
      newsContainer.innerHTML = newsHTML;
    }
 
-   async updatePriceChart(period = 7) {
+   async updatePriceChart(period = DEFAULT_CHART_DAYS) {
      if (!this.currentCoin || !this.priceChart) return;
+     const chartLoading = document.getElementById('chartLoading');
+     if (chartLoading) chartLoading.style.display = 'block';
      try {
-       const chartLoading = document.getElementById('chartLoading');
-       if (chartLoading) chartLoading.style.display = 'block';
        const currency = this.settings?.currency?.toLowerCase() || 'usd';
        const historyData = await coinDetailService.getCoinHistory(this.currentCoin.id, currency, period);
-       if (historyData && historyData.length > 0) {
+       // 请求期间用户可能已返回主页面
+       if (!this.priceChart) return;
+       if (historyData && historyData.error === 'API_LOCKED') {
+         this.priceChart.showError(I18N.t('rateLimitError'));
+       } else if (historyData && historyData.length > 0) {
          this.priceChart.setData(historyData);
-         if (chartLoading) chartLoading.style.display = 'none';
+       } else {
+         this.priceChart.showError(I18N.t('noHistoricalData'));
        }
      } catch (error) {
        console.error('[Chart] Error updating price chart:', error);
        if (this.priceChart) {
-         this.priceChart.showError();
+         this.priceChart.showError(I18N.t('chartDataLoadingFailed'));
        }
+     } finally {
+       if (chartLoading) chartLoading.style.display = 'none';
      }
+   }
+
+   setActivePeriod(period) {
+     document.querySelectorAll('.period-btn').forEach(btn => {
+       btn.classList.toggle('active', btn.dataset.period === String(period));
+     });
    }
 
    formatLargeNumber(number, symbol = '') {
@@ -1265,17 +1158,6 @@ class CryptoApp {
      }
    }
 
-   toggleDebugMode() {
-     const currentLang = this.settings.language || I18N.DEFAULT_LANGUAGE;
-     console.log('[Debug] 启动网络调试模式');
-     this.showMessage(I18N.t('debugModeStarted', currentLang), 'info');
-     this.runNetworkDiagnostics();
-   }
-
-   async runNetworkDiagnostics() {
-     // ... (omitted for brevity)
-   }
-
   updateCoinDetailPageLanguage(lang) {
     document.querySelectorAll('#coinDetailPage [data-i18n]').forEach(element => {
       const key = element.dataset.i18n;
@@ -1290,10 +1172,17 @@ class CryptoApp {
       this.settings.pinnedCoin = symbol;
     }
 
-    await this.saveSettings();
-    this.renderCryptoData();
+    try {
+      await storage.set(Config.STORAGE_KEY, this.settings);
+    } catch (error) {
+      console.warn('Failed to save settings:', error);
+    }
+
+    this.renderCryptoData(this.settings.language);
+    const pinnedData = this.cryptoData.find(c => c.symbol === this.settings.pinnedCoin);
+    updateBadge(pinnedData);
   }
 }
 
-// 创建应用实例
-const app = new CryptoApp();
+// 创建应用实例；i18n.js 通过 window.cryptoApp 读取当前语言
+window.cryptoApp = new CryptoApp();

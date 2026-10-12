@@ -674,31 +674,12 @@ button:active {
   gap: 16px;
 }
 
-.feedback-input textarea {
-  width: 100%;
-  height: 120px;
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #2d3748;
-  font-family: inherit;
-  font-size: 14px;
-  resize: vertical;
-  box-sizing: border-box;
-  transition: all 0.2s;
-  resize: none;
-  border-color: rgba(102, 126, 234, 0.2);
-}
-
-.feedback-input textarea::placeholder {
-  color: #718096;
-}
-
-.feedback-input textarea:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+.feedback-tip {
+  margin: 0;
+  color: #4a5568;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
 }
 
 .common-actions {
