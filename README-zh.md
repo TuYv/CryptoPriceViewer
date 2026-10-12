@@ -4,7 +4,7 @@
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Available-brightgreen)](https://chrome.google.com/webstore)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/yourusername/crypto-price-viewer)
+[![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
 
 ## 🌍 多语言文档
 
@@ -23,7 +23,7 @@
 - **实时价格监控**: 实时加密货币价格，自动更新
 - **智能搜索**: 智能加密货币搜索，支持自动完成建议
 - **动态币种管理**: 动态添加/删除任何加密货币
-- **多货币支持**: 支持美元、欧元、日元等多种法币显示
+- **多货币支持**: 可用美元（USD）、人民币（CNY）或欧元（EUR）显示价格
 - **价格趋势指标**: 价格变动的可视化指标
 - **市场数据**: 全面的市值、交易量和24小时变化数据
 
@@ -46,19 +46,15 @@
 - **玻璃拟态设计**: 现代化、半透明界面
 - **响应式布局**: 适应不同屏幕尺寸
 - **流畅动画**: CSS过渡和悬停效果
-- **深色主题支持**: 护眼的深色模式
 - **直观导航**: 基于标签的界面，清晰的分区
 
 ### ⚙️ 高级设置
 - **可自定义刷新间隔**: 设置您偏好的更新频率
-- **数据导入/导出**: 备份和恢复您的观察列表
 - **本地存储**: 所有数据本地存储，保护隐私
-- **重置选项**: 清除所有数据功能
 
 ### 💬 用户反馈系统
-- **集成反馈**: 内置反馈收集
+- **GitHub 反馈**: 点击“反馈”按钮打开项目的 GitHub Issues 页面
 - **捐赠支持**: BNB和SOL捐赠二维码
-- **多种联系方式**: 多种联系支持的方式
 
 ## 🛠️ 技术栈
 
@@ -74,48 +70,28 @@
 ## 📁 项目结构
 
 ```
-chromeTools/
+CryptoPriceViewer/
 ├── manifest.json          # 扩展配置
-├── popup.html            # 主UI界面
-├── privacy-policy.html   # Chrome Web Store隐私政策
+├── popup.html             # 主界面
+├── privacy-policy.html    # 提交 Chrome Web Store 用的隐私政策
 ├── css/
-│   └── style.css         # 样式和主题
+│   └── style.css          # 样式
 ├── js/
-│   ├── popup.js          # 主应用逻辑
-│   ├── background.js     # Service Worker后台脚本
-│   ├── badge-updater.js  # 徽章价格更新功能
-│   ├── config.js         # 配置和常量
-│   ├── i18n.js           # 国际化
-│   ├── lib/              # 🆕 核心工具库
-│   │   ├── chart.js      # 图表渲染和数据可视化
-│   │   ├── http.js       # HTTP客户端和错误处理
-│   │   ├── storage.js    # 存储抽象层
-│   │   ├── dom-manager.js # DOM操作工具
-│   │   ├── error-handler.js # 集中错误处理
-│   │   ├── data-formatter.js # 数据格式化工具
-│   │   └── ...           # 其他工具模块
-│   ├── services/         # 🆕 业务逻辑服务
-│   │   ├── CoinDetailService.js # 币种详情数据管理
-│   │   ├── NotionService.js     # Notion API集成
-│   │   └── StorageService.js    # 数据持久化服务
-│   └── clients/          # 🆕 外部API客户端
-│       └── CoinGeckoClient.js   # CoinGecko API客户端
-└── images/               # 图标和资源
-    ├── icon16.svg
-    ├── icon48.svg
-    ├── icon128.svg
-    └── ...
-│   ├── services/         # API和数据服务
-│   │   ├── ApiService.js
-│   │   ├── NotionService.js
-│   │   └── SettingsManager.js
-│   └── ui/
-│       └── UIManager.js  # UI管理
-└── images/               # 图标和资源
-    ├── icon16.svg
-    ├── icon48.svg
-    ├── icon128.svg
-    └── ...
+│   ├── popup.js           # 弹出窗口的主逻辑
+│   ├── background.js      # Service Worker：刷新固定到图标上的币种价格
+│   ├── badge-updater.js   # 图标徽章的文字和颜色
+│   ├── config.js          # 常量和默认设置
+│   ├── i18n.js            # 翻译文本（zh / en / ja / ko）
+│   ├── lib/
+│   │   ├── chart.js       # Canvas 价格图表
+│   │   ├── storage.js     # 对 chrome.storage / localStorage 的封装
+│   │   └── deep-storage.js # 按路径读写嵌套的值
+│   ├── services/
+│   │   ├── CoinDetailService.js # 币种详情和历史价格，带缓存
+│   │   └── StorageService.js    # 记录 API 限流状态
+│   └── clients/
+│       └── CoinGeckoClient.js   # CoinGecko API 客户端
+└── images/                # 图标和捐赠二维码
 ```
 
 ## 🚀 安装方法
@@ -128,7 +104,7 @@ chromeTools/
 ### 手动安装（开发者模式）
 1. 克隆此仓库：
    ```bash
-   git clone https://github.com/yourusername/crypto-price-viewer.git
+   git clone https://github.com/TuYv/CryptoPriceViewer.git
    ```
 2. 打开Chrome并导航至`chrome://extensions/`
 3. 在右上角启用"开发者模式"
@@ -149,11 +125,6 @@ chromeTools/
 - **设置**: 自定义语言、货币和刷新频率
 - **反馈**: 分享您的想法和建议
 
-### 键盘快捷键
-- `Ctrl/Cmd + K`: 聚焦搜索栏
-- `Escape`: 关闭搜索建议
-- `Enter`: 添加选中的加密货币
-
 ## 🔧 配置
 
 ### API配置
@@ -162,8 +133,7 @@ chromeTools/
 ### 自定义设置
 - **语言**: 从4种支持的语言中选择
 - **货币**: 选择您偏好的法定货币
-- **刷新频率**: 设置更新间隔（30秒、1分钟、5分钟、15分钟）
-- **主题**: 自动深色/浅色模式支持
+- **刷新频率**: 设置更新间隔（关闭、30秒、1分钟、5分钟、10分钟）
 
 ## 🤝 贡献
 
@@ -178,10 +148,10 @@ chromeTools/
 ### 开发环境设置
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/crypto-price-viewer.git
+git clone https://github.com/TuYv/CryptoPriceViewer.git
 
 # 导航到项目目录
-cd crypto-price-viewer
+cd CryptoPriceViewer
 
 # 启动开发服务器（可选）
 python3 -m http.server 8080
@@ -196,9 +166,9 @@ python3 -m http.server 8080
 
 ## 🐛 Bug报告和功能请求
 
-- **Bug报告**: 使用扩展中的反馈功能或创建issue
-- **功能请求**: 通过反馈系统分享您的想法
-- **安全问题**: 通过扩展直接联系我们
+- **Bug报告**: 在 [GitHub Issues](https://github.com/TuYv/CryptoPriceViewer/issues) 提交
+- **功能请求**: 同样在 GitHub Issues 提交
+- **安全问题**: 在 GitHub Issues 提交（不要贴出密钥或个人信息）
 
 ## 📄 隐私政策
 
@@ -208,7 +178,7 @@ python3 -m http.server 8080
 - ✅ 所有数据本地存储在您的浏览器中
 - ✅ 不收集个人信息
 - ✅ 无跟踪或分析
-- ✅ 仅可选的反馈提交
+- ✅ 唯一的网络请求是向 CoinGecko 获取行情数据
 
 ## 📜 许可证
 
@@ -243,9 +213,8 @@ python3 -m http.server 8080
 
 ## 📞 支持
 
-- **扩展反馈**: 使用内置反馈功能
+- **扩展反馈**: 点击扩展里的“反馈”按钮打开 GitHub Issues
 - **GitHub Issues**: 为bug或功能创建issue
-- **邮箱**: 通过扩展反馈系统联系
 
 ## 🌟 支持我们
 

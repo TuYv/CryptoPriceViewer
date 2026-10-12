@@ -4,7 +4,7 @@
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Available-brightgreen)](https://chrome.google.com/webstore)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/yourusername/crypto-price-viewer)
+[![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
 
 ## 🌍 다국어 문서
 
@@ -23,7 +23,7 @@
 - **실시간 가격 모니터링**: 자동 업데이트되는 실시간 암호화폐 가격
 - **스마트 검색**: 자동완성 제안이 있는 지능형 암호화폐 검색
 - **동적 코인 관리**: 모든 암호화폐를 동적으로 추가/제거
-- **다중 통화 지원**: USD, EUR, JPY 등으로 가격 표시
+- **다중 통화 지원**: USD, CNY, EUR 중 하나로 가격 표시
 - **가격 추세 지표**: 가격 변동의 시각적 지표
 - **시장 데이터**: 포괄적인 시가총액, 거래량, 24시간 변동 데이터
 
@@ -40,19 +40,15 @@
 - **글래스모피즘 디자인**: 현대적이고 반투명한 인터페이스
 - **반응형 레이아웃**: 다양한 화면 크기에 적응
 - **부드러운 애니메이션**: CSS 전환 및 호버 효과
-- **다크 테마 지원**: 눈에 편한 다크 모드
 - **직관적인 내비게이션**: 명확한 섹션이 있는 탭 기반 인터페이스
 
 ### ⚙️ 고급 설정
 - **사용자 정의 새로고침 간격**: 선호하는 업데이트 빈도 설정
-- **데이터 가져오기/내보내기**: 관심 목록 백업 및 복원
 - **로컬 저장소**: 개인정보 보호를 위해 모든 데이터를 로컬에 저장
-- **재설정 옵션**: 모든 데이터 지우기 기능
 
 ### 💬 사용자 피드백 시스템
-- **통합 피드백**: 내장된 피드백 수집
+- **GitHub 피드백**: 피드백 버튼을 누르면 프로젝트의 GitHub Issues 페이지가 열립니다
 - **기부 지원**: BNB 및 SOL 기부 QR 코드
-- **다양한 연락 방법**: 지원팀에 연락하는 다양한 방법
 
 ## 🛠️ 기술 스택
 
@@ -66,29 +62,28 @@
 ## 📁 프로젝트 구조
 
 ```
-chromeTools/
+CryptoPriceViewer/
 ├── manifest.json          # 확장 프로그램 구성
-├── popup.html            # 메인 UI 인터페이스
-├── privacy-policy.html   # Chrome Web Store용 개인정보 보호정책
+├── popup.html             # 메인 화면
+├── privacy-policy.html    # Chrome Web Store용 개인정보 보호정책
 ├── css/
-│   └── style.css         # 스타일링 및 테마
+│   └── style.css          # 스타일
 ├── js/
-│   ├── popup.js          # 메인 애플리케이션 로직
-│   ├── config.js         # 구성 및 상수
-│   ├── i18n.js           # 국제화
-│   ├── app/
-│   │   └── CryptoApp.js  # 핵심 애플리케이션 클래스
-│   ├── services/         # API 및 데이터 서비스
-│   │   ├── ApiService.js
-│   │   ├── NotionService.js
-│   │   └── SettingsManager.js
-│   └── ui/
-│       └── UIManager.js  # UI 관리
-└── images/               # 아이콘 및 자산
-    ├── icon16.svg
-    ├── icon48.svg
-    ├── icon128.svg
-    └── ...
+│   ├── popup.js           # 팝업 메인 로직
+│   ├── background.js      # Service Worker: 아이콘에 고정한 코인의 배지 가격 새로고침
+│   ├── badge-updater.js   # 배지 텍스트와 색상
+│   ├── config.js          # 상수 및 기본 설정
+│   ├── i18n.js            # 번역 (zh / en / ja / ko)
+│   ├── lib/
+│   │   ├── chart.js       # Canvas 가격 차트
+│   │   ├── storage.js     # chrome.storage / localStorage 래퍼
+│   │   └── deep-storage.js # 경로로 중첩된 값 읽기/쓰기
+│   ├── services/
+│   │   ├── CoinDetailService.js # 코인 상세 정보와 가격 기록 (캐시 포함)
+│   │   └── StorageService.js    # API 요청 제한 상태
+│   └── clients/
+│       └── CoinGeckoClient.js   # CoinGecko API 클라이언트
+└── images/                # 아이콘 및 기부용 QR 코드
 ```
 
 ## 🚀 설치
@@ -101,7 +96,7 @@ chromeTools/
 ### 수동 설치 (개발자 모드)
 1. 이 저장소 복제:
    ```bash
-   git clone https://github.com/yourusername/crypto-price-viewer.git
+   git clone https://github.com/TuYv/CryptoPriceViewer.git
    ```
 2. Chrome을 열고 `chrome://extensions/`로 이동
 3. 오른쪽 상단에서 "개발자 모드" 활성화
@@ -122,11 +117,6 @@ chromeTools/
 - **설정**: 언어, 통화, 새로고침 빈도 사용자 정의
 - **피드백**: 생각과 제안 공유
 
-### 키보드 단축키
-- `Ctrl/Cmd + K`: 검색 바에 포커스
-- `Escape`: 검색 제안 닫기
-- `Enter`: 선택한 암호화폐 추가
-
 ## 🔧 구성
 
 ### API 구성
@@ -135,8 +125,7 @@ chromeTools/
 ### 사용자 정의
 - **언어**: 지원되는 4개 언어 중 선택
 - **통화**: 선호하는 법정 통화 선택
-- **새로고침 빈도**: 업데이트 간격 설정 (30초, 1분, 5분, 15분)
-- **테마**: 자동 다크/라이트 모드 지원
+- **새로고침 빈도**: 업데이트 간격 설정 (끄기, 30초, 1분, 5분, 10분)
 
 ## 🤝 기여
 
@@ -151,10 +140,10 @@ chromeTools/
 ### 개발 환경 설정
 ```bash
 # 저장소 복제
-git clone https://github.com/yourusername/crypto-price-viewer.git
+git clone https://github.com/TuYv/CryptoPriceViewer.git
 
 # 프로젝트 디렉토리로 이동
-cd crypto-price-viewer
+cd CryptoPriceViewer
 
 # 개발 서버 시작 (선택사항)
 python3 -m http.server 8080
@@ -169,9 +158,9 @@ python3 -m http.server 8080
 
 ## 🐛 버그 리포트 및 기능 요청
 
-- **버그 리포트**: 확장 프로그램의 피드백 기능 사용 또는 이슈 생성
-- **기능 요청**: 피드백 시스템을 통해 아이디어 공유
-- **보안 문제**: 확장 프로그램을 통해 직접 연락
+- **버그 리포트**: [GitHub Issues](https://github.com/TuYv/CryptoPriceViewer/issues)에 등록해주세요
+- **기능 요청**: 마찬가지로 GitHub Issues에 등록해주세요
+- **보안 문제**: GitHub Issues에 등록해주세요 (비밀 키나 개인 정보는 적지 마세요)
 
 ## 📄 개인정보 보호정책
 
@@ -181,7 +170,7 @@ python3 -m http.server 8080
 - ✅ 모든 데이터는 브라우저에 로컬로 저장
 - ✅ 개인 정보 수집 안 함
 - ✅ 추적 또는 분석 없음
-- ✅ 선택적 피드백 제출만
+- ✅ 네트워크 요청은 CoinGecko 시세 데이터 요청뿐입니다
 
 ## 📜 라이선스
 
@@ -216,9 +205,8 @@ python3 -m http.server 8080
 
 ## 📞 지원
 
-- **확장 프로그램 피드백**: 내장 피드백 기능 사용
+- **확장 프로그램 피드백**: 확장 프로그램의 피드백 버튼으로 GitHub Issues를 엽니다
 - **GitHub 이슈**: 버그나 기능에 대한 이슈 생성
-- **이메일**: 확장 프로그램 피드백 시스템을 통해 연락
 
 ## 🌟 지원 보여주기
 

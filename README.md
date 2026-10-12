@@ -4,7 +4,7 @@
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Available-brightgreen)](https://chrome.google.com/webstore)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/yourusername/crypto-price-viewer)
+[![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
 
 ## 🌍 Multi-Language Documentation
 
@@ -23,7 +23,7 @@ Cryptocurrency Price Viewer is a comprehensive Chrome extension that provides re
 - **Real-time Price Monitoring**: Live cryptocurrency prices with automatic updates
 - **Smart Search**: Intelligent cryptocurrency search with autocomplete suggestions
 - **Dynamic Coin Management**: Add/remove any cryptocurrency dynamically
-- **Multi-currency Support**: Display prices in USD, EUR, JPY, and more
+- **Multi-currency Support**: Display prices in USD, CNY, or EUR
 - **Price Trend Indicators**: Visual indicators for price movements
 - **Market Data**: Comprehensive market cap, volume, and 24h change data
 
@@ -46,19 +46,15 @@ Cryptocurrency Price Viewer is a comprehensive Chrome extension that provides re
 - **Glassmorphism Design**: Modern, translucent interface
 - **Responsive Layout**: Adapts to different screen sizes
 - **Smooth Animations**: CSS transitions and hover effects
-- **Dark Theme Support**: Eye-friendly dark mode
 - **Intuitive Navigation**: Tab-based interface with clear sections
 
 ### ⚙️ Advanced Settings
 - **Customizable Refresh Intervals**: Set your preferred update frequency
-- **Data Import/Export**: Backup and restore your watchlist
 - **Local Storage**: All data stored locally for privacy
-- **Reset Options**: Clear all data functionality
 
 ### 💬 User Feedback System
-- **Integrated Feedback**: Built-in feedback collection
+- **Feedback via GitHub**: The Feedback button opens the project's GitHub Issues page
 - **Donation Support**: QR codes for BNB and SOL donations
-- **Multiple Contact Methods**: Various ways to reach support
 
 ## 🛠️ Technology Stack
 
@@ -74,37 +70,28 @@ Cryptocurrency Price Viewer is a comprehensive Chrome extension that provides re
 ## 📁 Project Structure
 
 ```
-chromeTools/
+CryptoPriceViewer/
 ├── manifest.json          # Extension configuration
-├── popup.html            # Main UI interface
-├── privacy-policy.html   # Privacy policy for Chrome Web Store
+├── popup.html             # Main UI
+├── privacy-policy.html    # Privacy policy for the Chrome Web Store
 ├── css/
-│   └── style.css         # Styling and themes
+│   └── style.css          # Styles
 ├── js/
-│   ├── popup.js          # Main application logic
-│   ├── background.js     # Service worker for badge updates
-│   ├── badge-updater.js  # Badge price update functionality
-│   ├── config.js         # Configuration and constants
-│   ├── i18n.js           # Internationalization
-│   ├── lib/              # 🆕 Core utility library
-│   │   ├── chart.js      # Chart rendering and data visualization
-│   │   ├── http.js       # HTTP client with error handling
-│   │   ├── storage.js    # Storage abstraction layer
-│   │   ├── dom-manager.js # DOM manipulation utilities
-│   │   ├── error-handler.js # Centralized error handling
-│   │   ├── data-formatter.js # Data formatting utilities
-│   │   └── ...           # Other utility modules
-│   ├── services/         # 🆕 Business logic services
-│   │   ├── CoinDetailService.js # Coin detail data management
-│   │   ├── NotionService.js     # Notion API integration
-│   │   └── StorageService.js    # Data persistence service
-│   └── clients/          # 🆕 External API clients
+│   ├── popup.js           # Main popup logic
+│   ├── background.js      # Service worker: refreshes the pinned coin's badge price
+│   ├── badge-updater.js   # Badge text and color
+│   ├── config.js          # Constants and default settings
+│   ├── i18n.js            # Translations (zh / en / ja / ko)
+│   ├── lib/
+│   │   ├── chart.js       # Canvas price chart
+│   │   ├── storage.js     # chrome.storage / localStorage wrapper
+│   │   └── deep-storage.js # Read/write nested values by path
+│   ├── services/
+│   │   ├── CoinDetailService.js # Coin details and price history, with cache
+│   │   └── StorageService.js    # API rate-limit state
+│   └── clients/
 │       └── CoinGeckoClient.js   # CoinGecko API client
-└── images/               # Icons and assets
-    ├── icon16.svg
-    ├── icon48.svg
-    ├── icon128.svg
-    └── ...
+└── images/                # Icons and donation QR codes
 ```
 
 ## 🚀 Installation
@@ -117,7 +104,7 @@ chromeTools/
 ### Manual Installation (Developer Mode)
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/crypto-price-viewer.git
+   git clone https://github.com/TuYv/CryptoPriceViewer.git
    ```
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable "Developer mode" in the top right
@@ -138,11 +125,6 @@ chromeTools/
 - **Settings**: Customize language, currency, and refresh rate
 - **Feedback**: Share your thoughts and suggestions
 
-### Keyboard Shortcuts
-- `Ctrl/Cmd + K`: Focus search bar
-- `Escape`: Close search suggestions
-- `Enter`: Add selected cryptocurrency
-
 ## 🔧 Configuration
 
 ### API Configuration
@@ -151,8 +133,7 @@ The extension uses the CoinGecko API for cryptocurrency data. No API key require
 ### Customization
 - **Language**: Choose from 4 supported languages
 - **Currency**: Select your preferred fiat currency
-- **Refresh Rate**: Set update intervals (30s, 1m, 5m, 15m)
-- **Theme**: Automatic dark/light mode support
+- **Refresh Rate**: Set update intervals (Off, 30s, 1m, 5m, 10m)
 
 ## 🤝 Contributing
 
@@ -167,10 +148,10 @@ We welcome contributions! Please follow these steps:
 ### Development Setup
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/crypto-price-viewer.git
+git clone https://github.com/TuYv/CryptoPriceViewer.git
 
 # Navigate to project directory
-cd crypto-price-viewer
+cd CryptoPriceViewer
 
 # Start development server (optional)
 python3 -m http.server 8080
@@ -185,9 +166,9 @@ python3 -m http.server 8080
 
 ## 🐛 Bug Reports & Feature Requests
 
-- **Bug Reports**: Use the feedback feature in the extension or create an issue
-- **Feature Requests**: Share your ideas through the feedback system
-- **Security Issues**: Contact us directly through the extension
+- **Bug Reports**: Open an issue on [GitHub Issues](https://github.com/TuYv/CryptoPriceViewer/issues)
+- **Feature Requests**: Open an issue on GitHub Issues as well
+- **Security Issues**: Open an issue on GitHub Issues (do not post secrets or personal data)
 
 ## 📄 Privacy Policy
 
@@ -197,7 +178,7 @@ We take your privacy seriously. Read our full [Privacy Policy](./privacy-policy.
 - ✅ All data stored locally in your browser
 - ✅ No personal information collected
 - ✅ No tracking or analytics
-- ✅ Optional feedback submission only
+- ✅ The only network requests are price data requests to CoinGecko
 
 ## 📜 License
 
@@ -232,9 +213,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Extension Feedback**: Use the built-in feedback feature
+- **Extension Feedback**: Click Feedback in the extension to open GitHub Issues
 - **GitHub Issues**: Create an issue for bugs or features
-- **Email**: Contact through extension feedback system
 
 ## 🌟 Show Your Support
 

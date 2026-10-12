@@ -4,7 +4,7 @@
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Available-brightgreen)](https://chrome.google.com/webstore)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/yourusername/crypto-price-viewer)
+[![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
 
 ## 🌍 多言語ドキュメント
 
@@ -23,7 +23,7 @@
 - **リアルタイム価格監視**: 自動更新によるライブ暗号通貨価格
 - **スマート検索**: オートコンプリート提案付きインテリジェント暗号通貨検索
 - **動的コイン管理**: 任意の暗号通貨を動的に追加/削除
-- **多通貨サポート**: USD、EUR、JPYなどでの価格表示
+- **多通貨サポート**: USD、CNY、EURのいずれかで価格を表示
 - **価格トレンド指標**: 価格変動の視覚的指標
 - **市場データ**: 包括的な時価総額、出来高、24時間変動データ
 
@@ -40,19 +40,15 @@
 - **グラスモーフィズムデザイン**: モダンで半透明のインターフェース
 - **レスポンシブレイアウト**: 異なる画面サイズに適応
 - **スムーズアニメーション**: CSSトランジションとホバー効果
-- **ダークテーマサポート**: 目に優しいダークモード
 - **直感的ナビゲーション**: 明確なセクションを持つタブベースインターフェース
 
 ### ⚙️ 高度な設定
 - **カスタマイズ可能な更新間隔**: 好みの更新頻度を設定
-- **データインポート/エクスポート**: ウォッチリストのバックアップと復元
 - **ローカルストレージ**: プライバシーのためすべてのデータをローカル保存
-- **リセットオプション**: 全データクリア機能
 
 ### 💬 ユーザーフィードバックシステム
-- **統合フィードバック**: 内蔵フィードバック収集
+- **GitHubでフィードバック**: 「フィードバック」ボタンでプロジェクトのGitHub Issuesページを開きます
 - **寄付サポート**: BNBとSOL寄付QRコード
-- **複数の連絡方法**: サポートに連絡する様々な方法
 
 ## 🛠️ 技術スタック
 
@@ -66,29 +62,28 @@
 ## 📁 プロジェクト構造
 
 ```
-chromeTools/
-├── manifest.json          # 拡張機能設定
-├── popup.html            # メインUIインターフェース
-├── privacy-policy.html   # Chrome Web Store用プライバシーポリシー
+CryptoPriceViewer/
+├── manifest.json          # 拡張機能の設定
+├── popup.html             # メイン画面
+├── privacy-policy.html    # Chrome Web Store用プライバシーポリシー
 ├── css/
-│   └── style.css         # スタイリングとテーマ
+│   └── style.css          # スタイル
 ├── js/
-│   ├── popup.js          # メインアプリケーションロジック
-│   ├── config.js         # 設定と定数
-│   ├── i18n.js           # 国際化
-│   ├── app/
-│   │   └── CryptoApp.js  # コアアプリケーションクラス
-│   ├── services/         # APIとデータサービス
-│   │   ├── ApiService.js
-│   │   ├── NotionService.js
-│   │   └── SettingsManager.js
-│   └── ui/
-│       └── UIManager.js  # UI管理
-└── images/               # アイコンとアセット
-    ├── icon16.svg
-    ├── icon48.svg
-    ├── icon128.svg
-    └── ...
+│   ├── popup.js           # ポップアップのメインロジック
+│   ├── background.js      # Service Worker：アイコンに固定したコインのバッジ価格を更新
+│   ├── badge-updater.js   # バッジの文字と色
+│   ├── config.js          # 定数とデフォルト設定
+│   ├── i18n.js            # 翻訳（zh / en / ja / ko）
+│   ├── lib/
+│   │   ├── chart.js       # Canvasの価格チャート
+│   │   ├── storage.js     # chrome.storage / localStorageのラッパー
+│   │   └── deep-storage.js # パスを指定して入れ子の値を読み書き
+│   ├── services/
+│   │   ├── CoinDetailService.js # コイン詳細と価格履歴（キャッシュ付き）
+│   │   └── StorageService.js    # APIレート制限の状態
+│   └── clients/
+│       └── CoinGeckoClient.js   # CoinGecko APIクライアント
+└── images/                # アイコンと寄付用QRコード
 ```
 
 ## 🚀 インストール
@@ -101,7 +96,7 @@ chromeTools/
 ### 手動インストール（開発者モード）
 1. このリポジトリをクローン：
    ```bash
-   git clone https://github.com/yourusername/crypto-price-viewer.git
+   git clone https://github.com/TuYv/CryptoPriceViewer.git
    ```
 2. Chromeを開き`chrome://extensions/`に移動
 3. 右上の"デベロッパーモード"を有効化
@@ -122,11 +117,6 @@ chromeTools/
 - **設定**: 言語、通貨、更新頻度をカスタマイズ
 - **フィードバック**: 思考や提案を共有
 
-### キーボードショートカット
-- `Ctrl/Cmd + K`: 検索バーにフォーカス
-- `Escape`: 検索提案を閉じる
-- `Enter`: 選択した暗号通貨を追加
-
 ## 🔧 設定
 
 ### API設定
@@ -135,8 +125,7 @@ chromeTools/
 ### カスタマイズ
 - **言語**: 4つのサポート言語から選択
 - **通貨**: 好みの法定通貨を選択
-- **更新頻度**: 更新間隔を設定（30秒、1分、5分、15分）
-- **テーマ**: 自動ダーク/ライトモードサポート
+- **更新頻度**: 更新間隔を設定（オフ、30秒、1分、5分、10分）
 
 ## 🤝 貢献
 
@@ -151,10 +140,10 @@ chromeTools/
 ### 開発環境セットアップ
 ```bash
 # リポジトリをクローン
-git clone https://github.com/yourusername/crypto-price-viewer.git
+git clone https://github.com/TuYv/CryptoPriceViewer.git
 
 # プロジェクトディレクトリに移動
-cd crypto-price-viewer
+cd CryptoPriceViewer
 
 # 開発サーバーを開始（オプション）
 python3 -m http.server 8080
@@ -169,9 +158,9 @@ python3 -m http.server 8080
 
 ## 🐛 バグレポートと機能リクエスト
 
-- **バグレポート**: 拡張機能のフィードバック機能を使用またはissueを作成
-- **機能リクエスト**: フィードバックシステムでアイデアを共有
-- **セキュリティ問題**: 拡張機能を通じて直接連絡
+- **バグレポート**: [GitHub Issues](https://github.com/TuYv/CryptoPriceViewer/issues) に投稿してください
+- **機能リクエスト**: 同じくGitHub Issuesに投稿してください
+- **セキュリティ問題**: GitHub Issuesに投稿してください（秘密情報や個人情報は書かないでください）
 
 ## 📄 プライバシーポリシー
 
@@ -181,7 +170,7 @@ python3 -m http.server 8080
 - ✅ すべてのデータはブラウザにローカル保存
 - ✅ 個人情報は収集しません
 - ✅ トラッキングや分析なし
-- ✅ オプションのフィードバック送信のみ
+- ✅ ネットワーク通信はCoinGeckoへの価格データ取得のみ
 
 ## 📜 ライセンス
 
@@ -216,9 +205,8 @@ python3 -m http.server 8080
 
 ## 📞 サポート
 
-- **拡張機能フィードバック**: 内蔵フィードバック機能を使用
+- **拡張機能フィードバック**: 拡張機能の「フィードバック」ボタンからGitHub Issuesを開きます
 - **GitHub Issues**: バグや機能のissueを作成
-- **メール**: 拡張機能フィードバックシステム経由で連絡
 
 ## 🌟 サポートを示す
 

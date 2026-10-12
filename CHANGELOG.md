@@ -2,7 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.0] - 2025-01-27
+## [0.1.3] - 2026-10-12
+
+### Fixes
+- The price on the extension icon now keeps updating after you pin a coin or change the refresh interval. Before, it only resumed after the browser was restarted.
+- The coin detail page no longer shows the currency symbol twice (for example "$$84,086").
+- New installs now refresh every 30 seconds by default, as intended. Before, auto refresh started out turned off.
+- The Japanese interface no longer shows Korean text, and the missing Japanese texts on the coin detail page were added.
+- The settings panel title no longer shows the raw text "settingsTitle".
+- Error messages now follow the language you chose.
+- The chart period buttons now highlight the period that is actually shown.
+- Removing the pinned coin now also clears the price on the extension icon.
+- Removing a coin now takes effect immediately, even while CoinGecko is limiting requests.
+- When CoinGecko limits requests, the extension now says so, instead of showing a general loading error.
+
+### Changes
+- The Feedback button now opens the project's GitHub Issues page. The extension no longer sends feedback itself and no longer needs access to api.notion.com.
+- Removed an unfinished debug shortcut (Ctrl+Shift+D) and unused code.
+
+## [0.1.2] - 2025-09-25
+
+### Improvements
+- Added more translations for all supported languages and improved the Korean interface text.
+
+## [0.1.1] - 2025-09-23
+
+### Fixes
+- Made background price refresh scheduling more reliable.
+
+### Documentation
+- Updated the README files for the 0.1.0 features and the new project structure.
+
+## [0.1.0] - 2025-09-21
 
 ### 🎉 New Features
 - **Coin Detail Page**: Added comprehensive coin detail view with price charts, market data, and historical information
@@ -36,7 +67,7 @@ All notable changes to this project will be documented in this file.
 - **Code Documentation**: Added comprehensive inline documentation for all new modules
 - **Architecture Notes**: Updated development documentation with new architectural patterns
 
-## [0.0.4] - 2024-12-30
+## [0.0.4] - 2025-09-05
 
 ### New
 - One-tap coin details: Open a coin’s page on CoinGecko in a new tab, automatically matched to your language.
