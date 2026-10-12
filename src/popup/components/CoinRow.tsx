@@ -9,7 +9,7 @@ import type { TileProps } from './Tile';
 
 const sign = (v: number | null | undefined) => ((v ?? 0) >= 0 ? 'up' : 'down');
 
-/** 列表显示方式下的一行：图标、代码和名字、7 天走势、价格和涨跌幅。参数和色块一样 */
+/** 列表显示方式下的一行：图标、代码和名字、价格和涨跌幅，7 天走势铺满整行垫在文字下面。参数和色块一样 */
 export function CoinRow(props: TileProps) {
   const { t, lang, settings } = usePopup();
   const { id, coin, pinned, loading, stale, menuOpen, dragging } = props;
@@ -36,6 +36,11 @@ export function CoinRow(props: TileProps) {
       onDragEnd={props.onDragEnd}
     >
       <button type="button" className="c-row-open" onClick={() => props.onOpen(id)} aria-label={name} />
+      {!loading && (
+        <span className="c-row-spark">
+          <Sparkline values={coin?.spark ?? []} height={48} fade />
+        </span>
+      )}
       <CoinIcon src={coin?.image} symbol={coin?.symbol} size={28} />
       <span className="c-row-name">
         <b>
@@ -48,9 +53,6 @@ export function CoinRow(props: TileProps) {
           )}
         </b>
         <small>{name}</small>
-      </span>
-      <span className="c-row-spark">
-        {loading ? <span className="c-skel c-skel--spark" /> : <Sparkline values={coin?.spark ?? []} height={28} />}
       </span>
       {loading ? (
         <span className="c-row-q">

@@ -202,6 +202,11 @@ select {
   outline: 2px solid var(--c-ink);
   outline-offset: 2px;
 }
+/* 色块和列表行会裁掉超出边缘的部分，焦点框画在里面 */
+.c-tile-open:focus-visible,
+.c-row-open:focus-visible {
+  outline-offset: -2px;
+}
 
 .up {
   color: var(--c-up);
@@ -668,9 +673,11 @@ select {
 .c-list {
   display: flex;
   flex-direction: column;
+  gap: 4px;
   margin: 0 -8px;
 }
 .c-row {
+  --row-bg: var(--c-bg);
   position: relative;
   display: flex;
   align-items: center;
@@ -678,16 +685,14 @@ select {
   height: 56px;
   padding: 0 4px 0 8px;
   border-radius: var(--r-md);
+  background: var(--row-bg);
   transition:
     box-shadow 0.15s ease-out,
     transform 0.15s ease-out;
 }
 /* 固定到工具栏的那一行一直带币色，其余行鼠标移上去才有 */
-.c-row:hover,
-.c-row.is-menu-open,
-.c-row.is-pinned,
-.c-row.is-dragging {
-  background: color-mix(in srgb, var(--coin) var(--c-tile-mix), var(--c-tile-base));
+.c-row:is(:hover, .is-menu-open, .is-pinned, .is-dragging) {
+  --row-bg: color-mix(in srgb, var(--coin) var(--c-tile-mix), var(--c-tile-base));
 }
 .c-row[draggable="true"] {
   cursor: grab;
@@ -738,20 +743,43 @@ select {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.c-row-spark {
-  flex: none;
-  display: flex;
-  align-items: center;
-  width: 56px;
-  height: 28px;
+/* 7 天走势铺满整行，垫在文字下面 */
+.c-row > .c-row-spark {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  overflow: hidden;
 }
+/* 走势图贴着行的底边，上面空出 8px，线不会顶到行的上沿 */
 .c-row-spark .c-spark {
+  position: absolute;
+  left: 0;
+  bottom: 0;
   margin-top: 0;
 }
-.c-row-spark .c-skel--spark {
-  width: 100%;
-  height: 8px;
-  margin: 0;
+/* 填充从上往下变淡，最浓处 12%，文字压在上面也看得清；行本身带币色底时只留线 */
+.c-spark-area--fade {
+  opacity: 1;
+}
+.c-spark-fade-top {
+  stop-color: var(--coin);
+  stop-opacity: 0.12;
+}
+.c-spark-fade-bottom {
+  stop-color: var(--coin);
+  stop-opacity: 0;
+}
+.c-row:is(:hover, .is-menu-open, .is-pinned, .is-dragging) .c-spark-area {
+  opacity: 0;
+}
+/* 文字描一圈行的底色，走势线从字下面穿过时在字边上断开 */
+.c-row-name,
+.c-row-q {
+  text-shadow:
+    0 0 2px var(--row-bg),
+    0 0 4px var(--row-bg),
+    0 0 6px var(--row-bg);
 }
 .c-row-q {
   flex: none;
