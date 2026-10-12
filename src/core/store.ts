@@ -1,6 +1,7 @@
 import { storage } from '#imports';
 import type { Language } from '@/i18n';
 import type { ChartPoint, MarketCoin } from './coingecko';
+import type { CoinMeta } from './coins';
 import { EMPTY_GATE, type GateState } from './gate';
 import { convertLegacySettings, LEGACY_KEYS, LEGACY_SETTINGS_KEY, mergeLegacyInto } from './legacy';
 import type { NewsItem } from './news';
@@ -44,6 +45,9 @@ export interface NewsCache {
   failed: NewsSourceId[];
 }
 export const newsItem = storage.defineItem<NewsCache | null>('local:news', { fallback: null });
+
+/** 通过搜索添加的币的名字和图标，价格还没回来时用来显示 */
+export const coinMetaItem = storage.defineItem<Record<string, CoinMeta>>('local:coinMeta', { fallback: {} });
 
 /** 请求次数记录放在 session 里：后台脚本被 Chrome 暂停后再启动也还在，关掉浏览器就清空 */
 export const gateItem = storage.defineItem<GateState>('session:gate', { fallback: EMPTY_GATE });

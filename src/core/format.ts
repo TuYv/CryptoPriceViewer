@@ -69,6 +69,15 @@ export function formatAgo(timestamp: number, now: number, lang: Language): strin
   return rtf.format(-Math.floor(seconds / 86_400), 'day');
 }
 
+/** 1 分钟后、30 秒后 */
+export function formatIn(timestamp: number, now: number, lang: Language): string {
+  const seconds = Math.max(1, Math.round((timestamp - now) / 1000));
+  const rtf = new Intl.RelativeTimeFormat(LOCALES[lang], { numeric: 'auto' });
+  if (seconds < 60) return rtf.format(seconds, 'second');
+  if (seconds < 3600) return rtf.format(Math.ceil(seconds / 60), 'minute');
+  return rtf.format(Math.ceil(seconds / 3600), 'hour');
+}
+
 export function formatClock(timestamp: number, lang: Language): string {
   return new Intl.DateTimeFormat(LOCALES[lang], { hour: '2-digit', minute: '2-digit', hour12: false }).format(
     timestamp,

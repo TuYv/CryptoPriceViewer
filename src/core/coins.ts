@@ -22,8 +22,26 @@ const BRAND_COLORS: Record<string, string> = {
   hyperliquid: '#50D2C1',
 };
 
+export interface CoinMeta {
+  symbol: string;
+  name: string;
+  image: string;
+}
+
+const IMG = 'https://coin-images.coingecko.com/coins/images';
+
+/** 常见币的名字和图标：第一次打开、价格还没回来时先显示这些 */
+export const KNOWN_COINS: Record<string, CoinMeta> = {
+  bitcoin: { symbol: 'BTC', name: 'Bitcoin', image: `${IMG}/1/large/bitcoin.png?1696501400` },
+  ethereum: { symbol: 'ETH', name: 'Ethereum', image: `${IMG}/279/large/ethereum.png?1696501628` },
+  solana: { symbol: 'SOL', name: 'Solana', image: `${IMG}/4128/large/solana.png?1718769756` },
+  binancecoin: { symbol: 'BNB', name: 'BNB', image: `${IMG}/825/large/bnb-icon2_2x.png?1696501970` },
+  ripple: { symbol: 'XRP', name: 'XRP', image: `${IMG}/44/large/xrp-symbol-white-128.png?1696501442` },
+  dogecoin: { symbol: 'DOGE', name: 'Dogecoin', image: `${IMG}/5/large/dogecoin.png?1696501409` },
+};
+
 /** 空自选列表时推荐的币 */
-export const POPULAR_COINS = ['bitcoin', 'ethereum', 'solana', 'binancecoin', 'ripple', 'dogecoin'];
+export const POPULAR_COINS = Object.keys(KNOWN_COINS);
 
 export function coinColor(id: string): string {
   const brand = BRAND_COLORS[id];
