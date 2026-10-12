@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [master, rewrite]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: 类型检查和代码规范
+        run: npm run check
+
+      - name: 单元测试
+        run: npm test
+
+      - name: 端到端测试（在 Chromium 里装上扩展）
+        run: |
+          npx playwright install --with-deps chromium
+          npm run e2e
+
+      - name: 打包商店用的 zip
+        run: npm run zip
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: chrome-extension
+          path: .output/*-chrome.zip
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-results
+          path: test-results/
+          if-no-files-found: ignore
