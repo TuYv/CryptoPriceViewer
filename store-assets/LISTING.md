@@ -4,6 +4,7 @@
 
 - 扩展名称和简短说明来自 `public/_locales/*/messages.json`，商店会自动读取，不用手填。
 - 截图在 `store-assets/screenshots/`，每张都是 1280×800，中文和英文各 5 张，可以用 `npm run store:screenshots` 重新生成。截图里的新闻标题是示例文字。
+- 商店图标（128×128）是 `store-assets/icon128-store.png`。
 - 隐私政策网址填仓库里 `privacy-policy.html` 发布后的地址。
 
 ---

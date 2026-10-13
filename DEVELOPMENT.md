@@ -15,6 +15,7 @@
 | `npm run build` | 构建到 `.output/chrome-mv3`，可以在 `chrome://extensions` 里用“加载已解压的扩展程序”装上 |
 | `npm run zip` | 打出上传 Chrome 商店用的 zip，放在 `.output/` 下 |
 | `npm run store:screenshots` | 重新生成商店截图到 `store-assets/screenshots/`（需要联网加载币种图标） |
+| `npm run icons` | 改了 `store-assets/logo/` 里的图标源文件以后运行，重新生成 `public/icon/` 下的 16、32、48、128 像素图标和商店图标 `store-assets/icon128-store.png` |
 
 每次推送到 `master` 或 `rewrite`，以及每个 Pull Request，GitHub Actions 都会跑一遍检查、单元测试和端到端测试，并把商店用的 zip 存为构建产物。
 
@@ -30,9 +31,9 @@
 | `src/i18n/` | 四种语言的界面文字。`messages/en.ts` 是基准，其他语言少了或多了词条，类型检查会报错；占位符不一致时单元测试会失败 |
 | `public/_locales/` | 扩展名称和简介，Chrome 商店和扩展管理页显示的就是这里的文字 |
 | `public/icon/`、`public/donate/` | 工具栏图标、打赏二维码 |
-| `store-assets/` | 只给商店页面用的图片和提交资料（`LISTING.md`），不会打进扩展 |
+| `store-assets/` | 只给商店页面用的图片和提交资料（`LISTING.md`），不会打进扩展。`logo/` 是图标的源文件：`logo.svg` 用于 48 像素以上，`logo-small.svg` 是给 16、32 像素简化过的版本 |
 | `e2e/` | 端到端测试。`mock-api.ts` 拦截所有网络请求并用 `data/coingecko.json` 里的固定数据回应 |
-| `scripts/` | 生成商店截图的脚本 |
+| `scripts/` | 生成商店截图和图标的脚本 |
 
 ## 数据怎么流动
 

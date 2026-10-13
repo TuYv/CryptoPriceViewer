@@ -16,7 +16,8 @@
     "test": "vitest run",
     "e2e": "wxt build && playwright test",
     "postinstall": "wxt prepare",
-    "store:screenshots": "wxt build && playwright test --config scripts/playwright.store.config.ts"
+    "store:screenshots": "wxt build && playwright test --config scripts/playwright.store.config.ts",
+    "icons": "node scripts/render-icons.mjs"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "5.3.0",

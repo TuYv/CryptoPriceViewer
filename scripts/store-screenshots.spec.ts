@@ -9,6 +9,7 @@ import { mockNetwork } from '../e2e/mock-api';
 
 const EXTENSION_PATH = path.resolve('.output/chrome-mv3');
 const OUT = path.resolve('store-assets/screenshots');
+const ICON = `data:image/png;base64,${fs.readFileSync(path.resolve('public/icon/48.png')).toString('base64')}`;
 
 const COPY = {
   zh: {
@@ -100,7 +101,7 @@ async function compose(
       box-shadow:0 24px 60px rgba(20,25,35,${dark ? '.55' : '.22'}),0 0 0 1px rgba(20,25,35,.08)}
     .bar{position:absolute;top:-58px;right:0;width:380px;height:40px;border-radius:12px;background:${dark ? '#33373d' : '#dce0e6'};
       display:flex;align-items:center;justify-content:flex-end;padding:0 14px;box-sizing:border-box}
-    .bar span{position:relative;width:24px;height:24px;border-radius:6px;background:#5c8f6e}
+    .bar span{position:relative;width:24px;height:24px;background:url(${ICON}) center/contain no-repeat}
     .bar b{position:absolute;right:-12px;bottom:-8px;padding:1px 5px;border-radius:5px;background:#c42b2e;color:#fff;font:600 11px -apple-system,sans-serif}
   </style></head><body><div class="copy"><h1>${title}</h1><p>${text}</p></div>
   <div class="shot">${badge ? '<div class="bar"><span><b>83.7k</b></span></div>' : ''}<img class="popup" src="${img}"></div></body></html>`);
