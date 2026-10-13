@@ -3,8 +3,16 @@
 上传 `npm run zip` 打出的 `.output/crypto-price-viewer-1.0.0-chrome.zip` 时，下面的内容可以直接复制到开发者后台对应的栏目。
 
 - 扩展名称和简短说明来自 `public/_locales/*/messages.json`，商店会自动读取，不用手填。
-- 截图在 `store-assets/screenshots/`，每张都是 1280×800，中文和英文各 5 张，可以用 `npm run store:screenshots` 重新生成。截图里的新闻标题是示例文字。
-- 商店图标（128×128）是 `store-assets/icon128-store.png`。
+- 要上传的图片都在 `store-assets/` 里，`npm run store:images` 可以重新生成（需要联网加载币种图标）：
+
+  | 开发者后台的栏目 | 文件 | 说明 |
+  |---|---|---|
+  | 商店图标 | `icon128-store.png` | 128×128，必须 |
+  | 小宣传图 | `promo/small-440x280.png` | 440×280，必须 |
+  | 大宣传图 | `promo/marquee-1400x560.png` | 1400×560，可选；不传就不会被放到商店首页的大横幅里 |
+  | 截图 | `screenshots/<语言>/1-market.png` 到 `5-list-dark.png` | 每张 1280×800，每种语言 5 张。在后台的“商品详情”里切换到对应语言（中文、English、日本語、한국어），上传对应文件夹里的 5 张 |
+
+  截图里的新闻标题是示例文字。宣传图上只有图标和扩展名，所有语言通用。
 - 隐私政策网址填仓库里 `privacy-policy.html` 发布后的地址。
 
 ---

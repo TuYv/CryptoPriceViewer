@@ -3,7 +3,7 @@
  * 运行：npm run icons
  * - 16、32 像素（工具栏）用 logo-small.svg，铺满整张图
  * - 48 像素（扩展管理页）用 logo.svg，铺满整张图
- * - 128 像素（安装提示、商店）用 logo.svg，按 Chrome 的要求画在中间 96×96，四周留 16 像素透明边
+ * - 128 像素（安装提示、商店）用 logo.svg。Chrome 商店建议圆形图标直径约 112 像素，所以四周留 8 像素透明边
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -17,8 +17,8 @@ const outputs = [
   { file: 'public/icon/16.png', size: 16, src: 'logo-small.svg', pad: 0 },
   { file: 'public/icon/32.png', size: 32, src: 'logo-small.svg', pad: 0 },
   { file: 'public/icon/48.png', size: 48, src: 'logo.svg', pad: 0 },
-  { file: 'public/icon/128.png', size: 128, src: 'logo.svg', pad: 16 },
-  { file: 'store-assets/icon128-store.png', size: 128, src: 'logo.svg', pad: 16 },
+  { file: 'public/icon/128.png', size: 128, src: 'logo.svg', pad: 8 },
+  { file: 'store-assets/icon128-store.png', size: 128, src: 'logo.svg', pad: 8 },
 ];
 
 const browser = await chromium.launch({ channel: 'chromium' });

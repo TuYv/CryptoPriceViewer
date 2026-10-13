@@ -104,7 +104,7 @@ export const en = {
 
   'perm.title': 'News needs your permission',
   'perm.text':
-    'News comes from the sites below. The extension only reads the headlines and links they publish, never the other pages you visit.',
+    'News is fetched from the list below. The extension only reads the headlines and links published there, never the other pages you visit.',
   'perm.allow': 'Allow and show news',
   'perm.later': 'Not now',
   'perm.note': 'Chrome will ask you to confirm. You can turn off any site later in Settings › News sources.',

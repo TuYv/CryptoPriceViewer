@@ -14,7 +14,7 @@
 | `npm run e2e` | 构建以后，在 Playwright 自带的 Chromium 里装上扩展做端到端测试。第一次运行前要先执行 `npx playwright install chromium` |
 | `npm run build` | 构建到 `.output/chrome-mv3`，可以在 `chrome://extensions` 里用“加载已解压的扩展程序”装上 |
 | `npm run zip` | 打出上传 Chrome 商店用的 zip，放在 `.output/` 下 |
-| `npm run store:screenshots` | 重新生成商店截图到 `store-assets/screenshots/`（需要联网加载币种图标） |
+| `npm run store:images` | 重新生成商店截图（`store-assets/screenshots/`，四种语言各 5 张）和宣传图（`store-assets/promo/`），需要联网加载币种图标 |
 | `npm run icons` | 改了 `store-assets/logo/` 里的图标源文件以后运行，重新生成 `public/icon/` 下的 16、32、48、128 像素图标和商店图标 `store-assets/icon128-store.png` |
 
 每次推送到 `master`，以及每个 Pull Request，GitHub Actions 都会跑一遍检查、单元测试和端到端测试，并把商店用的 zip 存为构建产物。
@@ -33,7 +33,7 @@
 | `public/icon/`、`public/donate/` | 工具栏图标、打赏二维码 |
 | `store-assets/` | 只给商店页面用的图片和提交资料（`LISTING.md`），不会打进扩展。`logo/` 是图标的源文件：`logo.svg` 用于 48 像素以上，`logo-small.svg` 是给 16、32 像素简化过的版本 |
 | `e2e/` | 端到端测试。`mock-api.ts` 拦截所有网络请求并用 `data/coingecko.json` 里的固定数据回应 |
-| `scripts/` | 生成商店截图和图标的脚本 |
+| `scripts/` | 生成商店截图、宣传图和图标的脚本 |
 
 ## 数据怎么流动
 
