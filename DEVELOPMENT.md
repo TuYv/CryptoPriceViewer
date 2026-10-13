@@ -17,7 +17,7 @@
 | `npm run store:screenshots` | 重新生成商店截图到 `store-assets/screenshots/`（需要联网加载币种图标） |
 | `npm run icons` | 改了 `store-assets/logo/` 里的图标源文件以后运行，重新生成 `public/icon/` 下的 16、32、48、128 像素图标和商店图标 `store-assets/icon128-store.png` |
 
-每次推送到 `master` 或 `rewrite`，以及每个 Pull Request，GitHub Actions 都会跑一遍检查、单元测试和端到端测试，并把商店用的 zip 存为构建产物。
+每次推送到 `master`，以及每个 Pull Request，GitHub Actions 都会跑一遍检查、单元测试和端到端测试，并把商店用的 zip 存为构建产物。
 
 ## 目录
 
