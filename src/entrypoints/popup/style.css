@@ -1213,6 +1213,30 @@ select {
   font-size: var(--fs-xs);
   color: var(--c-sub);
 }
+.c-ask {
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: var(--r-md);
+  background: var(--c-soft);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-normal);
+}
+.c-ask p {
+  margin: 0 0 8px;
+}
+.c-ask-actions {
+  display: flex;
+  gap: 8px;
+}
+.c-ask .c-small-btn {
+  height: 30px;
+}
+.c-ask .c-small-btn--ghost {
+  background: var(--c-raised);
+}
+.c-feed-note.is-error {
+  color: var(--c-red);
+}
 .c-day {
   margin: 8px 0 6px;
   font-size: var(--fs-sm);

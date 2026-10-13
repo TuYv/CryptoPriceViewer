@@ -96,6 +96,11 @@ export const en = {
   'news.noSources': 'All news sources are off. You can turn them on in Settings.',
   'news.openSettings': 'Open Settings',
   'news.english': 'English',
+  'news.withEnglish': '{name} (English)',
+  'news.askMore': 'Also show news from {names}? The extension needs your OK to visit {hosts}.',
+  'news.blocked': '{names} now needs your OK before the extension can read its news.',
+  'news.allow': 'Allow',
+  'news.skip': 'No thanks',
 
   'perm.title': 'News needs your permission',
   'perm.text':

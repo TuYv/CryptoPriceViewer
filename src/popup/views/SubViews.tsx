@@ -9,7 +9,7 @@ import { sourceName } from './NewsView';
 
 const hostOf = (source: NewsSource) => new URL(source.origin.replace('/*', '/')).host.replace(/^www\.|^api\./, '');
 
-/** 设置 › 资讯来源：打开时申请访问权限，关掉时连权限一起收回 */
+/** 设置 › 资讯来源：打开需要权限的来源时申请访问权限，关掉时连权限一起收回 */
 export function SourcesView() {
   const { t, lang, settings, update, go } = usePopup();
   const [denied, setDenied] = useState<string | null>(null);
@@ -20,7 +20,9 @@ export function SourcesView() {
   const toggle = async (source: NewsSource, on: boolean) => {
     setDenied(null);
     if (on) {
-      const granted = await browser.permissions.request({ origins: [source.origin] }).catch(() => false);
+      // 允许直接读取的来源不用申请权限
+      const granted =
+        source.open || (await browser.permissions.request({ origins: [source.origin] }).catch(() => false));
       if (!granted) {
         setDenied(sourceName(source.id, lang));
         return;

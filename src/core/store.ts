@@ -43,8 +43,13 @@ export interface NewsCache {
   items: NewsItem[];
   /** 这次没抓到的来源 */
   failed: NewsSourceId[];
+  /** 网络正常、但网站不再允许直接读取的来源，要请用户同意访问。旧的缓存里没有这一项 */
+  blocked?: NewsSourceId[];
 }
 export const newsItem = storage.defineItem<NewsCache | null>('local:news', { fallback: null });
+
+/** 用户打开过资讯页。打开之前，后台不会访问任何新闻网站 */
+export const newsActivatedItem = storage.defineItem<boolean>('local:newsActivated', { fallback: false });
 
 /** 通过搜索添加的币的名字和图标，价格还没回来时用来显示 */
 export const coinMetaItem = storage.defineItem<Record<string, CoinMeta>>('local:coinMeta', { fallback: {} });

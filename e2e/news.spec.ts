@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { expect, test } from './fixtures';
+import { expect, syncSettings, test } from './fixtures';
 
 const MINUTE = 60_000;
 
@@ -44,16 +44,51 @@ async function seedNews(page: Page) {
   );
 }
 
-test('没有权限时，先说明会访问哪些网站；点“以后再说”回到行情', async ({ openPopup }) => {
+test('中文界面：打开资讯页之前不访问新闻网站；打开后不用授权直接显示 PANews 和 Odaily；Decrypt 单独询问，可以不要', async ({
+  openPopup,
+  worker,
+  net,
+}) => {
   const page = await openPopup();
+  await expect(page.locator('.c-tile').first()).toBeVisible();
+  await page.waitForTimeout(500);
+  expect(net.newsCalls).toEqual([]);
+
   await page.getByRole('button', { name: '资讯' }).click();
-  await expect(page.getByText('显示新闻需要你同意一次')).toBeVisible();
-  const sites = page.locator('.c-perm-sites');
-  await expect(sites).toContainText('www.panewslab.com');
-  await expect(sites).toContainText('api.odaily.news');
+  await expect(page.getByText('比特币现货 ETF 本周净流入 3.2 亿美元')).toBeVisible();
+  // Odaily 的“上线 SOL 永续合约”和 PANews 说的是同一件事，只留更早的那条，所以这里看 Odaily 的另一条
+  await expect(page.getByText('XRP 现货 ETF 获批进入最后审核阶段')).toBeVisible();
+  await expect(page.getByText('显示新闻需要你同意一次')).toHaveCount(0);
+  expect(net.newsCalls).not.toContain('decrypt.co');
+
+  const ask = page.locator('.c-ask');
+  await expect(ask).toContainText('Decrypt（英文）');
+  await expect(ask).toContainText('decrypt.co');
+  await ask.getByRole('button', { name: '不用了' }).click();
+  await expect(ask).toHaveCount(0);
+  await expect.poll(async () => (await syncSettings(worker)).newsSources).toEqual(['panews', 'odaily']);
+});
+
+test('英文界面只有 Decrypt：先说明要访问哪个网站；点“以后再说”回到行情', async ({ openPopup, net }) => {
+  const page = await openPopup({ settings: { language: 'en', coins: ['bitcoin'] } });
+  await page.getByRole('button', { name: 'News' }).click();
+  await expect(page.getByText('News needs your permission')).toBeVisible();
+  const sites = page.locator('.c-perm-sites li');
+  await expect(sites).toHaveCount(1);
   await expect(sites).toContainText('decrypt.co');
-  await page.getByRole('button', { name: '以后再说' }).click();
-  await expect(page.getByRole('heading', { name: '行情' })).toBeVisible();
+  expect(net.newsCalls).toEqual([]);
+  await page.getByRole('button', { name: 'Not now' }).click();
+  await expect(page.getByRole('heading', { name: 'Markets' })).toBeVisible();
+});
+
+test('PANews 不再允许直接读取时，提示用户同意访问；Odaily 照常显示', async ({ openPopup, net }) => {
+  net.panewsOpen = false;
+  const page = await openPopup({ settings: { language: 'zh', coins: ['bitcoin'], newsSources: ['panews', 'odaily'] } });
+  await page.getByRole('button', { name: '资讯' }).click();
+  await expect(page.getByText('交易平台宣布上线SOL永续合约')).toBeVisible();
+  await expect(page.locator('.c-ask')).toContainText('PANews 现在要先同意扩展访问，才能读取新闻', { timeout: 10_000 });
+  await expect(page.locator('.c-ask').getByRole('button', { name: '允许' })).toBeVisible();
+  await expect(page.locator('.c-feed-note')).toHaveCount(0);
 });
 
 test('有新闻时按时间显示，可以只看提到某个币的；没抓到的来源有提示', async ({ openPopup }) => {

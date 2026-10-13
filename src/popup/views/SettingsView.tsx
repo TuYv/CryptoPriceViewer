@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { browser } from '#imports';
 import { ask } from '@/core/messages';
 import { feedsFor } from '@/core/news';
@@ -28,9 +28,13 @@ function ApiKeyField() {
   const saved = useStorageItem(apiKeyItem);
   const [draft, setDraft] = useState('');
   const [state, setState] = useState<KeyState>('idle');
+  const lastSaved = useRef('');
 
+  // 存储里的密钥读到或者变了时填进输入框；用户已经改过输入框就不覆盖（读取比打字慢时，打的字不会被清掉）
   useEffect(() => {
-    if (saved !== undefined) setDraft(saved);
+    if (saved === undefined) return;
+    setDraft((d) => (d === lastSaved.current ? saved : d));
+    lastSaved.current = saved;
   }, [saved]);
 
   const save = async () => {

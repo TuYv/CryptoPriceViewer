@@ -97,6 +97,11 @@ export const zh: Messages = {
   'news.noSources': '所有资讯来源都关掉了，可以在设置里打开。',
   'news.openSettings': '去设置',
   'news.english': '英文',
+  'news.withEnglish': '{name}（英文）',
+  'news.askMore': '也看 {names} 的新闻？要先同意扩展访问 {hosts}。',
+  'news.blocked': '{names} 现在要先同意扩展访问，才能读取新闻。',
+  'news.allow': '允许',
+  'news.skip': '不用了',
 
   'perm.title': '显示新闻需要你同意一次',
   'perm.text': '新闻来自下面几个网站。扩展只会读取它们发布的标题和链接，不会读取你浏览的其他网页。',

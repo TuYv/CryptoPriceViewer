@@ -32,7 +32,7 @@ A Chrome extension that shows prices for the coins you follow as soon as you cli
 **News**
 - A timeline grouped by day; show only news about your coins, or about one coin
 - When several sites report the same story, only the earliest one is shown
-- The first time you open it, the extension explains which sites it will visit and only starts after you allow it
+- The extension doesn't visit any news site until you open the News tab. PANews and Odaily show up right away; Decrypt asks for your OK first
 
 **Settings**
 - Currency: US dollar, Chinese yuan, euro
@@ -68,7 +68,7 @@ When you upgrade from 0.1.x, your coins, pinned coin, currency, language and ref
 - No personal information is collected or uploaded; no analytics, no ads
 - Settings are kept in Chrome’s own sync storage and only sync within your Chrome account
 - Your CoinGecko API key stays on this computer
-- The extension only connects to CoinGecko and the news sites you have allowed
+- The extension only connects to CoinGecko and, once you have opened the News tab, the news sites you have turned on
 
 See the full [privacy policy](./privacy-policy.html).
 

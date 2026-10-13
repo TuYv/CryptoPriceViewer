@@ -13,7 +13,7 @@ A complete rewrite of the extension: new design, new code, new features. Your co
 - The market page can switch between tiles and a compact list, one coin per row
 - Search with keyboard support (↑ ↓ to choose, Enter to add) that shows each coin's market cap rank
 - Coin details: charts for 1 day to 1 year with the high and low marked, a price tooltip, and market cap, volume, supply, all-time high and rank
-- A crypto news timeline from PANews, Odaily and Decrypt, grouped by day and filterable by coin. Stories reported by several sites are shown once. The extension only visits these sites after you allow it
+- A crypto news timeline from PANews, Odaily and Decrypt, grouped by day and filterable by coin. Stories reported by several sites are shown once. The extension doesn't visit these sites until you open the News tab, and Decrypt asks for your OK first
 - The toolbar icon can show the pinned coin's price or its 24h change, and shows the coin, price and change when you hover it
 - Price colors: red up / green down, green up / red down, or red up / blue down, defaulting to what's usual for your language
 - Optional free CoinGecko API key, checked before it's saved

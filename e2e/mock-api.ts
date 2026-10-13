@@ -23,6 +23,10 @@ export interface MockNetwork {
   markets: 'ok' | 'rate-limited' | 'offline';
   /** 扩展请求过的 CoinGecko 地址（路径加参数） */
   calls: string[];
+  /** 扩展访问过的新闻网站（域名） */
+  newsCalls: string[];
+  /** PANews 还允不允许扩展不经同意直接读取（真实的网站现在允许） */
+  panewsOpen: boolean;
 }
 
 const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000);
@@ -102,19 +106,26 @@ function coingecko(route: Route, net: MockNetwork) {
 
 /** 拦截扩展发出的所有网络请求，用固定的数据回应 */
 export async function mockNetwork(context: BrowserContext): Promise<MockNetwork> {
-  const net: MockNetwork = { markets: 'ok', calls: [] };
+  const net: MockNetwork = { markets: 'ok', calls: [], newsCalls: [], panewsOpen: true };
+  const news = (route: Route) => net.newsCalls.push(new URL(route.request().url()).host);
   await context.route('https://api.coingecko.com/**', (route) => coingecko(route, net));
   await context.route('https://coin-images.coingecko.com/**', (route) =>
     route.fulfill({ contentType: 'image/png', body: PNG }),
   );
-  await context.route('https://www.panewslab.com/**', (route) =>
-    route.fulfill({ contentType: 'application/rss+xml', body: panewsRss() }),
-  );
-  await context.route('https://api.odaily.news/**', (route) =>
-    route.fulfill({ contentType: 'application/json', body: odailyJson() }),
-  );
-  await context.route('https://decrypt.co/**', (route) =>
-    route.fulfill({ contentType: 'application/rss+xml', body: decryptRss() }),
-  );
+  await context.route('https://www.panewslab.com/**', async (route) => {
+    news(route);
+    // 这里拦下来的响应不经过浏览器的跨域检查，所以这样模拟网站不再允许直接读取：
+    // 读取内容的请求（带 origin 请求头）失败，只确认网站连不连得上的请求（no-cors，不带 origin）照常
+    if (!net.panewsOpen && (await route.request().allHeaders()).origin) return route.abort('failed');
+    return route.fulfill({ contentType: 'application/rss+xml', body: panewsRss() });
+  });
+  await context.route('https://api.odaily.news/**', (route) => {
+    news(route);
+    return route.fulfill({ contentType: 'application/json', body: odailyJson() });
+  });
+  await context.route('https://decrypt.co/**', (route) => {
+    news(route);
+    return route.fulfill({ contentType: 'application/rss+xml', body: decryptRss() });
+  });
   return net;
 }

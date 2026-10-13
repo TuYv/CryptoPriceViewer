@@ -26,7 +26,7 @@ Crypto Price Viewer shows the coins you follow as soon as you click its toolbar 
 
 When CoinGecko limits requests or you are offline, the last prices stay on screen with the time they are from. You can add your own free CoinGecko API key to make rate limits less likely.
 
-Privacy: no account, no analytics, no ads. The extension only connects to CoinGecko and, if you allow it, the news sites you turn on.
+Privacy: no account, no analytics, no ads. The extension only connects to CoinGecko and, once you open the News tab, the news sites you turn on.
 
 ### 简体中文
 
@@ -43,7 +43,7 @@ Privacy: no account, no analytics, no ads. The extension only connects to CoinGe
 
 被 CoinGecko 限速或者断网时，继续显示上一次的价格，并写明是几点的价格。可以填写自己的 CoinGecko 免费密钥，减少被限速的情况。
 
-隐私：不需要注册，没有统计，没有广告。本扩展只访问 CoinGecko，以及你同意并打开的新闻网站。
+隐私：不需要注册，没有统计，没有广告。本扩展只访问 CoinGecko，以及你打开资讯页以后、开着的新闻网站。
 
 ### 日本語
 
@@ -60,7 +60,7 @@ Privacy: no account, no analytics, no ads. The extension only connects to CoinGe
 
 CoinGecko の制限やオフラインのときも、前回の価格をその時刻と一緒に表示します。無料の CoinGecko API キーを設定すると制限に当たりにくくなります。
 
-プライバシー：アカウント不要、分析ツールなし、広告なし。接続先は CoinGecko と、許可してオンにしたニュースサイトだけです。
+プライバシー：アカウント不要、分析ツールなし、広告なし。接続先は CoinGecko と、ニュースタブを開いた後のオンにしているニュースサイトだけです。
 
 ### 한국어
 
@@ -77,7 +77,7 @@ CoinGecko の制限やオフラインのときも、前回の価格をその時�
 
 CoinGecko가 요청을 제한하거나 오프라인일 때도 마지막 가격을 몇 시 기준인지와 함께 보여 줍니다. 무료 CoinGecko API 키를 등록하면 요청 제한에 덜 걸립니다.
 
-개인정보: 계정이 필요 없고, 분석 도구와 광고가 없습니다. 접속하는 곳은 CoinGecko와 사용자가 허용하고 켠 뉴스 사이트뿐입니다.
+개인정보: 계정이 필요 없고, 분석 도구와 광고가 없습니다. 접속하는 곳은 CoinGecko와, 뉴스 탭을 연 뒤 켜 둔 뉴스 사이트뿐입니다.
 
 ---
 
@@ -96,7 +96,7 @@ CoinGecko가 요청을 제한하거나 오프라인일 때도 마지막 가격�
 | storage | Saves the user's settings (followed coins, pinned coin, currency, language, colors, theme, market page layout, refresh interval, news sources), an optional CoinGecko API key, and caches of prices, charts and news headlines so the popup can show data immediately. |
 | alarms | Refreshes prices for the toolbar badge and the news cache at the interval the user picks, while the popup is closed. |
 | Host permission: https://api.coingecko.com/* | Requests market prices, price history and coin search results from the CoinGecko API, which is the extension's only price data source. |
-| Optional host permissions: www.panewslab.com, api.odaily.news, decrypt.co | Requested only when the user opens the News tab and agrees. Used to download these sites' public news feeds (headlines and links) for the news timeline. The user can turn off each source and the extension then removes the permission. |
+| Optional host permissions: www.panewslab.com, api.odaily.news, decrypt.co | Not requested at install. The extension visits no news site until the user opens the News tab. PANews and Odaily allow any web page to read their public news feeds, so they are read without this permission; it is requested for them only if a site stops allowing that. Decrypt does not allow it, so its permission is requested when the user chooses to see Decrypt news. Used only to download these public news feeds (headlines and links). The user can turn off each source, and the extension then removes the permission. |
 
 **Remote code**：选 “No, I am not using remote code”。
 

@@ -68,7 +68,7 @@
         <h2>Which websites the extension connects to</h2>
         <ul>
             <li><strong>api.coingecko.com</strong>: to get prices, charts and search results. The request contains the coins you follow, the currency, and your API key if you added one. Coin icons are loaded from CoinGecko's image server.</li>
-            <li><strong>News sites</strong> (www.panewslab.com, api.odaily.news, decrypt.co): only after you allow it on the News page, and only for the sources you have turned on. The extension downloads their public news feeds and shows headlines and links. You can turn off any source, or remove the permission, in Settings › News sources.</li>
+            <li><strong>News sites</strong> (www.panewslab.com, api.odaily.news, decrypt.co): only after you have opened the News page, and only for the sources you have turned on. PANews and Odaily let any web page read their public news feeds, so the extension reads them without asking; Decrypt is read only after you allow it. The extension downloads their public news feeds and shows headlines and links. You can turn off any source, or remove the permission, in Settings › News sources.</li>
         </ul>
         <p>These sites handle requests under their own privacy policies. The extension does not send them any personal information.</p>
 
@@ -80,7 +80,7 @@
             <li><strong>storage</strong>: to save the settings and caches described above.</li>
             <li><strong>alarms</strong>: to refresh prices and news at the interval you choose.</li>
             <li><strong>https://api.coingecko.com/*</strong>: to request price data.</li>
-            <li><strong>Optional: the three news sites above</strong>: requested only when you choose to see news.</li>
+            <li><strong>Optional: the three news sites above</strong>: Decrypt is requested when you choose to see its news. PANews and Odaily are requested only if they stop letting their news feeds be read directly.</li>
         </ul>
 
         <h2>Children</h2>
@@ -110,7 +110,7 @@
         <h2>本扩展会访问哪些网站</h2>
         <ul>
             <li><strong>api.coingecko.com</strong>：获取价格、图表和搜索结果。请求里包含你关注的币、货币，以及你填写的密钥（如果有）。币种图标从 CoinGecko 的图片服务器加载。</li>
-            <li><strong>新闻网站</strong>（www.panewslab.com、api.odaily.news、decrypt.co）：只有在你于资讯页同意之后、并且只访问你打开的来源。本扩展下载它们公开的新闻订阅，只显示标题和链接。你可以在“设置 › 资讯来源”里关掉任意来源或收回权限。</li>
+            <li><strong>新闻网站</strong>（www.panewslab.com、api.odaily.news、decrypt.co）：只有在你打开过资讯页之后，并且只访问你开着的来源。PANews 和 Odaily 允许任何网页读取它们公开的新闻，所以本扩展不用询问就能读；Decrypt 要你同意之后才读。本扩展下载它们公开的新闻订阅，只显示标题和链接。你可以在“设置 › 资讯来源”里关掉任意来源或收回权限。</li>
         </ul>
         <p>这些网站按各自的隐私政策处理请求。本扩展不会向它们发送任何个人信息。</p>
 
@@ -122,7 +122,7 @@
             <li><strong>storage</strong>：保存上面说的设置和缓存。</li>
             <li><strong>alarms</strong>：按你设置的间隔刷新价格和新闻。</li>
             <li><strong>https://api.coingecko.com/*</strong>：请求行情数据。</li>
-            <li><strong>可选：上面三个新闻网站</strong>：只在你选择查看新闻时才申请。</li>
+            <li><strong>可选：上面三个新闻网站</strong>：Decrypt 在你选择看它的新闻时申请；PANews 和 Odaily 只有在它们不再允许直接读取新闻时才申请。</li>
         </ul>
 
         <h2>儿童</h2>

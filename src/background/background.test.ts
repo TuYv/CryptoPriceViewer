@@ -7,6 +7,7 @@ import {
   type MarketsCache,
   marketsItem,
   marketsProblemItem,
+  newsActivatedItem,
   newsItem,
   settingsItem,
   updateSettings,
@@ -228,28 +229,71 @@ describe('getChartCached：图表', () => {
 const RSS = (title: string, url: string, minutesAgo: number) =>
   `<rss><channel><item><title>${title}</title><link>${url}</link><pubDate>${new Date(T0 - minutesAgo * 60_000).toUTCString()}</pubDate></item></channel></rss>`;
 
-describe('refreshNews：新闻', () => {
-  it('只抓已经同意访问的来源', async () => {
-    await setSettings({ language: 'zh' });
-    grantOnly((origin) => origin.includes('panewslab'));
-    fetchMock.mockResolvedValue(respond(RSS('某交易平台将上线永续合约', 'https://www.panewslab.com/zh/articles/1', 5)));
-    await refreshNews({ force: false });
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(String(fetchMock.mock.calls[0]?.[0])).toContain('panewslab.com/rss.xml?lang=zh');
-    const cache = await newsItem.getValue();
-    expect(cache?.items.map((n) => n.title)).toEqual(['某交易平台将上线永续合约']);
-    expect(cache?.lang).toBe('zh');
-  });
+const ODAILY = (title: string, minutesAgo: number) => ({
+  code: 0,
+  data: {
+    list: [
+      { id: 1, title, link: 'https://www.odaily.news/zh-CN/newsflash/1', publishTimestamp: T0 - minutesAgo * 60_000 },
+    ],
+  },
+});
 
-  it('一个来源都没同意时不请求', async () => {
-    grantOnly(() => false);
+describe('refreshNews：新闻', () => {
+  it('用户打开资讯页之前，一个新闻网站都不访问', async () => {
+    await setSettings({ language: 'zh' });
+    grantOnly(() => true);
     await refreshNews({ force: true });
     expect(fetchMock).not.toHaveBeenCalled();
     expect(await newsItem.getValue()).toBeNull();
   });
 
+  it('打开过资讯页以后，PANews 和 Odaily 不用权限就抓；Decrypt 要同意访问才抓', async () => {
+    await setSettings({ language: 'zh' });
+    await newsActivatedItem.setValue(true);
+    grantOnly(() => false);
+    fetchMock.mockImplementation(async (url: string) =>
+      String(url).includes('panewslab')
+        ? respond(RSS('某交易平台将上线永续合约', 'https://www.panewslab.com/zh/articles/1', 5))
+        : respond(ODAILY('比特币现货 ETF 本周净流入', 10)),
+    );
+    await refreshNews({ force: false });
+    const urls = fetchMock.mock.calls.map((c) => String(c[0]));
+    expect(urls).toHaveLength(2);
+    expect(urls.some((u) => u.includes('panewslab.com/rss.xml?lang=zh'))).toBe(true);
+    expect(urls.some((u) => u.includes('api.odaily.news'))).toBe(true);
+    expect(urls.some((u) => u.includes('decrypt.co'))).toBe(false);
+    const cache = await newsItem.getValue();
+    expect(cache?.items.map((n) => n.title)).toEqual(['某交易平台将上线永续合约', '比特币现货 ETF 本周净流入']);
+    expect(cache?.lang).toBe('zh');
+    expect(cache?.blocked).toEqual([]);
+  });
+
+  it('英文界面只有 Decrypt，没同意访问时不请求', async () => {
+    await setSettings({ language: 'en' });
+    await newsActivatedItem.setValue(true);
+    grantOnly(() => false);
+    await refreshNews({ force: true });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('网站不再允许直接读取时记下来，请用户同意访问；网络断了只算这次没抓到', async () => {
+    await setSettings({ language: 'zh', newsSources: ['panews', 'odaily'] });
+    await newsActivatedItem.setValue(true);
+    grantOnly(() => false);
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      // PANews：网络通，但不再允许直接读取（不读内容的请求能成功）。Odaily：网络不通
+      if (String(url).includes('panewslab') && init?.mode === 'no-cors') return respond('');
+      throw new TypeError('Failed to fetch');
+    });
+    await refreshNews({ force: true });
+    const cache = await newsItem.getValue();
+    expect(cache?.failed.sort()).toEqual(['odaily', 'panews']);
+    expect(cache?.blocked).toEqual(['panews']);
+  }, 15_000);
+
   it('20 分钟内不重复抓；某个来源失败时记下来，其他来源照常', async () => {
     await setSettings({ language: 'en' });
+    await newsActivatedItem.setValue(true);
     grantOnly(() => true);
     fetchMock.mockResolvedValue(respond(RSS('Bitcoin climbs', 'https://decrypt.co/1', 1)));
     await refreshNews({ force: false });
@@ -261,6 +305,7 @@ describe('refreshNews：新闻', () => {
     await refreshNews({ force: false });
     const cache = await newsItem.getValue();
     expect(cache?.failed).toEqual(['decrypt']);
+    expect(cache?.blocked).toEqual([]);
     expect(cache?.items.map((n) => n.title)).toEqual(['Bitcoin climbs']);
   }, 10_000);
 });

@@ -11,7 +11,11 @@ import { usePopup } from '../context';
 import { useStorageItem } from '../hooks';
 import { BackIcon, ExternalIcon, PinIcon } from '../icons';
 
-type ChartState = { kind: 'loading' } | { kind: 'ok'; points: ChartPoint[] } | { kind: 'failed'; problem: Problem };
+/** 取回来的图表带着 key（币、时间范围、货币、第几次重试），用来认出是不是当前这一次请求的结果 */
+type ChartState =
+  | { kind: 'loading' }
+  | { kind: 'ok'; key: string; points: ChartPoint[] }
+  | { kind: 'failed'; key: string; problem: Problem };
 
 const COINGECKO_LANG = { zh: 'zh', en: 'en', ja: 'ja', ko: 'ko' } as const;
 const sign = (v: number | null | undefined) => ((v ?? 0) >= 0 ? 'up' : 'down');
@@ -22,22 +26,29 @@ export function DetailView({ id }: { id: string }) {
   const meta = useStorageItem(coinMetaItem);
   const news = useStorageItem(newsItem);
   const [days, setDays] = useState<ChartDays>('7');
-  const [chart, setChart] = useState<ChartState>({ kind: 'loading' });
+  const [loaded, setChart] = useState<ChartState>({ kind: 'loading' });
   const [attempt, setAttempt] = useState(0);
   const currency = settings.currency;
+  const chartKey = `${id}|${days}|${currency}|${attempt}`;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: 换货币后要重新取图表；attempt 用来重试
+  // biome-ignore lint/correctness/useExhaustiveDependencies: chartKey 已经包含了币、时间范围、货币和重试次数
   useEffect(() => {
     let alive = true;
     setChart({ kind: 'loading' });
     void ask('chart', { id, days }).then((res) => {
       if (!alive) return;
-      setChart(res.ok ? { kind: 'ok', points: res.data } : { kind: 'failed', problem: res.problem });
+      setChart(
+        res.ok
+          ? { kind: 'ok', key: chartKey, points: res.data }
+          : { kind: 'failed', key: chartKey, problem: res.problem },
+      );
     });
     return () => {
       alive = false;
     };
-  }, [id, days, currency, attempt]);
+  }, [chartKey]);
+  // 刚换了时间范围或货币、新的请求还没发出去时，手上还是上一次的结果，当作正在加载，免得把 7 天的涨跌幅标成 30 天
+  const chart: ChartState = loaded.kind !== 'loading' && loaded.key !== chartKey ? { kind: 'loading' } : loaded;
 
   const coin = markets?.currency === currency ? markets.coins[id] : undefined;
   const info = coin ?? meta?.[id] ?? KNOWN_COINS[id];

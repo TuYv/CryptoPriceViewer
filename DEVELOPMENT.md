@@ -45,9 +45,11 @@
 ## 测试的约定
 
 - 端到端测试启动浏览器时加了 `--host-resolver-rules`，没被 `mock-api.ts` 拦截的请求会直接失败，测试不会访问外网。
-- 自动化测试点不了 Chrome 的权限确认框。资讯页的测试在弹窗页面里把 `permissions.contains` 换成总是返回 true，扩展本身的代码不变。
+- 自动化测试点不了 Chrome 的权限确认框。需要“已同意访问”的资讯页测试，在弹窗页面里把 `permissions.contains` 换成总是返回 true，扩展本身的代码不变。
+- Playwright 拦下来返回的响应不经过浏览器的跨域检查。所以 `mock-api.ts` 用“读取内容的请求（带 `origin` 请求头）失败、只确认网站连不连得上的请求（no-cors）照常”来模拟网站不再允许直接读取。
+- 每个测试打开弹窗前，先等扩展装好时那次取行情结束再清空数据，免得机器忙时这次请求晚到、被算进测试自己的请求次数里。
 - 升级测试用同一个浏览器资料目录启动两次：第一次写入 0.1.x 的旧数据，第二次检查后台启动后是否转换。
 
 ## 权限
 
-必需权限只有 `storage`、`alarms` 和 `https://api.coingecko.com/*`，和 0.1.x 相比没有新增，老用户升级时 Chrome 不会弹出权限确认。新闻网站放在 `optional_host_permissions` 里，用户第一次打开资讯页时才请求。新增必需权限会让已安装的扩展在升级后被 Chrome 停用、等用户重新同意，改 `wxt.config.ts` 里的权限前要先想清楚。
+必需权限只有 `storage`、`alarms` 和 `https://api.coingecko.com/*`，和 0.1.x 相比没有新增，老用户升级时 Chrome 不会弹出权限确认。用户第一次打开资讯页之前，后台不访问任何新闻网站。PANews 和 Odaily 的新闻允许任何网页读取（响应里带着允许所有来源读取的 CORS 头），不用权限就能读；Decrypt 不允许，要用户同意访问。三个网站都放在 `optional_host_permissions` 里：Decrypt 在用户要看它的新闻时申请；PANews 和 Odaily 只在网站不再允许直接读取时申请。判断方法是读取失败后用 no-cors 再请求一次，连得上就说明是网站拒绝，连不上就是网络问题。新增必需权限会让已安装的扩展在升级后被 Chrome 停用、等用户重新同意，改 `wxt.config.ts` 里的权限前要先想清楚。

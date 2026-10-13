@@ -98,6 +98,11 @@ export const ko: Messages = {
   'news.noSources': '모든 뉴스 출처가 꺼져 있습니다. 설정에서 켤 수 있습니다.',
   'news.openSettings': '설정 열기',
   'news.english': '영어',
+  'news.withEnglish': '{name}(영어)',
+  'news.askMore': '{names} 뉴스도 볼까요? {hosts} 접속을 허용해야 합니다.',
+  'news.blocked': '이제 {names} 뉴스를 읽으려면 접속을 허용해야 합니다.',
+  'news.allow': '허용',
+  'news.skip': '괜찮아요',
 
   'perm.title': '뉴스를 보려면 권한이 필요합니다',
   'perm.text':

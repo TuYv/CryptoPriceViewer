@@ -13,8 +13,13 @@ export interface NewsItem {
 export interface NewsSource {
   id: NewsSourceId;
   name: string;
-  /** 需要申请的访问权限 */
+  /** 访问这个网站的权限 */
   origin: string;
+  /**
+   * 网站允许任何网页直接读取它的新闻（返回了允许所有来源读取的 CORS 头），扩展不用申请权限就能读。
+   * 网站以后不再允许时，扩展会发现并改为请用户同意访问
+   */
+  open: boolean;
   /** 这个来源提供哪些语言的新闻 */
   languages: Language[];
   feedUrl(lang: Language): string;
@@ -29,6 +34,7 @@ export const NEWS_SOURCES: Record<NewsSourceId, NewsSource> = {
     id: 'panews',
     name: 'PANews',
     origin: 'https://www.panewslab.com/*',
+    open: true,
     languages: ['zh', 'ja', 'ko'],
     feedUrl: (lang) => `https://www.panewslab.com/rss.xml?lang=${lang}&type=NEWS`,
     parse: (body) => parseRss(body, 'panews'),
@@ -37,6 +43,7 @@ export const NEWS_SOURCES: Record<NewsSourceId, NewsSource> = {
     id: 'odaily',
     name: 'Odaily',
     origin: 'https://api.odaily.news/*',
+    open: true,
     languages: ['zh', 'ja', 'ko'],
     feedUrl: (lang) => `https://api.odaily.news/api/v1/newsflash?page=1&size=30&lang=${ODAILY_LANG[lang] ?? 'zh-cn'}`,
     parse: (body, lang) => parseOdaily(body, lang),
@@ -45,6 +52,7 @@ export const NEWS_SOURCES: Record<NewsSourceId, NewsSource> = {
     id: 'decrypt',
     name: 'Decrypt',
     origin: 'https://decrypt.co/*',
+    open: false,
     languages: ['en'],
     feedUrl: () => 'https://decrypt.co/feed',
     parse: (body) => parseRss(body, 'decrypt'),

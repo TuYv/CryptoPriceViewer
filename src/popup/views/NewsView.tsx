@@ -5,49 +5,91 @@ import { formatClock, formatDate } from '@/core/format';
 import { ask } from '@/core/messages';
 import { feedsFor, NEWS_SOURCES } from '@/core/news';
 import type { NewsSourceId } from '@/core/settings';
-import { marketsItem, newsItem } from '@/core/store';
+import { marketsItem, newsActivatedItem, newsItem } from '@/core/store';
 import type { Language } from '@/i18n';
 import { TabBar } from '../components/ui';
 import { usePopup } from '../context';
 import { useNow, useStorageItem } from '../hooks';
 import { NewsIcon } from '../icons';
 
-type Permission = 'checking' | 'none' | 'granted' | 'denied';
-
 export function sourceName(id: NewsSourceId, lang: Language): string {
   return id === 'odaily' && lang === 'zh' ? 'Odaily 星球日报' : NEWS_SOURCES[id].name;
 }
 
+const hostOf = (origin: string) => new URL(origin.replace('/*', '/')).host;
+
+/** 资讯页顶上请用户同意访问某些来源的提示 */
+function Ask(props: { text: string; allow: string; onAllow: () => void; skip?: string; onSkip?: () => void }) {
+  return (
+    <div className="c-ask">
+      <p>{props.text}</p>
+      <div className="c-ask-actions">
+        <button type="button" className="c-small-btn" onClick={props.onAllow}>
+          {props.allow}
+        </button>
+        {props.skip && (
+          <button type="button" className="c-small-btn c-small-btn--ghost" onClick={props.onSkip}>
+            {props.skip}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function NewsView() {
-  const { t, lang, settings, go } = usePopup();
+  const { t, lang, settings, update, go } = usePopup();
   const news = useStorageItem(newsItem);
   const markets = useStorageItem(marketsItem);
   const now = useNow(60_000);
-  const [permission, setPermission] = useState<Permission>('checking');
+  /** 每个来源有没有拿到访问权限；null 表示还在检查 */
+  const [granted, setGranted] = useState<Partial<Record<NewsSourceId, boolean>> | null>(null);
+  const [denied, setDenied] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('all');
   const feeds = useMemo(() => feedsFor(lang, settings.newsSources), [lang, settings.newsSources]);
-  const origins = useMemo(() => feeds.map((f) => f.source.origin), [feeds]);
 
   useEffect(() => {
-    if (origins.length === 0) return;
     let alive = true;
-    void Promise.all(origins.map((o) => browser.permissions.contains({ origins: [o] }))).then((granted) => {
+    void (async () => {
+      // 打开资讯页就是要看新闻：从这时起后台才会去访问新闻网站
+      await newsActivatedItem.setValue(true);
+      const entries = await Promise.all(
+        feeds.map(async ({ source }) => [source.id, await browser.permissions.contains({ origins: [source.origin] })]),
+      );
       if (!alive) return;
-      const any = granted.some(Boolean);
-      setPermission(any ? 'granted' : 'none');
-      if (any) void ask('news', { force: false });
-    });
+      setGranted(Object.fromEntries(entries));
+      void ask('news', { force: false });
+    })();
     return () => {
       alive = false;
     };
-  }, [origins]);
+  }, [feeds]);
 
-  const allow = async () => {
+  type Feed = (typeof feeds)[number];
+  const blockedIds = news && news.lang === lang ? (news.blocked ?? []) : [];
+  const isGranted = (f: Feed) => !!granted?.[f.source.id];
+  // 能读的：允许直接读取、而且没被网站拒绝的来源，以及已经同意访问的来源
+  const readable = feeds.filter((f) => (f.source.open && !blockedIds.includes(f.source.id)) || isGranted(f));
+  // 网站不再允许直接读取，要用户同意访问
+  const blocked = feeds.filter((f) => f.source.open && blockedIds.includes(f.source.id) && !isGranted(f));
+  // 本来就要用户同意访问才能读（比如 Decrypt）
+  const needsConsent = feeds.filter((f) => !f.source.open && !isGranted(f));
+  const nameOf = (f: Feed) =>
+    f.lang === lang ? sourceName(f.source.id, lang) : t('news.withEnglish', { name: sourceName(f.source.id, lang) });
+
+  const allow = async (list: Feed[]) => {
+    setDenied(null);
     // 必须在点击事件里直接调用，Chrome 才会弹出确认框
-    const granted = await browser.permissions.request({ origins }).catch(() => false);
-    setPermission(granted ? 'granted' : 'denied');
-    if (granted) void ask('news', { force: true });
+    const ok = await browser.permissions.request({ origins: list.map((f) => f.source.origin) }).catch(() => false);
+    if (!ok) {
+      setDenied(list.map(nameOf).join(', '));
+      return;
+    }
+    setGranted((g) => ({ ...g, ...Object.fromEntries(list.map((f) => [f.source.id, true])) }));
+    void ask('news', { force: true });
   };
+  const skip = (list: Feed[]) =>
+    void update((s) => ({ ...s, newsSources: s.newsSources.filter((id) => !list.some((f) => f.source.id === id)) }));
 
   const coins = useMemo(
     () =>
@@ -89,9 +131,10 @@ export function NewsView() {
         </button>
       </div>
     );
-  } else if (permission === 'checking') {
+  } else if (granted === null) {
     body = null;
-  } else if (permission === 'none' || permission === 'denied') {
+  } else if (readable.length === 0) {
+    const asking = [...blocked, ...needsConsent];
     body = (
       <div className="c-perm">
         <div className="c-perm-icon">
@@ -100,18 +143,18 @@ export function NewsView() {
         <p className="c-perm-title">{t('perm.title')}</p>
         <p className="c-perm-text">{t('perm.text')}</p>
         <ul className="c-perm-sites">
-          {feeds.map(({ source, lang: feedLang }) => (
+          {asking.map(({ source, lang: feedLang }) => (
             <li key={source.id}>
               <b>
                 {sourceName(source.id, lang)}
                 {feedLang !== lang && <em>{t('news.english')}</em>}
               </b>
-              <span>{new URL(source.origin.replace('/*', '/')).host}</span>
+              <span>{hostOf(source.origin)}</span>
             </li>
           ))}
         </ul>
-        {permission === 'denied' && <p className="c-perm-error">{t('perm.denied')}</p>}
-        <button type="button" className="c-btn" onClick={allow}>
+        {denied && <p className="c-perm-error">{t('perm.denied')}</p>}
+        <button type="button" className="c-btn" onClick={() => void allow(asking)}>
           {t('perm.allow')}
         </button>
         <button type="button" className="c-btn c-btn--ghost" onClick={() => go({ name: 'market' })}>
@@ -128,7 +171,13 @@ export function NewsView() {
       if (last?.day === day) last.list.push(n);
       else groups.push({ day, list: [n] });
     }
-    const failed = news && news.lang === lang ? news.failed.map((id) => sourceName(id, lang)) : [];
+    // 被网站拒绝的来源下面单独提示，这里不再重复
+    const failed =
+      news && news.lang === lang
+        ? news.failed.filter((id) => !blockedIds.includes(id)).map((id) => sourceName(id, lang))
+        : [];
+    const hosts = (list: Feed[]) => list.map((f) => hostOf(f.source.origin)).join(', ');
+    const names = (list: Feed[]) => list.map(nameOf).join(', ');
     body = (
       <>
         <div className="c-chips" role="radiogroup" aria-label={t('news.filter')}>
@@ -156,6 +205,23 @@ export function NewsView() {
           ))}
         </div>
         <div className="c-feed">
+          {blocked.length > 0 && (
+            <Ask
+              text={t('news.blocked', { names: names(blocked) })}
+              allow={t('news.allow')}
+              onAllow={() => void allow(blocked)}
+            />
+          )}
+          {needsConsent.length > 0 && (
+            <Ask
+              text={t('news.askMore', { names: names(needsConsent), hosts: hosts(needsConsent) })}
+              allow={t('news.allow')}
+              onAllow={() => void allow(needsConsent)}
+              skip={t('news.skip')}
+              onSkip={() => skip(needsConsent)}
+            />
+          )}
+          {denied && <p className="c-feed-note is-error">{t('sources.denied', { name: denied })}</p>}
           {failed.length > 0 && <p className="c-feed-note">{t('news.failed', { sources: failed.join(', ') })}</p>}
           {!news || news.lang !== lang ? (
             <p className="c-empty">{t('news.loading')}</p>

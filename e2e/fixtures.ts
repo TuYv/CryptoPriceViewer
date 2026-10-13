@@ -34,6 +34,17 @@ export async function resetStorage(worker: Worker, seed: Seed = {}) {
   }, seed);
 }
 
+/**
+ * 扩展装好时后台会先取一次行情。等它取完再清空数据，
+ * 免得机器忙的时候这次请求晚到，被算进测试自己的请求里
+ */
+async function waitForInstallRefresh(worker: Worker) {
+  for (let waited = 0; waited < 10_000; waited += 100) {
+    if (await worker.evaluate(async () => !!(await chrome.storage.local.get('markets')).markets)) return;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+}
+
 export const test = base.extend<Fixtures>({
   // biome-ignore lint/correctness/noEmptyPattern: Playwright 的 fixture 写法要求第一个参数是对象解构
   context: async ({}, use) => {
@@ -64,6 +75,7 @@ export const test = base.extend<Fixtures>({
   },
   openPopup: async ({ context, worker, extensionId, net }, use) => {
     await use(async (seed = { settings: DEFAULT_TEST_SETTINGS }) => {
+      await waitForInstallRefresh(worker);
       await resetStorage(worker, seed);
       net.calls.length = 0;
       const page = await context.newPage();

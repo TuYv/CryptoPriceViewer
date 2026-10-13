@@ -99,6 +99,11 @@ export const ja: Messages = {
   'news.noSources': 'ニュースの配信元がすべてオフです。設定でオンにできます。',
   'news.openSettings': '設定を開く',
   'news.english': '英語',
+  'news.withEnglish': '{name}（英語）',
+  'news.askMore': '{names} のニュースも表示しますか？ {hosts} へのアクセスを許可する必要があります。',
+  'news.blocked': '{names} のニュースを読むには、アクセスの許可が必要になりました。',
+  'news.allow': '許可',
+  'news.skip': '表示しない',
 
   'perm.title': 'ニュースの表示には許可が必要です',
   'perm.text':

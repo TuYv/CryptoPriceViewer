@@ -1,7 +1,7 @@
 import { browser } from '#imports';
 import { feedsFor, mergeNews, type NewsItem, type NewsSource } from '@/core/news';
 import type { NewsSourceId } from '@/core/settings';
-import { getSettings, newsItem } from '@/core/store';
+import { getSettings, newsActivatedItem, newsItem } from '@/core/store';
 import { languageOf } from './context';
 
 /** 20 分钟内抓过就不再抓 */
@@ -11,6 +11,11 @@ const KEEP_MS = 3 * 86_400_000;
 
 export async function hasPermission(source: NewsSource): Promise<boolean> {
   return browser.permissions.contains({ origins: [source.origin] });
+}
+
+/** 允许直接读取的来源不用权限；其余来源要用户同意访问 */
+async function canRead(source: NewsSource): Promise<boolean> {
+  return source.open || (await hasPermission(source));
 }
 
 async function fetchText(url: string): Promise<string> {
@@ -35,15 +40,33 @@ async function fetchText(url: string): Promise<string> {
 }
 
 /**
- * 抓用户打开、并且已经同意访问的新闻来源，和缓存里同一种语言的新闻合并后写回缓存。
+ * 读取失败时判断网站本身连不连得上：用不读内容的方式（no-cors）再请求一次。
+ * 连得上说明是网站不再允许直接读取，连不上就是网络问题
+ */
+async function reachable(url: string): Promise<boolean> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15_000);
+  try {
+    await fetch(url, { mode: 'no-cors', signal: controller.signal });
+    return true;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * 用户打开过资讯页以后，抓打开了的、能读取的新闻来源，和缓存里同一种语言的新闻合并后写回缓存。
  * 某个来源没抓到时，它之前的新闻还留着。
  */
 export async function refreshNews({ force }: { force: boolean }): Promise<void> {
+  if (!(await newsActivatedItem.getValue())) return;
   const settings = await getSettings();
   const lang = languageOf(settings);
   const feeds = [];
   for (const feed of feedsFor(lang, settings.newsSources)) {
-    if (await hasPermission(feed.source)) feeds.push(feed);
+    if (await canRead(feed.source)) feeds.push(feed);
   }
   if (feeds.length === 0) return;
   const cache = await newsItem.getValue();
@@ -51,12 +74,15 @@ export async function refreshNews({ force }: { force: boolean }): Promise<void> 
   if (!force && cache && cache.lang === lang && now - cache.fetchedAt < NEWS_FRESH_MS) return;
 
   const failed: NewsSourceId[] = [];
+  const blocked: NewsSourceId[] = [];
   const lists = await Promise.all(
     feeds.map(async ({ source, lang: feedLang }) => {
+      const url = source.feedUrl(feedLang);
       try {
-        return source.parse(await fetchText(source.feedUrl(feedLang)), feedLang);
+        return source.parse(await fetchText(url), feedLang);
       } catch {
         failed.push(source.id);
+        if (source.open && !(await hasPermission(source)) && (await reachable(url))) blocked.push(source.id);
         return [];
       }
     }),
@@ -66,7 +92,7 @@ export async function refreshNews({ force }: { force: boolean }): Promise<void> 
     cache && cache.lang === lang
       ? cache.items.filter((n) => enabled.has(n.source) && now - n.publishedAt < KEEP_MS)
       : [];
-  await newsItem.setValue({ lang, fetchedAt: now, items: mergeNews([...lists, previous]), failed });
+  await newsItem.setValue({ lang, fetchedAt: now, items: mergeNews([...lists, previous]), failed, blocked });
 }
 
 /** 用户关掉某个来源或者收回权限后，把它的新闻从缓存里去掉 */
@@ -76,7 +102,7 @@ export async function pruneNews(): Promise<void> {
   const settings = await getSettings();
   const allowed = new Set<NewsSourceId>();
   for (const { source } of feedsFor(cache.lang, settings.newsSources)) {
-    if (await hasPermission(source)) allowed.add(source.id);
+    if (await canRead(source)) allowed.add(source.id);
   }
   await newsItem.setValue({ ...cache, items: cache.items.filter((n) => allowed.has(n.source)) });
 }
