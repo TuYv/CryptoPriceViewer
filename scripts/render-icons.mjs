@@ -64,7 +64,8 @@ for (const { file, size, src, pad } of outputs) {
   const png = await page.screenshot({ omitBackground: true });
   const mismatch = await circleMismatch(page, png, size, pad);
   await page.close();
-  if (mismatch > 0.01) throw new Error(`${file} 画出来不是一整个圆（${(mismatch * 100).toFixed(1)}% 的点对不上），没有保存`);
+  if (mismatch > 0.01)
+    throw new Error(`${file} 画出来不是一整个圆（${(mismatch * 100).toFixed(1)}% 的点对不上），没有保存`);
   fs.writeFileSync(path.join(root, file), png);
   console.log(`${file}  ${size}×${size}  检查通过`);
 }
