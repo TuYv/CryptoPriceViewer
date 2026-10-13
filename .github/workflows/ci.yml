@@ -38,6 +38,8 @@ jobs:
           name: chrome-extension
           path: .output/*-chrome.zip
           if-no-files-found: error
+          # zip 在 .output/ 里，以点开头的文件夹默认不上传，要明确打开
+          include-hidden-files: true
 
       - uses: actions/upload-artifact@v7
         if: failure()
