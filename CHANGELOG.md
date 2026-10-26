@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2026-10-26
+
+### New
+- The News tab can switch to Key dates: when the next Fed rate decision, CPI, jobs report, PCE and GDP come out, with a plain-language note on each, and related headlines under the ones released in the past week
+
 ## [1.0.0] - 2026-10-12
 
 A complete rewrite of the extension: new design, new code, new features. Your coins, pinned coin, currency, language and refresh interval are kept when you upgrade from 0.1.x.
@@ -14,7 +19,6 @@ A complete rewrite of the extension: new design, new code, new features. Your co
 - Search with keyboard support (↑ ↓ to choose, Enter to add) that shows each coin's market cap rank
 - Coin details: charts for 1 day to 1 year with the high and low marked, a price tooltip, and market cap, volume, supply, all-time high and rank
 - A crypto news timeline from PANews, Odaily and Decrypt, grouped by day and filterable by coin. Stories reported by several sites are shown once. The extension doesn't visit these sites until you open the News tab, and Decrypt asks for your OK first
-- The News tab can switch to Key dates: when the next Fed rate decision, CPI, jobs report, PCE and GDP come out, with a plain-language note on each, and related headlines under the ones released in the past week
 - The toolbar icon can show the pinned coin's price or its 24h change, and shows the coin, price and change when you hover it
 - Price colors: red up / green down, green up / red down, or red up / blue down, defaulting to what's usual for your language
 - Optional free CoinGecko API key, checked before it's saved

@@ -1,6 +1,6 @@
 # Crypto Price Viewer
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/TuYv/CryptoPriceViewer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [English](./README.md) · [中文](./README-zh.md) · [日本語](./README-ja.md) · **한국어**

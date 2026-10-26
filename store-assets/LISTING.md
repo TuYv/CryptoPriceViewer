@@ -1,6 +1,6 @@
-# Chrome 网上应用店提交资料（1.0.0）
+# Chrome 网上应用店提交资料（1.1.0）
 
-上传 `npm run zip` 打出的 `.output/crypto-price-viewer-1.0.0-chrome.zip` 时，下面的内容可以直接复制到开发者后台对应的栏目。
+上传 `npm run zip` 打出的 `.output/crypto-price-viewer-1.1.0-chrome.zip` 时，下面的内容可以直接复制到开发者后台对应的栏目。
 
 - 扩展名称和简短说明来自 `public/_locales/*/messages.json`，商店会自动读取，不用手填。
 - 要上传的图片都在 `store-assets/` 里，`npm run store:images` 可以重新生成（需要联网加载币种图标）：

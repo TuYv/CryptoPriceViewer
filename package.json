@@ -2,7 +2,7 @@
   "name": "crypto-price-viewer",
   "description": "Chrome extension: crypto prices at a glance, a pinned price on the toolbar, and a crypto news timeline.",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "engines": {
     "node": ">=22"
