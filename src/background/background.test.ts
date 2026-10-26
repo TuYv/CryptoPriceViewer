@@ -1,9 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from '#imports';
 import { type MarketCoin, NetworkError, RateLimitedError } from '@/core/coingecko';
+import { easternToUtc } from '@/core/schedule';
 import { DEFAULT_SETTINGS, type Settings } from '@/core/settings';
 import {
   chartsItem,
+  eventNewsItem,
   type MarketsCache,
   marketsItem,
   marketsProblemItem,
@@ -308,6 +310,46 @@ describe('refreshNews：新闻', () => {
     expect(cache?.blocked).toEqual([]);
     expect(cache?.items.map((n) => n.title)).toEqual(['Bitcoin climbs']);
   }, 10_000);
+
+  it('和大事日程上某件事有关的快讯另外存起来，以后的新闻里没有了也还在', async () => {
+    // 9 月 CPI 在美国东部时间 10 月 14 日 8:30 公布；标题是编的
+    const cpiAt = easternToUtc('2026-10-14', '08:30');
+    const odaily = (list: { title: string; at: number }[]) =>
+      respond({
+        code: 0,
+        data: {
+          list: list.map((n, i) => ({
+            id: i,
+            title: n.title,
+            link: `https://www.odaily.news/zh-CN/newsflash/${n.at}`,
+            publishTimestamp: n.at,
+          })),
+        },
+      });
+    await setSettings({ language: 'zh', newsSources: ['odaily'] });
+    await newsActivatedItem.setValue(true);
+    grantOnly(() => false);
+    vi.setSystemTime(cpiAt + 30 * 60_000);
+    fetchMock.mockResolvedValueOnce(
+      odaily([
+        { title: '美国9月CPI同比上涨3.7%，高于预期', at: cpiAt },
+        { title: '某交易平台上线新币', at: cpiAt + 60_000 },
+      ]),
+    );
+    await refreshNews({ force: true });
+    expect((await eventNewsItem.getValue())?.items.map((n) => n.title)).toEqual(['美国9月CPI同比上涨3.7%，高于预期']);
+
+    vi.setSystemTime(cpiAt + 3 * 86_400_000);
+    fetchMock.mockResolvedValueOnce(odaily([{ title: '某交易平台上线新币', at: cpiAt + 3 * 86_400_000 }]));
+    await refreshNews({ force: true });
+    expect((await eventNewsItem.getValue())?.items.map((n) => n.title)).toEqual(['美国9月CPI同比上涨3.7%，高于预期']);
+
+    // 8 天以后不再保留
+    vi.setSystemTime(cpiAt + 9 * 86_400_000);
+    fetchMock.mockResolvedValueOnce(odaily([]));
+    await refreshNews({ force: true });
+    expect((await eventNewsItem.getValue())?.items).toEqual([]);
+  });
 });
 
 describe('消息', () => {

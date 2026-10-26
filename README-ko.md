@@ -33,6 +33,7 @@
 - 날짜별로 묶은 타임라인. 내 코인이나 특정 코인 관련 뉴스만 볼 수 있습니다
 - 여러 사이트가 같은 소식을 보도하면 가장 먼저 나온 한 건만 보여 줍니다
 - 뉴스 탭을 열기 전에는 어떤 뉴스 사이트에도 접속하지 않습니다. PANews와 Odaily는 바로 보이고, Decrypt는 먼저 허용을 요청합니다
+- 주요 일정으로 바꾸면 연준 금리 결정, CPI, 비농업 고용, PCE, GDP의 다음 발표 시각을 볼 수 있습니다. 각각 무엇인지, 왜 중요한지, 결과를 어떻게 보면 되는지 쉽게 설명합니다. 발표 뒤에는 관련 속보가 그 아래에 붙습니다
 
 **설정**
 - 표시 통화: 미국 달러, 중국 위안, 유로
@@ -61,6 +62,7 @@
 ## 데이터 출처
 
 - **시세**: [CoinGecko](https://www.coingecko.com/) 공개 API
+- **주요 일정**: [연준](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm), [미국 노동통계국](https://www.bls.gov/schedule/news_release/), [미국 경제분석국](https://www.bea.gov/news/schedule)이 공개한 일정입니다. 날짜는 확장 프로그램에 들어 있고 새 버전으로 업데이트합니다. 설명 글은 이 확장 프로그램을 위해 쓴 것입니다.
 - **뉴스**: [PANews](https://www.panewslab.com/), [Odaily](https://www.odaily.news/), [Decrypt](https://decrypt.co/). 확장 프로그램은 제목과 링크만 보여 주고, 기사는 원래 사이트에서 열립니다. 기사의 저작권은 각 사이트에 있습니다. 설정 › 뉴스 출처에서 출처별로 끌 수 있습니다.
 
 ## 개인정보

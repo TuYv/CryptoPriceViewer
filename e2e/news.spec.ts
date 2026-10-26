@@ -115,3 +115,93 @@ test('所有来源都关掉时提示去设置里打开', async ({ openPopup }) =
   await page.getByRole('button', { name: '去设置' }).click();
   await expect(page.getByRole('heading', { name: '资讯来源' })).toBeVisible();
 });
+
+/** 把弹窗里的时间拨到某一刻再重新打开（后台用的还是真实时间） */
+async function setTime(page: Page, time: number) {
+  await page.clock.install({ time });
+  await page.reload();
+}
+
+/** 和 9 月 CPI 有关的快讯（美国东部时间 10 月 14 日 8:30 公布），标题是编的 */
+async function seedEventNews(page: Page) {
+  const cpiAt = Date.UTC(2026, 9, 14, 12, 30);
+  const item = (id: string, title: string, minutesAfter: number) => ({
+    id,
+    title,
+    url: `https://www.odaily.news/zh-CN/newsflash/${id}`,
+    source: 'odaily',
+    publishedAt: cpiAt + minutesAfter * MINUTE,
+  });
+  await page.evaluate(
+    (items) => chrome.storage.local.set({ eventNews: { lang: 'zh', items } }),
+    [
+      item('e1', '美国9月CPI同比上涨3.7%，高于预期', 0),
+      item('e2', '市场加大美联储加息押注', 2),
+      item('e3', '美国核心CPI年率创新高', 1),
+    ],
+  );
+}
+
+test('大事日程：下一件大事可以展开说明；列出接下来几件；最近公布的下面挂着相关快讯；下次打开还是大事日程', async ({
+  openPopup,
+}) => {
+  const page = await openPopup();
+  await setTime(page, Date.UTC(2026, 9, 15, 3, 0));
+  await page.getByRole('button', { name: '资讯' }).click();
+  // 等后台这次抓完新闻，再放进和大事有关的快讯，免得被后台按真实时间清掉
+  await expect(page.getByText('比特币现货 ETF 本周净流入 3.2 亿美元')).toBeVisible();
+  await page.getByRole('radio', { name: '大事日程' }).click();
+  await seedEventNews(page);
+
+  const card = page.locator('.c-ev-card');
+  await expect(card.getByRole('heading', { name: '美联储利率决议' })).toBeVisible();
+  await expect(card).toContainText('美联储开会决定美元的基础利息');
+  await card.getByRole('button', { name: '怎么看结果' }).click();
+  await expect(card).toContainText('关键看结果和大家预想的一不一样');
+  await expect(card.getByRole('link', { name: '官方公布页面' })).toHaveAttribute(
+    'href',
+    'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm',
+  );
+  await card.getByRole('button', { name: '收起' }).click();
+  await expect(card).not.toContainText('关键看结果');
+
+  const later = page.locator('section', { has: page.getByRole('heading', { name: '接下来' }) });
+  await expect(later.locator('.c-ev-row b')).toHaveText(['PCE 物价', 'GDP 经济增长', '非农就业', 'CPI 物价']);
+  await later.getByRole('button', { name: /非农就业/ }).click();
+  await expect(later).toContainText('美国上个月新增了多少个工作');
+
+  const done = page.locator('.c-ev-done');
+  await expect(done.locator('.c-ev-row b')).toHaveText(['CPI 物价']);
+  // 只挂说到 CPI 的，按时间从早到晚
+  await expect(done.locator('.c-item b')).toHaveText(['美国9月CPI同比上涨3.7%，高于预期', '美国核心CPI年率创新高']);
+
+  await page.reload();
+  await page.getByRole('button', { name: '资讯' }).click();
+  await expect(page.getByRole('radio', { name: '大事日程' })).toHaveAttribute('aria-checked', 'true');
+  await expect(page.getByRole('heading', { name: '美联储利率决议' })).toBeVisible();
+});
+
+test('英文界面没收集到快讯时，给出官方公布页面；还没同意访问 Decrypt 也能看大事日程', async ({ openPopup }) => {
+  const page = await openPopup({ settings: { language: 'en', coins: ['bitcoin'] } });
+  await setTime(page, Date.UTC(2026, 9, 15, 3, 0));
+  await page.getByRole('button', { name: 'News' }).click();
+  await expect(page.getByText('News needs your permission')).toBeVisible();
+  await page.getByRole('radio', { name: 'Key dates' }).click();
+  await expect(page.getByRole('heading', { name: 'Fed rate decision' })).toBeVisible();
+  const done = page.locator('.c-ev-done');
+  await expect(done).toContainText('No related headlines were collected.');
+  await expect(done.getByRole('link', { name: 'Official release' })).toHaveAttribute(
+    'href',
+    'https://www.bls.gov/news.release/cpi.nr0.htm',
+  );
+});
+
+test('写好的日期都过去以后，提示日程待更新，并给出三个官网的日程', async ({ openPopup }) => {
+  const page = await openPopup();
+  await setTime(page, Date.UTC(2028, 0, 5));
+  await page.getByRole('button', { name: '资讯' }).click();
+  await page.getByRole('radio', { name: '大事日程' }).click();
+  await expect(page.getByRole('heading', { name: '日程待更新' })).toBeVisible();
+  await expect(page.locator('.c-ev-card a')).toHaveText(['美联储', '美国劳工统计局', '美国经济分析局']);
+  await expect(page.locator('.c-ev-row')).toHaveCount(0);
+});

@@ -33,6 +33,7 @@ A Chrome extension that shows prices for the coins you follow as soon as you cli
 - A timeline grouped by day; show only news about your coins, or about one coin
 - When several sites report the same story, only the earliest one is shown
 - The extension doesn't visit any news site until you open the News tab. PANews and Odaily show up right away; Decrypt asks for your OK first
+- Switch to Key dates to see when the next Fed rate decision, CPI, jobs report, PCE and GDP come out, each with a plain-language note on what it is, why it matters and how to read the result. After a release, related headlines are shown under it
 
 **Settings**
 - Currency: US dollar, Chinese yuan, euro
@@ -61,6 +62,7 @@ When you upgrade from 0.1.x, your coins, pinned coin, currency, language and ref
 ## Where the data comes from
 
 - **Prices**: the public [CoinGecko](https://www.coingecko.com/) API.
+- **Key dates**: the release schedules published by the [Federal Reserve](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm), the [Bureau of Labor Statistics](https://www.bls.gov/schedule/news_release/) and the [Bureau of Economic Analysis](https://www.bea.gov/news/schedule). The dates are built into the extension and updated with new versions; the explanations are written for this extension.
 - **News**: [PANews](https://www.panewslab.com/), [Odaily](https://www.odaily.news/) and [Decrypt](https://decrypt.co/). The extension only shows headlines and links; articles open on the original site, and their copyright belongs to each site. You can turn off any source in Settings › News sources.
 
 ## Privacy

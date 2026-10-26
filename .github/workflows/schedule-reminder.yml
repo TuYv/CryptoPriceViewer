@@ -1,0 +1,50 @@
+name: 大事日程到期提醒
+
+on:
+  schedule:
+    # 每月 1 日 UTC 1:00
+    - cron: '0 1 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: 看日期还剩多少天
+        id: check
+        run: node scripts/check-schedule.mjs
+
+      - name: 不到 90 天时开 issue（已经有一个开着的就不再开）
+        if: fromJSON(steps.check.outputs.days_left) < 90
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LAST: ${{ steps.check.outputs.last }}
+          DAYS_LEFT: ${{ steps.check.outputs.days_left }}
+        run: |
+          title="大事日程快用完了，该加下一年的日期"
+          open=$(gh issue list --state open --search "in:title $title" --json number --jq 'length')
+          if [ "$open" != "0" ]; then
+            echo "已经有一个开着的提醒"
+            exit 0
+          fi
+          gh issue create --title "$title" --body "$(cat <<EOF
+          src/core/schedule.ts 里的日期写到 $LAST，还剩 $DAYS_LEFT 天。日期用完以后，资讯页的大事日程会显示“日程待更新”。
+
+          到下面几个官网抄下一年的日期，接在后面，然后发一个新版本：
+          - 美联储利率决议：https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
+          - CPI：https://www.bls.gov/schedule/news_release/cpi.htm
+          - 非农：https://www.bls.gov/schedule/news_release/empsit.htm
+          - PCE 和 GDP 的第一次估算：https://www.bea.gov/news/schedule/next-year
+          EOF
+          )"

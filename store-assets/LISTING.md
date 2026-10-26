@@ -28,6 +28,7 @@ Crypto Price Viewer shows the coins you follow as soon as you click its toolbar 
 • Price history: charts for 1 day to 1 year with the high and low marked; hover to see the price at any point.
 • Market data: market cap, 24h volume, circulating supply, all-time high and rank.
 • Crypto news: a timeline from PANews, Odaily and Decrypt, grouped by day and filterable by coin. The same story from several sites is shown once.
+• Key dates: when the next Fed rate decision, CPI, jobs report, PCE and GDP come out, with a plain-language note on each and related headlines after the release.
 • Works the way you read prices: red up / green down, green up / red down, or red up / blue down.
 • Light and dark themes; English, 简体中文, 日本語 and 한국어.
 • Your list syncs across computers signed in to the same Chrome account.
@@ -45,6 +46,7 @@ Privacy: no account, no analytics, no ads. The extension only connects to CoinGe
 • 价格走势：1 天到 1 年的图表，标出最高和最低，鼠标移上去显示那个时间点的价格。
 • 行情数据：市值、24 小时成交量、流通量、历史最高、市值排名。
 • 币圈新闻：来自 PANews、Odaily 星球日报和 Decrypt 的新闻时间线，按天分组，可以按币筛选；几家报道同一件事时只显示一条。
+• 大事日程：美联储利率决议、CPI、非农、PCE、GDP 下一次什么时候公布，每件事都有大白话说明，公布后挂上相关快讯。
 • 涨跌颜色随你习惯：红涨绿跌、绿涨红跌、红涨蓝跌。
 • 浅色和深色外观；支持简体中文、English、日本語、한국어。
 • 自选列表在登录同一个 Chrome 账号的电脑之间同步。
@@ -62,6 +64,7 @@ Privacy: no account, no analytics, no ads. The extension only connects to CoinGe
 • 価格チャート：1日から1年まで。最高値・最安値を表示し、マウスを乗せるとその時点の価格がわかります。
 • マーケットデータ：時価総額、24時間出来高、流通量、過去最高値、ランキング。
 • ニュース：PANews、Odaily、Decrypt のニュースを日付ごとのタイムラインで表示し、コインで絞り込めます。同じ出来事は1件にまとめます。
+• 重要日程：FRBの政策金利発表、CPI、雇用統計、PCE、GDP の次の発表日時を、やさしい説明つきで表示。発表後は関連する速報も表示します。
 • 値動きの色を選べます：緑が上昇・赤が下落、赤が上昇・緑が下落、赤が上昇・青が下落。
 • ライト／ダーク表示、日本語・English・简体中文・한국어 に対応。
 • 同じ Chrome アカウントのパソコン間でリストを同期します。
@@ -79,6 +82,7 @@ CoinGecko の制限やオフラインのときも、前回の価格をその時�
 • 가격 차트: 1일부터 1년까지. 최고가와 최저가를 표시하고, 마우스를 올리면 그 시점의 가격을 보여 줍니다.
 • 시장 데이터: 시가총액, 24시간 거래량, 유통량, 역대 최고가, 순위.
 • 뉴스: PANews, Odaily, Decrypt의 뉴스를 날짜별 타임라인으로 보여 주고 코인별로 걸러 볼 수 있습니다. 같은 소식은 한 건만 보여 줍니다.
+• 주요 일정: 연준 금리 결정, CPI, 비농업 고용, PCE, GDP의 다음 발표 시각을 쉬운 설명과 함께 보여 주고, 발표 뒤에는 관련 속보를 붙여 줍니다.
 • 등락 색상 선택: 빨강 상승·파랑 하락, 빨강 상승·초록 하락, 초록 상승·빨강 하락.
 • 라이트/다크 모드, 한국어·English·简体中文·日本語 지원.
 • 같은 Chrome 계정으로 로그인한 컴퓨터끼리 목록이 동기화됩니다.
@@ -95,7 +99,7 @@ CoinGecko가 요청을 제한하거나 오프라인일 때도 마지막 가격�
 
 **Single purpose**
 
-> Show live prices for the cryptocurrencies the user follows, optionally on the toolbar icon, together with crypto news headlines.
+> Show live prices for the cryptocurrencies the user follows, optionally on the toolbar icon, together with crypto news headlines and a schedule of major US economic releases.
 
 **Permission justification**
 

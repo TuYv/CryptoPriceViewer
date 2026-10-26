@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatAgo, formatBadge, formatChange, formatCompactMoney, formatPrice } from './format';
+import { formatAgo, formatBadge, formatChange, formatCompactMoney, formatPrice, formatUntil } from './format';
 
 describe('formatPrice', () => {
   it('一万以上不带小数，1 以上两位小数，小于 1 保留 4 位有效数字', () => {
@@ -62,5 +62,21 @@ describe('formatAgo', () => {
     expect(formatAgo(now - 32_000, now, 'en')).toBe('32 seconds ago');
     expect(formatAgo(now - 5 * 60_000, now, 'en')).toBe('5 minutes ago');
     expect(formatAgo(now - 32_000, now, 'zh')).toContain('32');
+  });
+});
+
+describe('formatUntil', () => {
+  // 用电脑本地的钟点构造时间，在哪个时区跑结果都一样
+  const now = new Date(2026, 9, 26, 18, 0).getTime();
+
+  it('当天按小时、分钟', () => {
+    expect(formatUntil(new Date(2026, 9, 26, 21, 0).getTime(), now, 'en')).toBe('in 3 hours');
+    expect(formatUntil(new Date(2026, 9, 26, 18, 20).getTime(), now, 'en')).toBe('in 20 minutes');
+  });
+
+  it('其余按日历上差几天，不管差几个小时', () => {
+    expect(formatUntil(new Date(2026, 9, 27, 3, 0).getTime(), now, 'zh')).toBe('明天');
+    expect(formatUntil(new Date(2026, 9, 28, 23, 0).getTime(), now, 'zh')).toBe('后天');
+    expect(formatUntil(new Date(2026, 10, 6, 22, 30).getTime(), now, 'en')).toBe('in 11 days');
   });
 });

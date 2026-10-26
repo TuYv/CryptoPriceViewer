@@ -5,12 +5,13 @@ import { formatClock, formatDate } from '@/core/format';
 import { ask } from '@/core/messages';
 import { feedsFor, NEWS_SOURCES } from '@/core/news';
 import type { NewsSourceId } from '@/core/settings';
-import { marketsItem, newsActivatedItem, newsItem } from '@/core/store';
+import { marketsItem, newsActivatedItem, newsItem, newsPaneItem } from '@/core/store';
 import type { Language } from '@/i18n';
-import { TabBar } from '../components/ui';
+import { Segmented, TabBar } from '../components/ui';
 import { usePopup } from '../context';
 import { useNow, useStorageItem } from '../hooks';
 import { NewsIcon } from '../icons';
+import { EventsPane } from './EventsPane';
 
 export function sourceName(id: NewsSourceId, lang: Language): string {
   return id === 'odaily' && lang === 'zh' ? 'Odaily 星球日报' : NEWS_SOURCES[id].name;
@@ -39,6 +40,7 @@ function Ask(props: { text: string; allow: string; onAllow: () => void; skip?: s
 
 export function NewsView() {
   const { t, lang, settings, update, go } = usePopup();
+  const pane = useStorageItem(newsPaneItem);
   const news = useStorageItem(newsItem);
   const markets = useStorageItem(marketsItem);
   const now = useNow(60_000);
@@ -51,7 +53,7 @@ export function NewsView() {
   useEffect(() => {
     let alive = true;
     void (async () => {
-      // 打开资讯页就是要看新闻：从这时起后台才会去访问新闻网站
+      // 打开资讯页就是要看新闻（大事日程也要用快讯）：从这时起后台才会去访问新闻网站
       await newsActivatedItem.setValue(true);
       const entries = await Promise.all(
         feeds.map(async ({ source }) => [source.id, await browser.permissions.contains({ origins: [source.origin] })]),
@@ -265,8 +267,19 @@ export function NewsView() {
     <div className="c-screen">
       <header className="c-head">
         <h1>{t('tab.news')}</h1>
+        {pane && (
+          <Segmented
+            label={t('news.pane')}
+            value={pane}
+            options={[
+              { value: 'news', label: t('news.paneNews') },
+              { value: 'events', label: t('news.paneEvents') },
+            ]}
+            onChange={(next) => void newsPaneItem.setValue(next)}
+          />
+        )}
       </header>
-      {body}
+      {pane === 'events' ? <EventsPane /> : pane === 'news' ? body : null}
       <TabBar current="news" />
     </div>
   );

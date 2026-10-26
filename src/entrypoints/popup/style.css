@@ -1208,6 +1208,134 @@ select {
   overflow-y: auto;
   padding: 0 16px 76px;
 }
+/* ---------- 资讯：大事日程 ---------- */
+.c-ev-card {
+  margin: 0 0 8px;
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  background: var(--c-soft);
+}
+.c-ev-card h3 {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+.c-ev-when {
+  margin: 4px 0 0;
+  font-size: var(--fs-xs);
+  color: var(--c-sub);
+  font-variant-numeric: tabular-nums;
+}
+.c-ev-what {
+  margin: 8px 0 0;
+}
+.c-ev-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--c-ink);
+  cursor: pointer;
+}
+.c-ev-toggle svg,
+.c-ev-row svg {
+  flex: none;
+  color: var(--c-sub);
+  transition: transform 0.15s;
+}
+.c-ev-toggle[aria-expanded="true"] svg,
+.c-ev-row[aria-expanded="true"] svg {
+  transform: rotate(90deg);
+}
+/* 一行事件：鼠标移上去整行变灰，灰底往两边多伸出 8px，文字仍和标题对齐 */
+.c-ev-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% + 16px);
+  margin: 0 -8px;
+  padding: 8px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.c-ev-row:hover {
+  background: var(--c-hover);
+}
+.c-ev-row-when {
+  flex: none;
+  font-size: var(--fs-xs);
+  color: var(--c-sub);
+  font-variant-numeric: tabular-nums;
+}
+.c-ev-row b {
+  flex: 1;
+  font-weight: var(--fw-bold);
+}
+.c-ev-explain {
+  padding: 4px 0 8px;
+}
+.c-ev-card .c-ev-explain {
+  padding: 8px 0 0;
+}
+.c-ev-explain dl {
+  margin: 0;
+}
+.c-ev-explain dt {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--c-sub);
+}
+.c-ev-explain dd {
+  margin: 0 0 8px;
+}
+.c-ev-note,
+.c-ev-empty {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--c-sub);
+}
+.c-ev-empty {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 0 0 8px;
+}
+.c-ev-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--c-ink);
+  text-decoration: none;
+}
+.c-ev-empty .c-ev-link {
+  margin-top: 0;
+}
+.c-ev-link svg {
+  color: var(--c-sub);
+}
+.c-ev-link:hover {
+  text-decoration: underline;
+}
+.c-ev-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+}
+.c-ev-done .c-item {
+  --coin: var(--c-line);
+}
 .c-feed-note {
   margin: 0 0 8px;
   font-size: var(--fs-xs);
@@ -1647,7 +1775,9 @@ select {
   .c-tile,
   .c-row,
   .c-switch,
-  .c-switch i {
+  .c-switch i,
+  .c-ev-toggle svg,
+  .c-ev-row svg {
     transition: none;
   }
 }

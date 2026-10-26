@@ -33,6 +33,7 @@
 - 按天分组的新闻时间线，可以只看提到自选币的，或者只看某一个币的
 - 几家网站报道同一件事时只显示最早的一条
 - 打开资讯页之前，扩展不会访问任何新闻网站。PANews 和 Odaily 打开就能看；Decrypt 要你先同意访问
+- 可以切到大事日程，看美联储利率决议、CPI、非农、PCE、GDP 下一次什么时候公布。每件事都有大白话说明：是什么、为什么关心、怎么看结果。公布以后，相关快讯会挂在它下面
 
 **设置**
 - 显示货币：美元、人民币、欧元
@@ -61,6 +62,7 @@
 ## 数据从哪里来
 
 - **行情**：[CoinGecko](https://www.coingecko.com/) 的公共接口。
+- **大事日程**：[美联储](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm)、[美国劳工统计局](https://www.bls.gov/schedule/news_release/)、[美国经济分析局](https://www.bea.gov/news/schedule)官网公布的日程。日期写在扩展里，随新版本更新；说明文字是本扩展自己写的。
 - **新闻**：[PANews](https://www.panewslab.com/)、[Odaily 星球日报](https://www.odaily.news/)、[Decrypt](https://decrypt.co/)。扩展只显示标题和链接，点进去在原网站阅读，内容版权归各网站所有。每个来源都可以在“设置 › 资讯来源”里单独关掉。
 
 ## 隐私

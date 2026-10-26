@@ -101,3 +101,23 @@ export function formatDateTime(timestamp: number, lang: Language): string {
     hour12: false,
   }).format(timestamp);
 }
+
+/** 大事日程的时间：10月29日周四 03:00，按电脑的时区 */
+export function formatEventTime(timestamp: number, lang: Language): string {
+  return new Intl.DateTimeFormat(LOCALES[lang], {
+    month: 'short',
+    day: 'numeric',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(timestamp);
+}
+
+/** 离公布还有多久：当天按小时、分钟（3 小时后），其余按日历上差几天（明天、后天、5 天后） */
+export function formatUntil(timestamp: number, now: number, lang: Language): string {
+  const startOfDay = (t: number) => new Date(t).setHours(0, 0, 0, 0);
+  const days = Math.round((startOfDay(timestamp) - startOfDay(now)) / 86_400_000);
+  if (days <= 0) return formatIn(timestamp, now, lang);
+  return new Intl.RelativeTimeFormat(LOCALES[lang], { numeric: 'auto' }).format(days, 'day');
+}

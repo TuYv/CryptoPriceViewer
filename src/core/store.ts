@@ -51,6 +51,20 @@ export const newsItem = storage.defineItem<NewsCache | null>('local:news', { fal
 /** 用户打开过资讯页。打开之前，后台不会访问任何新闻网站 */
 export const newsActivatedItem = storage.defineItem<boolean>('local:newsActivated', { fallback: false });
 
+/**
+ * 和大事日程上某件事有关的快讯。普通的新闻缓存十几个小时就被新的挤掉了，这些另外存，留 8 天，
+ * 大事日程里“已经公布”的事下面显示它们
+ */
+export interface EventNewsCache {
+  lang: Language;
+  items: NewsItem[];
+}
+export const eventNewsItem = storage.defineItem<EventNewsCache | null>('local:eventNews', { fallback: null });
+
+/** 资讯页上次看的是快讯还是大事日程，下次打开还是这一个 */
+export type NewsPane = 'news' | 'events';
+export const newsPaneItem = storage.defineItem<NewsPane>('local:newsPane', { fallback: 'news' });
+
 /** 通过搜索添加的币的名字和图标，价格还没回来时用来显示 */
 export const coinMetaItem = storage.defineItem<Record<string, CoinMeta>>('local:coinMeta', { fallback: {} });
 

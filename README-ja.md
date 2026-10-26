@@ -33,6 +33,7 @@
 - 日付ごとにまとめたタイムライン。マイリストのコインや特定のコインに関するものだけを表示できます
 - 複数のサイトが同じ出来事を報じた場合は、最も早い1件だけを表示します
 - ニュースタブを開くまで、ニュースサイトには一切アクセスしません。PANews と Odaily はすぐに表示され、Decrypt は先に許可を求めます
+- 重要日程に切り替えると、FRBの政策金利発表、CPI、雇用統計、PCE、GDP の次の発表日時がわかります。それぞれ、どんなものか・なぜ大事か・結果の見方をやさしく説明します。発表後は関連する速報がその下に表示されます
 
 **設定**
 - 表示通貨：米ドル、人民元、ユーロ
@@ -61,6 +62,7 @@
 ## データの取得元
 
 - **価格**：[CoinGecko](https://www.coingecko.com/) の公開 API
+- **重要日程**：[FRB](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm)、[米労働統計局](https://www.bls.gov/schedule/news_release/)、[米経済分析局](https://www.bea.gov/news/schedule)が公表している日程。日付は拡張機能に入っていて、新しいバージョンで更新します。説明文はこの拡張機能のために書いたものです
 - **ニュース**：[PANews](https://www.panewslab.com/)、[Odaily](https://www.odaily.news/)、[Decrypt](https://decrypt.co/)。拡張機能は見出しとリンクだけを表示し、記事は元のサイトで開きます。記事の著作権は各サイトに帰属します。配信元は「設定 › ニュースの配信元」で個別にオフにできます。
 
 ## プライバシー

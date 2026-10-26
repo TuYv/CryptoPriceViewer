@@ -1,13 +1,16 @@
 import { browser } from '#imports';
+import { pickEventNews } from '@/core/events';
 import { feedsFor, mergeNews, type NewsItem, type NewsSource } from '@/core/news';
 import type { NewsSourceId } from '@/core/settings';
-import { getSettings, newsActivatedItem, newsItem } from '@/core/store';
+import { eventNewsItem, getSettings, newsActivatedItem, newsItem } from '@/core/store';
 import { languageOf } from './context';
 
 /** 20 分钟内抓过就不再抓 */
 export const NEWS_FRESH_MS = 20 * 60_000;
 /** 只保留 3 天以内的新闻 */
 const KEEP_MS = 3 * 86_400_000;
+/** 和大事日程有关的快讯留 8 天，比“已经公布”显示的 7 天多一天 */
+const EVENT_NEWS_KEEP_MS = 8 * 86_400_000;
 
 export async function hasPermission(source: NewsSource): Promise<boolean> {
   return browser.permissions.contains({ origins: [source.origin] });
@@ -93,6 +96,13 @@ export async function refreshNews({ force }: { force: boolean }): Promise<void> 
       ? cache.items.filter((n) => enabled.has(n.source) && now - n.publishedAt < KEEP_MS)
       : [];
   await newsItem.setValue({ lang, fetchedAt: now, items: mergeNews([...lists, previous]), failed, blocked });
+
+  const kept = await eventNewsItem.getValue();
+  const keptItems =
+    kept && kept.lang === lang
+      ? kept.items.filter((n) => enabled.has(n.source) && now - n.publishedAt < EVENT_NEWS_KEEP_MS)
+      : [];
+  await eventNewsItem.setValue({ lang, items: mergeNews([pickEventNews(lists.flat()), keptItems], 100) });
 }
 
 /** 用户关掉某个来源或者收回权限后，把它的新闻从缓存里去掉 */
@@ -105,4 +115,6 @@ export async function pruneNews(): Promise<void> {
     if (await canRead(source)) allowed.add(source.id);
   }
   await newsItem.setValue({ ...cache, items: cache.items.filter((n) => allowed.has(n.source)) });
+  const kept = await eventNewsItem.getValue();
+  if (kept) await eventNewsItem.setValue({ ...kept, items: kept.items.filter((n) => allowed.has(n.source)) });
 }

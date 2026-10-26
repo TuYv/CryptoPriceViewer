@@ -87,6 +87,56 @@ export const en = {
   'news.all': 'All',
   'news.mine': 'My coins',
   'news.filter': 'Filter news',
+  'news.pane': 'Show',
+  'news.paneNews': 'Headlines',
+  'news.paneEvents': 'Key dates',
+  'events.next': 'Next up',
+  'events.later': 'Coming up',
+  'events.recent': 'Recently released',
+  'events.how': 'How to read the result',
+  'events.hide': 'Hide',
+  'events.what': 'What it is',
+  'events.why': 'Why it matters',
+  'events.note': 'These are common patterns, not rules. Crypto prices are moved by many other things too.',
+  'events.official': 'Official release',
+  'events.noNews': 'No related headlines were collected.',
+  'events.ended': 'The schedule needs an update',
+  'events.endedText':
+    'The last date built into the extension has passed. Update the extension to get the new dates, or check the official schedules:',
+  'events.scheduleFed': 'Federal Reserve',
+  'events.scheduleBls': 'Bureau of Labor Statistics',
+  'events.scheduleBea': 'Bureau of Economic Analysis',
+  'event.fed.name': 'Fed rate decision',
+  'event.fed.what': 'The Federal Reserve meets 8 times a year to set the base interest rate for the US dollar.',
+  'event.fed.why':
+    'When rates are high, savings and US Treasury bills pay a safe return, so less money goes into riskier assets like crypto. Lower rates work the other way.',
+  'event.fed.how':
+    'What matters most is whether the result is a surprise. If everyone expected it, prices usually moved before the announcement. A surprise hike, or the Fed chair hinting at more hikes, usually pushes crypto down first; a surprise pause, or a hint that hikes are over, usually lifts it first. The chair’s press conference half an hour later often moves prices sharply too.',
+  'event.cpi.name': 'CPI inflation',
+  'event.cpi.what':
+    'How fast US prices rose last month. “Core CPI” leaves out food and energy, so it shows the longer-term trend better.',
+  'event.cpi.why': 'When prices rise quickly, the Fed is more likely to raise rates and less likely to cut them.',
+  'event.cpi.how':
+    'Compare the actual number with the forecast. Higher than expected makes a rate hike more likely, which tends to weigh on crypto; lower than expected tends to do the opposite.',
+  'event.jobs.name': 'Jobs report',
+  'event.jobs.what':
+    'How many jobs the US added last month outside farming, released together with the unemployment rate.',
+  'event.jobs.why':
+    'Lots of new jobs and fast wage growth mean a hot economy, so the Fed is more likely to keep rates high. Fewer jobs and rising unemployment make it more likely to stop raising rates.',
+  'event.jobs.how':
+    'Far more jobs than expected makes a hike more likely, which tends to weigh on crypto; far fewer tends to do the opposite. Also check whether the two previous months were revised a lot.',
+  'event.pce.name': 'PCE inflation',
+  'event.pce.what':
+    'Another measure of how fast US prices are rising. The Fed’s goal of 2% inflation is measured with this one.',
+  'event.pce.why':
+    'It is the price measure the Fed watches most closely, so it feeds straight into the next rate decision.',
+  'event.pce.how':
+    'Like CPI: higher than expected tends to weigh on crypto, lower than expected tends to help. CPI and producer prices come out first, so people can roughly work out PCE in advance, and surprises are usually small.',
+  'event.gdp.name': 'GDP growth',
+  'event.gdp.what': 'How much the whole US economy grew last quarter.',
+  'event.gdp.why': 'An economy that runs too hot or too cold changes the Fed’s plans for rates.',
+  'event.gdp.how':
+    'Very fast growth can make the Fed worry that prices will rise too; very slow or negative growth makes markets worry about a recession.',
   'news.today': 'Today',
   'news.yesterday': 'Yesterday',
   'news.empty': 'No news yet',
